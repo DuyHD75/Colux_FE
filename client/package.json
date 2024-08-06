@@ -16,6 +16,7 @@
     "@testing-library/user-event": "^13.5.0",
     "aos": "^2.3.4",
     "axios": "^1.6.1",
+    "classnames": "^2.5.1",
     "dayjs": "^1.11.10",
     "formik": "^2.4.5",
     "moment": "^2.30.1",

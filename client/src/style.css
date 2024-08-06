@@ -14,3 +14,29 @@ body {
 code {
   font-family: 'Nunito';
 }
+
+/* CSS cho tam giác */
+.triangle {
+  width: 0;
+  height: 0;
+  border-left: 30px solid transparent;
+  border-right: 30px solid transparent;
+  border-bottom: 30px solid #f6f6f7;
+  position: absolute;
+  top: -25px;
+  left: 3%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  z-index: 20;
+}
+
+.triangle.visible {
+  opacity: 1;
+}
+
+.triangle-container {
+  position: relative;
+  height: 10px;
+  margin-bottom: 5px;
+}
