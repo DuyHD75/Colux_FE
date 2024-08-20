@@ -82,10 +82,10 @@ const WishList = () => {
                                     }} size="small" aria-label="a dense table">
                                         <TableHead>
                                             <TableRow sx={{ display: { xs: 'none', md: 'contents' } }}>
-                                                <TableCell sx={{...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }}>Product</TableCell>
-                                                <TableCell sx={{...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Color</TableCell>
-                                                <TableCell sx={{...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Qty</TableCell>
-                                                <TableCell sx={{...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Price (Each)</TableCell>
+                                                <TableCell sx={{ ...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }}>Product</TableCell>
+                                                <TableCell sx={{ ...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Color</TableCell>
+                                                <TableCell sx={{ ...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Qty</TableCell>
+                                                <TableCell sx={{ ...TextConfig.style.basicFont, background: '-webkit-gradient(linear, left bottom, left top, color-stop(0, #eee), color-stop(1, #fafafa))', border: '1px solid #E5E5E5' }} align="left">Price (Each)</TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody sx={{ position: 'relative' }}>
@@ -112,7 +112,7 @@ const WishList = () => {
                                                 aria-labelledby="customized-dialog-title"
                                                 open={open && selectedProductIndex === index}
                                             >
-                                                <DialogTitle sx={{ m: 0, p: 2 ,...TextConfig.style.basicFont}} id="customized-dialog-title">
+                                                <DialogTitle sx={{ m: 0, p: 2, ...TextConfig.style.basicFont }} id="customized-dialog-title">
                                                     PaintPerks
                                                 </DialogTitle>
                                                 <IconButton
@@ -186,7 +186,7 @@ const WishList = () => {
                                                                     Base: <span style={{ fontWeight: 'normal' }}>{product.Base}</span>
                                                                 </Typography>
                                                             </Box>
-                                                            <Link className='' style={{...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '12px' }} onClick={() => handleRemove(index)}>Change Options</Link>
+                                                            <Link className='' style={{ ...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '12px' }} onClick={() => handleRemove(index)}>Change Options</Link>
                                                         </Stack>
                                                     </Stack>
                                                 </TableCell>
@@ -201,11 +201,11 @@ const WishList = () => {
                                                             <Typography marginTop='6px' marginBottom='6px' variant='h4' fontSize='12px' sx={{ ...TextConfig.style.basicFont }}>{product.colorID}</Typography>
                                                             <Typography marginBottom='6px' variant='h4' fontSize='12px' sx={{ ...TextConfig.style.basicFont }}>{product.colorName}</Typography>
                                                             <Typography marginBottom='6px' variant='h4' fontSize='12px' sx={{ ...TextConfig.style.basicFont }}>{product.type}</Typography>
-                                                            <Link className='' style={{...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '10.8px' }} onClick={() => handleRemove(index)}>Change Color</Link>
+                                                            <Link className='' style={{ ...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '10.8px' }} onClick={() => handleRemove(index)}>Change Color</Link>
                                                         </Stack> :
                                                         <Stack direction='column'>
                                                             <Typography margin='5.4px 0px 3.24px' variant='h4' fontSize='10.8px' sx={{ ...TextConfig.style.basicFont }} fontWeight='bold'>No Color Specified</Typography>
-                                                            <Link className='' style={{...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '10.8px' }} onClick={() => handleRemove(index)}>Select Color</Link>
+                                                            <Link className='' style={{ ...TextConfig.style.basicFont, marginRight: '10px', color: '#0069AF', fontSize: '10.8px' }} onClick={() => handleRemove(index)}>Select Color</Link>
                                                         </Stack>
                                                     }
                                                 </TableCell>
@@ -226,14 +226,14 @@ const WishList = () => {
 
                         <Box width='auto' height='auto' flex={{ xs: 1, sm: 3.5 }} sx={{ position: 'sticky', top: '0', zIndex: 1, flexDirection: 'column', marginLeft: '2rem', justifyContent: 'flex-start' }}>
                             <Box sx={{ flexDirection: 'column', border: '1px solid #E5E5E5', borderRadius: '10px 10px 0 0' }}>
-                                <Box sx={{ padding: '4.2px 14px 2.8px', ...backgroundConfigs.style.backgroundPrimary, borderBottom: '1px solid grey', ...TextConfig.style.basicFont, fontSize: '16px', color: 'white',borderRadius:'6px 6px 0 0' }}>Summary</Box>
+                                <Box sx={{ padding: '4.2px 14px 2.8px', ...backgroundConfigs.style.backgroundPrimary, borderBottom: '1px solid grey', ...TextConfig.style.basicFont, fontSize: '16px', color: 'white', borderRadius: '6px 6px 0 0' }}>Summary</Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', padding: '7.9125px' }}>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>Total <span style={{ fontWeight: 'normal' }}>({products.length})</span></Typography>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold', color: '#0069AF' }}>{calculateTotalAmount()}$</Typography>
                                 </Box>
                             </Box>
                             <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', margin: '7px 0px' }}>Prices do not include taxes or other fees as applicable.</Typography>
-                            <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white' ,...TextConfig.style.basicFont}} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleAddAllToCart()}>Add All Items To Cart</button>
+                            <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleAddAllToCart()}>Add All Items To Cart</button>
 
                         </Box>
                     </Stack>

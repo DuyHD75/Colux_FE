@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 
 import { Skeleton } from '@mui/material';
 
-const ImageComponent = ({ src, width, height ,className}) => {
+const ImageComponent = ({ src, width, height, className }) => {
     const [imageLoaded, setImageLoaded] = useState(false);
 
     useEffect(() => {

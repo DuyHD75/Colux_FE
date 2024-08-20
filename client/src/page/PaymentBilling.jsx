@@ -8,7 +8,6 @@ import { useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 
-
 const PaymentBilling = () => {
   const navigate = useNavigate();
 
@@ -99,7 +98,7 @@ const PaymentBilling = () => {
             height: '50px',
             width: '100%', border: '1px solid #E5E5E5',
             color: 'gray',
-            ...TextConfig.style.basicFont 
+            ...TextConfig.style.basicFont
           }}>REVIEW ORDER</Button>
 
         </Stack>
@@ -157,10 +156,10 @@ const PaymentBilling = () => {
                 <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>State:</Typography>
               </label>
               <Select
-                style={{width:'70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
+                style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
                 name='state'
                 id='state'
-                
+
                 value={billingForm.values.state} // Controlled value
                 onChange={billingForm.handleChange} // Update state on change
                 error={billingForm.touched.state && billingForm.errors.state !== undefined}
@@ -200,7 +199,7 @@ const PaymentBilling = () => {
                     width: '100%',
                     marginRight: '3px'
                   }} />
-                  <Button variant='contained' sx={{...TextConfig.style.basicFont}}>Apply</Button>
+                  <Button variant='contained' sx={{ ...TextConfig.style.basicFont }}>Apply</Button>
                 </Stack>
                 <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Estimated Tax:
                   <br />
@@ -217,10 +216,10 @@ const PaymentBilling = () => {
                 padding: '12px',
                 borderBottom: '1px solid #E5E5E5'
               }}>
-                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance',...TextConfig.style.basicFont }}>
+                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
                   Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
                 </Typography>
-                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap',...TextConfig.style.basicFont }}>
+                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap', ...TextConfig.style.basicFont }}>
                   By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
                 </Typography>
               </Box>

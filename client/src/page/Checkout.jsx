@@ -8,7 +8,6 @@ import ProductInfo from '../components/commons/ProductInfo';
 import { useSelector } from 'react-redux';
 import { LiaCcVisa } from "react-icons/lia";
 
-
 const Checkout = () => {
 
     const products = useSelector((state) => state.checkout.checkoutData);
@@ -236,9 +235,6 @@ const Checkout = () => {
                                 <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
                                     Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
                                 </Typography>
-                                {/* <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap' }}>
-                                    By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
-                                </Typography> */}
                             </Box>
                             <Box sx={{
                                 padding: '12px',
@@ -246,9 +242,6 @@ const Checkout = () => {
                             }}>
                                 <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
                                     By selecting Agree & Pay you are agreeing to the Sherwin-Williams <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Online Terms & Conditions of Sale</Link> Opens in new windowand have been provided with electronic access Opens in new windowto product safety data sheets and environmental data sheets for all applicable products in my order.                                </Typography>
-                                {/* <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap' }}>
-                                    By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
-                                </Typography> */}
                                 <Stack direction='row' alignItems='center'>
                                     <Checkbox size='small' onChange={handleCheckboxChange} />
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>I agree to the Sherwin-Williams<Link style={{ color: '#0069AF', fontSize: '11.9px' }}> Online Terms and Conditions of SaleOpens in new window.</Link></Typography>

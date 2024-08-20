@@ -1,12 +1,10 @@
-import { createSlice } from '@reduxjs/toolkit';
-
-
+import { createSlice } from "@reduxjs/toolkit";
 
 const checkoutSlice = createSlice({
-  name: 'checkout',
+  name: "checkout",
   initialState: {
-   checkoutData: {}
- },
+    checkoutData: {},
+  },
   reducers: {
     setCheckoutDetail: (state, action) => {
       state.checkoutData = action.payload;

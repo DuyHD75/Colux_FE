@@ -11,23 +11,6 @@ import { setCheckoutDetail } from '../redux/reducer/checkoutSlice';
 import { useDispatch } from 'react-redux';
 import customScrollbarStyle from '../config/scrollbar.config';
 
-// const customScrollbarStyle = {
-//   '::-webkit-scrollbar-thumb': {
-//     borderRadius: '10px',
-//     WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,.3)',
-//     backgroundColor: '#A8A8A8',
-//   },
-//   '::-webkit-scrollbar-track': {
-//     WebkitBoxShadow: 'inset 0 0 6px rgba(0,0,0,0.3)',
-//     borderRadius: '10px',
-//     backgroundColor: '#F5F5F5',
-//   },
-//   '::-webkit-scrollbar': {
-//     width: '2px',
-//     backgroundColor: '#F5F5F5',
-//   }
-// };
-
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -79,6 +62,7 @@ const Cart = () => {
       .reduce((acc, product) => acc + product.total, 0);
     return totalAmount;
   };
+
   return (
     <>
       <Box p={{ xs: '73px 0 1rem 0', md: '75px 0 1rem 0' }} bgcolor='#EAEAEA' >
@@ -150,10 +134,10 @@ const Cart = () => {
                   <Stack key={product.id} marginY={1} sx={{ p: '1rem' }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} flex borderBottom={1} borderColor='#e0e0e0' paddingBottom='1rem'>
                       <ProductInfo product={product} />
-                      <Stack direction='row' spacing={{xs:0,md:6}} sx={{ flex: 1, alignItems: 'center', mt: { xs: "1rem", md: 0 } }} >
+                      <Stack direction='row' spacing={{ xs: 0, md: 6 }} sx={{ flex: 1, alignItems: 'center', mt: { xs: "1rem", md: 0 } }} >
                         <Stack direction='column' justifyContent='flex-start' alignItems={{ xs: 'center', sm: 'normal' }} flex={1}>
                           <Stack direction='row' spacing={1} alignItems='center'>
-                            <Typography variant='h4' marginBottom='2.8px' sx={{ ...TextConfig.style.basicFont, width:'max-content' }} fontSize='14px'>Your price: </Typography>
+                            <Typography variant='h4' marginBottom='2.8px' sx={{ ...TextConfig.style.basicFont, width: 'max-content' }} fontSize='14px'>Your price: </Typography>
                             <Typography variant='h4' marginBottom='7px' sx={{ ...TextConfig.style.basicFont }} fontSize='14px'>{product.price}$ </Typography>
                           </Stack>
                           <Stack direction='row' alignItems='center' width='90px' height='58px'>
@@ -170,66 +154,63 @@ const Cart = () => {
                             <Link className='' style={{ color: '#0069AF', fontSize: '13px', fontWeight: 'bold' }} onClick={() => handleRemove(index)}>Edit</Link>
                           </Stack>
                         </Stack>
-                        <Stack  direction='column' justifyContent='flex-end' alignItems='center' flex={1} borderLeft={{xs:'1px solid #E5E5E5',md:0}}>
-                          <Typography variant='h4' sx={{ ...TextConfig.style.basicFont, fontSize: '1rem',color:'green',fontWeight:'bold',width:'max-content' }}>In Stock</Typography>
+                        <Stack direction='column' justifyContent='flex-end' alignItems='center' flex={1} borderLeft={{ xs: '1px solid #E5E5E5', md: 0 }}>
+                          <Typography variant='h4' sx={{ ...TextConfig.style.basicFont, fontSize: '1rem', color: 'green', fontWeight: 'bold', width: 'max-content' }}>In Stock</Typography>
                           <Checkbox
                             sx={{ width: '20px', height: '20px', flex: { xs: 1, md: 0 } }}
                             key={product.id}
                             checked={checkedProducts[product.id] || false}
                             onChange={(e) => handleCheckboxChange(product.id, e.target.checked)}
                           />
-                          </Stack>
-
                         </Stack>
-
                       </Stack>
                     </Stack>
-                ))}
-                  </Box>
-            </Box>
-
-              <Box width='auto' height='auto' flex={{ xs: 1, md: 3.5 }} sx={{ flexDirection: 'column', border: '1px solid #E5E5E5', marginLeft: '2rem' }}>
-                <Box sx={{ padding: '12px', borderBottom: '1px solid #E5E5E5' }}></Box>
-                <Box sx={{
-                  padding: '12px',
-                  borderBottom: '1px solid #E5E5E5'
-                }}>
-                  <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '10px' }}>
-                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Subtotal</Typography>
-                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
-                  </Box>
-                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Apply coupon code</Typography>
-                  <Stack direction='row' justifyContent='flex-start' pt='8.4px'>
-                    <TextField variant='outlined' size='small' sx={{
-                      width: '100%',
-                      marginRight: '3px'
-                    }} />
-                    <Button sx={{ ...TextConfig.style.basicFont }} variant='contained'>Apply</Button>
                   </Stack>
-                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Estimated Tax:
-                    <br />
-                    <em>(Determined later)</em>
-                  </Typography>
-                  <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
-                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
-                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
-                  </Box>
-                  <Typography marginTop='12px' sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Product pricing shown reflects applicable sales and discounts
-                  </Typography>
-                </Box>
-                <Box sx={{
-                  padding: '12px',
-                  borderBottom: '1px solid #E5E5E5'
-                }}>
-                  <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
-                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
-                  </Typography>
-                  <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap', ...TextConfig.style.basicFont }}>
-                    By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
-                  </Typography>
-                </Box>
-                <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleCheckout(CheckoutDetail)}>Go to checkout</button>
+                ))}
               </Box>
+            </Box>
+            <Box width='auto' height='auto' flex={{ xs: 1, md: 3.5 }} sx={{ flexDirection: 'column', border: '1px solid #E5E5E5', marginLeft: '2rem' }}>
+              <Box sx={{ padding: '12px', borderBottom: '1px solid #E5E5E5' }}></Box>
+              <Box sx={{
+                padding: '12px',
+                borderBottom: '1px solid #E5E5E5'
+              }}>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '10px' }}>
+                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Subtotal</Typography>
+                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
+                </Box>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Apply coupon code</Typography>
+                <Stack direction='row' justifyContent='flex-start' pt='8.4px'>
+                  <TextField variant='outlined' size='small' sx={{
+                    width: '100%',
+                    marginRight: '3px'
+                  }} />
+                  <Button sx={{ ...TextConfig.style.basicFont }} variant='contained'>Apply</Button>
+                </Stack>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Estimated Tax:
+                  <br />
+                  <em>(Determined later)</em>
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
+                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
+                  <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
+                </Box>
+                <Typography marginTop='12px' sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Product pricing shown reflects applicable sales and discounts
+                </Typography>
+              </Box>
+              <Box sx={{
+                padding: '12px',
+                borderBottom: '1px solid #E5E5E5'
+              }}>
+                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
+                  Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
+                </Typography>
+                <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap', ...TextConfig.style.basicFont }}>
+                  By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
+                </Typography>
+              </Box>
+              <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleCheckout(CheckoutDetail)}>Go to checkout</button>
+            </Box>
           </Stack>
         </Container>
       </Box>
