@@ -7,6 +7,7 @@ import appStateReducer from './reducer/appStateSlice';
 import blogReducer from './reducer/blogSlice';
 import productReducer from './reducer/productSlice';
 import constructedReducer from './reducer/constructedSlice';
+import checkoutReducer from './reducer/checkoutSlice';
 
 const store = configureStore({
     reducer: {
@@ -18,6 +19,8 @@ const store = configureStore({
         blogs: blogReducer,
         products: productReducer,
         constructed: constructedReducer,
+        checkout: checkoutReducer,
+
     }
 });
 
