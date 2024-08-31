@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import Banner from "../components/commons/Banner";
 import Navigate from "../components/commons/Navigate";
-import ColorCarousel from "../components/commons/ColorCarousel";
+import HomeColorFamilies from "../components/commons/HomeColorFamilies";
 import Blogs from "../components/commons/Blogs";
 import ProductCarousel from "../components/commons/ProductCarousel";
 import AdvisoryBanner from "../components/commons/AdvisoryBanner";
@@ -12,7 +12,7 @@ const Home = () => {
     <Fragment>
       <Banner></Banner>
       <Navigate></Navigate>
-      <ColorCarousel></ColorCarousel>
+      <HomeColorFamilies></HomeColorFamilies>
       <Blogs></Blogs>
       <ProductCarousel></ProductCarousel>
       <AdvisoryBanner></AdvisoryBanner>

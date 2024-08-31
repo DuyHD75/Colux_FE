@@ -1,19 +1,17 @@
 import React, { Fragment } from "react";
 import Navigate from "../components/commons/Navigate";
-import ColorFamilies from "../components/commons/ColorFamilies";
-import ListColors from "../components/commons/ListColors";
-
+import ColorSwitcher from "../components/commons/ColorSwitcher";
+import { Box } from "@mui/material";
 
 const Colors = () => {
-  
   return (
-    <Fragment>
-        <div style={{ marginTop: "96px" }}></div>
-        <Navigate></Navigate>
-        <ColorFamilies></ColorFamilies>
-        <ListColors></ListColors>
+    <Fragment >
+      <Box sx={{ marginTop: {xs: "56px", md: "96px"}}}>
+      <Navigate></Navigate>
+      <ColorSwitcher></ColorSwitcher>
+      </Box>
     </Fragment>
   );
-}; 
+};
 
 export default Colors;

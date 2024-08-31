@@ -19,7 +19,7 @@ const Banner = () => {
         backgroundPosition: "center",
         padding: "20px",
         textAlign: "center",
-        marginTop: "96px",
+        marginTop: {xs: "56px", md: "96px"},
         minHeight: "600px",
         
       }}

@@ -1,5 +1,6 @@
 import Home from "../page/Home";
 import Colors from "../page/Colors";
+import Auth from "../page/Auth";
 
 export const routesGen = {
   home: "/",
@@ -19,9 +20,34 @@ const routes = [
     state: "colors",
   },
   {
-    path: "/colors/:colorFamily",
+    path: "/colors/:section",
     element: <Colors />,
     state: "colors",
+  },
+  {
+    path: "/colors/:section/:collection",
+    element: <Colors />,
+    state: "colors",
+  },
+  {
+    path: "/login",
+    element: <Auth />,
+    state: "login",
+  },
+  {
+    path: "/register",
+    element: <Auth />,
+    state: "register",
+  },
+  {
+    path: "/forgotPassword",
+    element: <Auth />,
+    state: "forgotPassword",
+  },
+  {
+    path: "/resetPassword",
+    element: <Auth />,
+    state: "resetPassword",
   },
 ];
 
