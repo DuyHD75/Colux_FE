@@ -8,6 +8,7 @@ import blogReducer from './reducer/blogSlice';
 import productReducer from './reducer/productSlice';
 import constructedReducer from './reducer/constructedSlice';
 import globalLoadingReducer from './reducer/globalLoadingSlice';
+import checkoutReducer from './reducer/checkoutSlice';
 
 const store = configureStore({
     reducer: {
@@ -20,6 +21,7 @@ const store = configureStore({
         products: productReducer,
         constructed: constructedReducer,
         globalLoading: globalLoadingReducer,
+        checkout: checkoutReducer,
     }
 });
 
