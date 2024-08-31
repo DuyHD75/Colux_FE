@@ -41,14 +41,14 @@ const AdvisoryBanner = () => {
             <Typography
               variant="body1"
               paragraph
-              sx={{ ...textConfigs.style.subHeaderText }}
+              sx={{ ...textConfigs.style.subText }}
             >
               Unlock the Door to Your Dream Home with KOLUX 3D Home Design Services 
             </Typography>
             <Typography
               variant="body1"
               paragraph
-              sx={{ ...textConfigs.style.subHeaderText }}
+              sx={{ ...textConfigs.style.subText }}
             >
               Discover the Art of Personalized Home Design with KOLUX's 3D Advisory
             </Typography>

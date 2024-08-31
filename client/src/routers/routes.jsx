@@ -5,6 +5,7 @@ import Checkout from "../page/Checkout";
 import WishList from "../page/WishList";
 import PaymentBilling from "../page/PaymentBilling";
 
+import Auth from "../page/Auth";
 
 export const routesGen = {
   home: "/",
@@ -27,7 +28,12 @@ const routes = [
     state: "colors",
   },
   {
-    path: "/colors/:colorFamily",
+    path: "/colors/:section",
+    element: <Colors />,
+    state: "colors",
+  },
+  {
+    path: "/colors/:section/:collection",
     element: <Colors />,
     state: "colors",
   },
@@ -52,6 +58,27 @@ const routes = [
         element: <PaymentBilling/>,
         state: "paymentBilling"
     },
+
+  {
+    path: "/login",
+    element: <Auth />,
+    state: "login",
+  },
+  {
+    path: "/register",
+    element: <Auth />,
+    state: "register",
+  },
+  {
+    path: "/forgotPassword",
+    element: <Auth />,
+    state: "forgotPassword",
+  },
+  {
+    path: "/resetPassword",
+    element: <Auth />,
+    state: "resetPassword",
+  },
 ];
 
 export default routes;

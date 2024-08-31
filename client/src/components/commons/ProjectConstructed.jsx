@@ -1,5 +1,4 @@
-
-import React, { useState, useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { Container, Typography, Box } from "@mui/material";
 import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
@@ -26,10 +25,10 @@ const ProjectConstructed = () => {
       setWindowWidth(window.innerWidth);
     };
 
-    window.addEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
+      window.removeEventListener("resize", handleResize);
     };
   }, []);
   return (
@@ -99,7 +98,7 @@ const ProjectConstructed = () => {
                   "border-b-2 border-solid border-[#1c2759]":
                     index === selectedSlideIndex,
                 })}
-                style={{ ...textConfigs.style.headerText }}
+                style={{ ...textConfigs.style.headerText, cursor: "pointer" }}
                 onClick={() => setSelectedSlideIndex(index)}
               >
                 {project.name}
@@ -107,18 +106,15 @@ const ProjectConstructed = () => {
             ))}
           </Swiper>
 
-          {constructed.map((project, index) => (
-            index === selectedSlideIndex && (
-              <Box key={index} style={{ ...textConfigs.style.subHeaderText }}>
-                <Typography>
-                  Address: {project.address}
-                </Typography>
-                <Typography>
-                  {project.content}
-                </Typography>
-              </Box>
-            )
-          ))}
+          {constructed.map(
+            (project, index) =>
+              index === selectedSlideIndex && (
+                <Box key={index} style={{ ...textConfigs.style.subText }}>
+                  <Typography>Address: {project.address}</Typography>
+                  <Typography>{project.content}</Typography>
+                </Box>
+              )
+          )}
         </Box>
       </Container>
     </Box>

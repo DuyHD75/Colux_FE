@@ -1,10 +1,5 @@
 import React from "react";
-import {
-  Box,
-  Typography,
-  Container,
-  Grid,
-} from "@mui/material/";
+import { Box, Typography, Container, Grid } from "@mui/material/";
 import BackgroundColor from "../../config/background.config";
 import { Link } from "react-router-dom";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
@@ -22,10 +17,10 @@ const Footer = () => {
             <Grid
               item
               xs={12}
-              md={3}
+              md={4}
               key="aboutUs"
               className="text-white"
-              sx={{ paddingRight: "32px", mb: 3, mx: {xs: 1, md: 0}}}
+              sx={{ paddingRight: "32px", mb: 3, mx: { xs: 1, md: 0 } }}
             >
               <Typography
                 className="font-bold no-underline"
@@ -65,65 +60,74 @@ const Footer = () => {
                 READ MORE ABOUT US
               </Link>
             </Grid>
-
-            <Grid
-              item
-              xs={4}
-              md={3}
-              key="ourCompany"
-              className="text-white font-['Nunito']"
-            >
-              <Typography
-                variant="h5"
-                sx={{ fontFamily: "Nunito", marginX: "8px" }}
+            <Grid container xs={12} md={8}>
+              <Grid
+                item
+                xs={12}
+                md={4}
+                key="ourCompany"
+                className="text-white font-['Nunito']"
+                sx={{ mb: 3 }}
               >
-                Our Company
-              </Typography>
-              {menuConfigs.navItems.map((item, index) => (
-                <Link
-                  to={item.path}
-                  key={index}
-                  className="my-1 mx-2 text-white flex"
+                <Typography
+                  variant="h5"
+                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  {item.display}
-                </Link>
-              ))}
-            </Grid>
+                  Our Company
+                </Typography>
+                {menuConfigs.navItems.map((item, index) => (
+                  <Link
+                    to={item.path}
+                    key={index}
+                    className="my-1 mx-2 text-white flex"
+                  >
+                    {item.display}
+                  </Link>
+                ))}
+              </Grid>
 
-            <Grid item xs={4} md={3} key="termsOfUse" className="text-white">
-              <Typography
-                variant="h5"
-                sx={{ fontFamily: "Nunito", marginX: "8px" }}
+              <Grid
+                item
+                xs={12}
+                md={4}
+                key="termsOfUse"
+                className="text-white"
+                sx={{ mb: 3 }}
               >
-                Terms of Use
-              </Typography>
-              {menuConfigs.termItems.map((item, index) => (
-                <Link
-                  to={item.path}
-                  key={index}
-                  className="my-1 mx-2 text-white flex"
+                <Typography
+                  variant="h5"
+                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  {item.display}
-                </Link>
-              ))}
-            </Grid>
+                  Terms of Use
+                </Typography>
+                {menuConfigs.termItems.map((item, index) => (
+                  <Link
+                    to={item.path}
+                    key={index}
+                    className="my-1 mx-2 text-white flex"
+                  >
+                    {item.display}
+                  </Link>
+                ))}
+              </Grid>
 
-            <Grid item xs={4} md={3} key="product" className="text-white">
-              <Typography
-                variant="h5"
-                sx={{ fontFamily: "Nunito", marginX: "8px" }}
-              >
-                User
-              </Typography>
-              {menuConfigs.settings.map((item, index) => (
-                <Link
-                  to={item.path}
-                  key={index}
-                  className="my-1 mx-2 text-white flex"
+              <Grid item xs={12} md={4} key="product" className="text-white">
+                <Typography
+                  variant="h5"
+                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  {item.display}
-                </Link>
-              ))}
+                  User
+                </Typography>
+                {menuConfigs.settings.map((item, index) => (
+                  <Link
+                    to={item.path}
+                    key={index}
+                    className="my-1 mx-2 text-white flex"
+                  >
+                    {item.display}
+                  </Link>
+                ))}
+              </Grid>
             </Grid>
           </Grid>
         </Box>
