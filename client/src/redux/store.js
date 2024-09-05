@@ -8,7 +8,7 @@ import blogReducer from './reducer/blogSlice';
 import productReducer from './reducer/productSlice';
 import constructedReducer from './reducer/constructedSlice';
 import checkoutReducer from './reducer/checkoutSlice';
-
+import filterCategoriesReducer from './reducer/filtersCategoriesSlice';
 const store = configureStore({
     reducer: {
         colorFamilies: colorReducer,
@@ -20,6 +20,7 @@ const store = configureStore({
         products: productReducer,
         constructed: constructedReducer,
         checkout: checkoutReducer,
+        filterCategories: filterCategoriesReducer,
 
     }
 });

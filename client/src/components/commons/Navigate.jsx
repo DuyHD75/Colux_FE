@@ -32,7 +32,7 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const Navigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
-  const { colorFamily } = useParams();
+  const { colorFamily, productCategory } = useParams();
 
   return (
     <Box className="p-5" sx={{ ...backgroundConfigs.style.backgroundContext }}>
@@ -51,20 +51,18 @@ const Navigate = () => {
                 <StyledBreadcrumb
                   key={index}
                   component="a"
-                  href="#"
+                  href={item.path}
                   label={item.display}
                   sx={{ fontSize: "1rem" }}
                 />
               );
-
             } else {
               return null;
             }
           })}
           {colorFamilies
-          .filter(item => item.name === colorFamily)
-          .map((item, index) => {
-            return (
+            .filter(item => item.name === colorFamily)
+            .map((item, index) => (
               <StyledBreadcrumb
                 key={index}
                 component="a"
@@ -72,9 +70,16 @@ const Navigate = () => {
                 label={item.name}
                 sx={{ fontSize: "1rem" }}
               />
-            );
-          })
-        }
+            ))
+          }
+          {productCategory && (
+            <StyledBreadcrumb
+              component="a"
+              href="#"
+              label={productCategory}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
         </Breadcrumbs>
       </Container>
     </Box>
