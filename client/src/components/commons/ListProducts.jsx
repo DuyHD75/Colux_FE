@@ -8,7 +8,7 @@ import ProductCard from './ProductCard';
 const ListProducts = () => {
   const products = useSelector((state) => state.products.products);
   const categories = useSelector((state) => state.categories.categories);
-  const { categoryId } = useParams(); // Sử dụng categoryId từ URL
+  const { categoryId } = useParams(); 
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 18;
