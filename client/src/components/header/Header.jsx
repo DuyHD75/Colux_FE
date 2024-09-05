@@ -28,7 +28,6 @@ export const Header = () => {
   const { categories } = useSelector((state) => state.categories);
   const { collections } = useSelector((state) => state.collections);
   const { user } = useSelector((state) => state.user);
-  
 
   const [anchorElNav, setAnchorElNav] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(false);
@@ -72,22 +71,16 @@ export const Header = () => {
     handleCloseCategoriesMenu();
   };
 
-  const columnsNav = menuConfigs.navItems.reduce((acc, curr, index) => {
-    const columnIndex = Math.floor(index / 4);
-    if (!acc[columnIndex]) {
-      acc[columnIndex] = [];
-    }
-    acc[columnIndex].push(curr);
-    return acc;
-  }, []);
-
   return (
     <AppBar
-      className="fixed top-0 left-0 right-0 z-10 font-['Nunito']"
-      sx={{ ...BackgroundColor.style.backgroundPrimary }}
+      className="top-0 left-0 right-0 z-10 font-['Nunito']"
+      sx={{
+        background: { xs: "#1c2759", md: "#ffffff" },
+        position: "absolute",
+      }}
     >
+      <SubHeader />
       <Container maxWidth="lg">
-        <SubHeader />
         <Toolbar disableGutters>
           {/* Start logo */}
           <Typography
@@ -101,7 +94,7 @@ export const Header = () => {
               fontFamily: "Nunito",
               fontWeight: 700,
               letterSpacing: ".6rem",
-              color: "inherit",
+              color: "#000",
               textDecoration: "none",
               fontSize: "2rem",
               overflow: "inherit",
@@ -139,6 +132,7 @@ export const Header = () => {
               onClose={handleCloseNavMenu}
               sx={{
                 display: { xs: "block", md: "none" },
+                mt: "4px",
               }}
             >
               <Grid container spacing={1}>
@@ -152,15 +146,7 @@ export const Header = () => {
                     <MenuItem
                       key={index}
                       onClick={(event) => {
-                        if (item.display === "Colors") {
-                          // event.preventDefault();
-                          // setAnchorElColors(event.currentTarget);
-                        } else if (item.display === "Products") {
-                          // event.preventDefault();
-                          // setAnchorElCategories(event.currentTarget);
-                        } else {
-                          handleCloseNavMenu(event);
-                        }
+                        handleCloseNavMenu(event);
                       }}
                     >
                       <Button
@@ -180,60 +166,6 @@ export const Header = () => {
                   </Grid>
                 ))}
               </Grid>
-              {/* <Menu
-                sx={{ mt: "45px" }}
-                id="menu-colors"
-                anchorEl={anchorElColors}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElColors)}
-                onClose={handleCloseColorsMenu}
-              >
-                {colorFamilies.map((color, index) => (
-                  <MenuItem
-                    key={index}
-                    onClick={handleCloseColorsMenu}
-                    sx={{ minWidth: "120px" }}
-                  >
-                    <Typography textAlign="center">{color.name}</Typography>
-                  </MenuItem>
-                ))}
-              </Menu>
-              <Menu
-                sx={{ mt: "45px" }}
-                id="menu-categories"
-                anchorEl={anchorElCategories}
-                anchorOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                keepMounted
-                transformOrigin={{
-                  vertical: "top",
-                  horizontal: "left",
-                }}
-                open={Boolean(anchorElCategories)}
-                onClose={handleCloseCategoriesMenu}
-              >
-                  {categories.map((category, index) => (
-                        <MenuItem
-                          key={index}
-                          onClick={handleCloseCategoriesMenu}
-                          sx={{ minWidth: "120px" }}
-                        >
-                          <Typography textAlign="center">
-                            {category.name}
-                          </Typography>
-                        </MenuItem>
-                  ))}
-              </Menu> */}
             </Menu>
           </Box>
           {/* End menu mobile */}
@@ -271,7 +203,12 @@ export const Header = () => {
 
           {/* Start menu colors */}
           <Menu
-            sx={{ mt: "45px", paddingTop: 0 }}
+            sx={{
+              mt: "45px",
+              "& .MuiMenu-list": {
+                paddingY: 0,
+              },
+            }}
             id="menu-colors"
             anchorEl={anchorElColors}
             anchorOrigin={{
@@ -289,7 +226,7 @@ export const Header = () => {
             <Grid
               container
               sx={{
-                width: "50vw",
+                width: "30vw",
                 padding: 0,
                 ...BackgroundColor.style.backgroundContext,
               }}
@@ -307,7 +244,7 @@ export const Header = () => {
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={`/colors/${item.name}`}
+                      to={`/colors/color-family/${item.name}`}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
@@ -352,21 +289,6 @@ export const Header = () => {
                     </Link>
                   </MenuItem>
                 ))}
-                <MenuItem
-                  container
-                  maxWidth={"lg"}
-                  key="allCollections"
-                  onClick={handleCloseColorsMenu}
-                  className="min-w-[120px] py-0"
-                >
-                  <Link
-                    to={`/colors/collections/`}
-                    key="allCollections"
-                    className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
-                  >
-                    All Collections
-                  </Link>
-                </MenuItem>
               </Grid>
             </Grid>
           </Menu>
@@ -374,7 +296,12 @@ export const Header = () => {
 
           {/* Start menu Products */}
           <Menu
-            sx={{ mt: "45px", padding: 0 }}
+            sx={{
+              mt: "45px",
+              "& .MuiMenu-list": {
+                paddingY: 0,
+              },
+            }}
             id="menu-categories"
             anchorEl={anchorElCategories}
             anchorOrigin={{
@@ -392,7 +319,7 @@ export const Header = () => {
             <Grid
               container
               sx={{
-                width: "50vw",
+                width: "15vw",
                 padding: 0,
                 ...BackgroundColor.style.backgroundContext,
               }}
@@ -438,44 +365,23 @@ export const Header = () => {
           </Menu>
           {/* End menu Products */}
 
-          {/* search */}
-          {/* <Paper
-            component="form"
-            sx={{
-              p: "2px 4px",
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              width: 250,
-              height: 40,
-              mx: 2,
-            }}
-          >
-            <InputBase
-              sx={{ ml: 1, flex: 1 }}
-              placeholder="Search..."
-              inputProps={{ "aria-label": "search..." }}
-            />
-            <IconButton
-              component={Link}
-              to="/products"
-              type="button"
-              sx={{ p: "10px" }}
-              aria-label="search"
-            >
-              <SearchIcon />
-            </IconButton>
-          </Paper> */}
-
           {/* Start User Setting */}
           <Box className="grow-0">
             <Box className="flex justify-between">
               {user === null ? (
                 <Typography className="flex">
-                  <MenuItem className="p-0">
+                  <MenuItem
+                    className="p-0"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                      },
+                    }}
+                  >
                     <Link
                       component={Link}
                       to="/login"
-                      className="text-white capitalize text-center text-base hover:text-[#6dacd5]"
+                      className="md:text-[#1c2759] capitalize text-center text-base hover:text-[#1D4Ed8] "
                     >
                       Login
                     </Link>
@@ -488,7 +394,13 @@ export const Header = () => {
                     component={Link}
                     to="/favorites"
                     aria-label="Favorite"
-                    color="inherit"
+                    sx={{
+                      color: "#1c2759",
+                      "&:hover": {
+                        color: "#1D4Ed8",
+                        backgroundColor: "transparent",
+                      },
+                    }}
                   >
                     <FavoriteIcon />
                   </IconButton>
@@ -497,12 +409,26 @@ export const Header = () => {
                     component={Link}
                     to="/carts"
                     aria-label="ShoppingCart"
-                    color="inherit"
+                    sx={{
+                      color: "#1c2759",
+                      "&:hover": {
+                        color: "#1D4Ed8",
+                        backgroundColor: "transparent",
+                      },
+                    }}
                   >
                     <ShoppingCartIcon />
                   </IconButton>
                   <Tooltip title="Name of User">
-                    <IconButton onClick={handleOpenUserMenu} sx={{ p: "10px" }}>
+                    <IconButton
+                      onClick={handleOpenUserMenu}
+                      sx={{
+                        p: "10px",
+                        "&:hover": {
+                          backgroundColor: "transparent",
+                        },
+                      }}
+                    >
                       <Avatar
                         alt="Remy Sharp"
                         src="https://play-lh.googleusercontent.com/4qAz40o6M5w6hJ62VsjwGbYueB0fRWPmiG1yOZpNHn3qo2uzlhZZ1mwE5jtBlPp3Lw=w600-h300-pc0xffffff-pd"
@@ -514,7 +440,7 @@ export const Header = () => {
             </Box>
 
             <Menu
-              sx={{ mt: "55px" }}
+              sx={{ mt: "44px" }}
               id="menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{

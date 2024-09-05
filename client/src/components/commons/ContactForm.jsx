@@ -84,7 +84,7 @@ const ContactForm = () => {
                 variant="outlined"
                 value={formData.name}
                 onChange={handleChange}
-                sx={{ marginY: {sx: 0, md: 1}}}
+                sx={{ marginY: { sx: 0, md: 1 } }}
               />
             </Grid>
             <Grid item xs={12} md={2}></Grid>
@@ -96,7 +96,7 @@ const ContactForm = () => {
                 variant="outlined"
                 value={formData.email}
                 onChange={handleChange}
-                sx={{ marginY: {sx: 0, md: 1}}}
+                sx={{ marginY: { sx: 0, md: 1 } }}
               />
             </Grid>
             <Grid item xs={12} md={12}>
