@@ -33,6 +33,7 @@ export const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
+  const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -63,6 +64,11 @@ export const Header = () => {
 
   const handleCloseCategoriesMenu = () => {
     setAnchorElCategories(null);
+    setIsCategoriesMenuOpen(false); 
+  };
+
+  const handleCategoryClick = (path) => {
+    handleCloseCategoriesMenu();
   };
 
   return (
@@ -327,7 +333,7 @@ export const Header = () => {
                     container
                     maxWidth={"lg"}
                     key={index}
-                    onClick={handleCloseColorsMenu}
+                    onClick={() => handleCategoryClick(`/products/${item.name}`)}
                     className="min-w-[120px] py-0"
                   >
                     <Link
