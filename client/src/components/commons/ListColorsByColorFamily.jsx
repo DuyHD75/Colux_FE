@@ -15,15 +15,6 @@ import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
 
-const isColorSimilarToWhite = (hex) => {
-  hex = hex.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const brightness = (r + g + b) / 3;
-  return brightness > 200;
-};
-
 const ListColorsByColorFamily = () => {
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { section, collection } = useParams();
@@ -144,32 +135,31 @@ const ListColorsByColorFamily = () => {
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-        {paginatedColors.map((color, index) => {
-          const isWhite = isColorSimilarToWhite(color.code);
+        {paginatedColors.map((color, index) => (
           <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
               to={`/colors/${section}/${collection}/${color.name}`}
               className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
-                hoveredColor && hoveredColor !== color.code
+                hoveredColor && hoveredColor !== color.hex
                   ? "opacity-50"
                   : "opacity-100"
               }`}
-              onMouseEnter={() => setHoveredColor(color.code)}
+              onMouseEnter={() => setHoveredColor(color.hex)}
               onMouseLeave={() => setHoveredColor(null)}
               style={{
                 width:
                   window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",
                 transform:
-                  hoveredColor === color.code ? "scale(1.1)" : "scale(1)",
+                  hoveredColor === color.hex ? "scale(1.1)" : "scale(1)",
                 transition: "transform 0.3s ease",
               }}
             >
               <BsFillHexagonFill
                 size={window.innerWidth < 600 ? 100 : 180}
                 style={{
-                  color: color.code,
-                  boxShadow: isWhite ? "0px 0px 5px #000" : "none",
+                  color: color.hex,
+                  filter: "drop-shadow(0px 0px 4px #ccc)",
                 }}
               />
               <span
@@ -179,8 +169,8 @@ const ListColorsByColorFamily = () => {
                 {color.name}
               </span>
             </Link>
-          </Grid>;
-        })}
+          </Grid>
+        ))}
       </Grid>
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>

@@ -46,7 +46,7 @@ const HomeColorFamilies = () => {
   // Thêm lục giác "All Colors" vào cuối mảng
   const extendedColorFamilies = [
     ...colorFamilies,
-    { code: "010101", name: "All Colors" },
+    { hex: "010101", name: "All Colors" },
   ];
   const rowLengths = calculateRowLengths(extendedColorFamilies.length);
   const rows = [];
@@ -84,11 +84,11 @@ const HomeColorFamilies = () => {
                 key={index}
                 to={`/colors/color-family/${color.name}`}
                 className={`mx-4 my-2 relative flex items-center justify-center transition-opacity duration-300 ${
-                  hoveredColor && hoveredColor !== color.code
+                  hoveredColor && hoveredColor !== color.hex
                     ? "opacity-50"
                     : "opacity-100"
                 }`}
-                onMouseEnter={() => setHoveredColor(color.code)}
+                onMouseEnter={() => setHoveredColor(color.hex)}
                 onMouseLeave={() => setHoveredColor(null)}
                 style={{
                   width:
@@ -97,11 +97,11 @@ const HomeColorFamilies = () => {
               >
                 <BsFillHexagonFill
                   size={window.innerWidth < 600 ? 100 : 150}
-                  style={{ color: color.code }}
+                  style={{ color: color.hex }}
                 />
                 <span
                   className="absolute text-xs md:text-sm font-bold text-center"
-                  style={{ color: getContrastColor(color.code) }}
+                  style={{ color: getContrastColor(color.hex) }}
                 >
                   {color.name}
                 </span>

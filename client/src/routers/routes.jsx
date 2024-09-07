@@ -4,6 +4,8 @@ import Cart from "../page/Cart";
 import Checkout from "../page/Checkout";
 import WishList from "../page/WishList";
 import PaymentBilling from "../page/PaymentBilling";
+import ColorDetail from "../page/detail/ColorDetail";
+
 import Products from "../page/Products";
 import Auth from "../page/Auth";
 
@@ -12,6 +14,8 @@ export const routesGen = {
   colors: "/colors",
   colorDetail: (colorId) => `/colors/${colorId}`,
   cart: "/cart",
+  checkout: "/checkout",
+  wishlist: "/wishlist",
   checkout: "/checkout",
   wishlist: "/wishlist",
 };
@@ -30,12 +34,37 @@ const routes = [
   {
     path: "/colors/:section",
     element: <Colors />,
-    state: "colors",
+    state: "colorsSection",
   },
   {
     path: "/colors/:section/:collection",
     element: <Colors />,
-    state: "colors",
+    state: "colorsSectionCollection",
+  },
+  {
+    path: "/colors/:section/:collection/:colorName",
+    element: <ColorDetail />,
+    state: "colorDetail",
+  },
+  {
+    path: "/cart",
+    element: <Cart />,
+    state: "cart",
+  },
+  {
+    path: "/checkout",
+    element: <Checkout />,
+    state: "checkout",
+  },
+  {
+    path: "/wishlist",
+    element: <WishList />,
+    state: "cart",
+  },
+  {
+    path: "/billing",
+    element: <PaymentBilling />,
+    state: "paymentBilling",
   },
 
   {
