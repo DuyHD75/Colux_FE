@@ -3,11 +3,11 @@ import { Box, Typography, Container, Grid } from "@mui/material";
 import textConfigs from "../../config/text.config";
 import Navigate from "./Navigate";
 
-const ColorBanner = ({ img, section, title, content, code }) => {
+const ColorBanner = ({ img, section, title, content, hex }) => {
   return (
     <Box
       sx={{
-        backgroundColor: code,
+        backgroundColor: hex,
         minHeight: { xs: "auto", md: "686px" },
         display: "flex",
         alignItems: "center",
@@ -24,9 +24,8 @@ const ColorBanner = ({ img, section, title, content, code }) => {
               alt="Explore Paint Colors"
               sx={{
                 width: "100%",
-                borderRadius: "8px",
                 paddingBottom: { xs: "24px", md: "48px" },
-                maxHeight: "300px", 
+                height: "100%", 
                 objectFit: "cover",
               }}
             />

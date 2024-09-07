@@ -147,41 +147,42 @@ const ListColorsByExterior = () => {
       </Grid>
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {
-          const isWhite = isColorSimilarToWhite(color.code);
-          <Grid item xs={6} md={2.4} key={index}>
-            <Link
-              key={index}
-              to={`/colors/${section}/${collection}/${color.name}`}
-              className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
-                hoveredColor && hoveredColor !== color.code
-                  ? "opacity-50"
-                  : "opacity-100"
-              }`}
-              onMouseEnter={() => setHoveredColor(color.code)}
-              onMouseLeave={() => setHoveredColor(null)}
-              style={{
-                width:
-                  window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",
-                transform:
-                  hoveredColor === color.code ? "scale(1.1)" : "scale(1)",
-                transition: "transform 0.3s ease",
-              }}
-            >
-              <BsFillHexagonFill
-                size={window.innerWidth < 600 ? 100 : 180}
+          return (
+            <Grid item xs={6} md={2.4} key={index}>
+              <Link
+                key={index}
+                to={`/colors/${section}/${collection}/${color.name}`}
+                className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
+                  hoveredColor && hoveredColor !== color.hex
+                    ? "opacity-50"
+                    : "opacity-100"
+                }`}
+                onMouseEnter={() => setHoveredColor(color.hex)}
+                onMouseLeave={() => setHoveredColor(null)}
                 style={{
-                  color: color.code,
-                  boxShadow: isWhite ? "0px 0px 5px #000" : "none",
+                  width:
+                    window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",
+                  transform:
+                    hoveredColor === color.hex ? "scale(1.1)" : "scale(1)",
+                  transition: "transform 0.3s ease",
                 }}
-              />
-              <span
-                className="text-xs md:text-lg font-bold text-center mt-1"
-                style={{ color: "#3b3730" }}
               >
-                {color.name}
-              </span>
-            </Link>
-          </Grid>;
+                <BsFillHexagonFill
+                  size={window.innerWidth < 600 ? 100 : 180}
+                  style={{
+                    color: color.hex,
+                    filter: "drop-shadow(0px 0px 4px #ccc)",
+                  }}
+                />
+                <span
+                  className="text-xs md:text-lg font-bold text-center mt-1"
+                  style={{ color: "#3b3730" }}
+                >
+                  {color.name}
+                </span>
+              </Link>
+            </Grid>
+          );
         })}
       </Grid>
 
