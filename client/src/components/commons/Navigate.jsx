@@ -33,6 +33,8 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const Navigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
+  const { colorFamily, productCategory } = useParams();
+
   const { collections } = useSelector((state) => state.collections);
   const rooms = data.rooms;
   const exteriors = data.exteriors;
@@ -85,6 +87,27 @@ const Navigate = () => {
               return null;
             }
           })}
+
+          {colorFamilies
+            .filter(item => item.name === colorFamily)
+            .map((item, index) => (
+              <StyledBreadcrumb
+                key={index}
+                component="a"
+                href="#"
+                label={item.name}
+                sx={{ fontSize: "1rem" }}
+              />
+            ))
+          }
+          {productCategory && (
+            <StyledBreadcrumb
+              component="a"
+              href="#"
+              label={productCategory}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
 
           {menuConfigs.sectionColors.map((item, index) => {
             if (item.path === "/colors/" + section) {
