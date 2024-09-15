@@ -31,7 +31,7 @@ const ColorSwitcher = () => {
       title: "Explore Paint Colors",
       content:
         "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
-      code: "#c1cbd2",
+      hex: "#c1cbd2",
       collections: [],
     },
   ];
@@ -153,7 +153,7 @@ const ColorSwitcher = () => {
     let section = "";
     let title = "";
     let content = "";
-    let code = "";
+    let hex = "";
 
     switch (selectedSection) {
       case "Color Family":
@@ -161,28 +161,28 @@ const ColorSwitcher = () => {
         section = "COLOR FAMILY";
         title = selectedColor.title;
         content = selectedColor.content;
-        code = selectedColor.code;
+        hex = selectedColor.hex;
         break;
       case "Room":
         img = selectedRoom.img;
         section = "ROOM";
         title = selectedRoom.title;
         content = selectedRoom.content;
-        code = selectedRoom.code;
+        hex = selectedRoom.hex;
         break;
       case "Collection":
         img = selectedCollection.img;
         section = "COLLECTION";
         title = selectedCollection.title;
         content = selectedCollection.content;
-        code = selectedCollection.code;
+        hex = selectedCollection.hex;
         break;
       case "Exterior":
         img = selectedExterior.img;
         section = "EXTERIOR";
         title = selectedExterior.title;
         content = selectedExterior.content;
-        code = selectedExterior.code;
+        hex = selectedExterior.hex;
         break;
       default:
         return null;
@@ -194,7 +194,7 @@ const ColorSwitcher = () => {
         section={section}
         title={title}
         content={content}
-        code={code}
+        hex={hex}
       />
     );
   };

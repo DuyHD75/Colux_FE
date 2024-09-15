@@ -27,7 +27,7 @@ const ColorFamilies = ({ onColorSelect, selectedColor }) => {
       title: "Explore Paint Colors",
       content:
         "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
-      code: "#c1cbd2",
+      hex: "#c1cbd2",
       collections: [],
     },
   ];
@@ -63,13 +63,13 @@ const ColorFamilies = ({ onColorSelect, selectedColor }) => {
           >
             <BsFillHexagonFill
               size={window.innerWidth < 600 ? 60 : 80}
-              style={{ color: color.code }}
+              style={{ color: color.hex }}
             />
             {isSelected && (
               <FaCheck
                 className="absolute bottom-1/2"
                 style={{
-                  color: getContrastColor(color.code),
+                  color: getContrastColor(color.hex),
                   fontSize: window.innerWidth < 600 ? "1rem" : "1.6rem",
                 }}
               />
