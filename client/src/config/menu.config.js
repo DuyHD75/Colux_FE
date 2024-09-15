@@ -14,6 +14,12 @@ const navItems = [
     path: "/products",
     state: "products",
   },
+
+  {
+    display: "Blogs",
+    path: "/blogs",
+    state: "blogs",
+  },
   {
     display: "About",
     path: "/about",

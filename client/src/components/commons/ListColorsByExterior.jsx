@@ -148,7 +148,8 @@ const ListColorsByExterior = () => {
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {
           const isWhite = isColorSimilarToWhite(color.code);
-          <Grid item xs={6} md={2.4} key={index}>
+          return(
+            <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
               to={`/colors/${section}/${collection}/${color.name}`}
@@ -181,7 +182,8 @@ const ListColorsByExterior = () => {
                 {color.name}
               </span>
             </Link>
-          </Grid>;
+          </Grid>
+          )
         })}
       </Grid>
 

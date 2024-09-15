@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { Container, Grid, Typography, Pagination } from '@mui/material';
-import { useSelector } from 'react-redux';
-import { useParams } from 'react-router-dom';
-import SidebarFilters from '../commons/SidebarFilters';
-import ProductCard from './ProductCard';
+import React, { useState, useEffect } from "react";
+import { Container, Grid, Typography, Pagination } from "@mui/material";
+import { useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import SidebarFilters from "../commons/SidebarFilters";
+import ProductCard from "./ProductCard";
 
 const ListProducts = () => {
   const products = useSelector((state) => state.products.products);
   const categories = useSelector((state) => state.categories.categories);
-  const { categoryId } = useParams(); 
+
+  const { productCategory } = useParams(); // Lấy tên danh mục từ URL
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 18;
@@ -17,32 +18,72 @@ const ListProducts = () => {
   const [selectedSurface, setSelectedSurface] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const [selectedCategory, setSelectedCategory] = useState(categoryId || "");
+  const [selectCategory, setSelectedCategory] = useState([]);
+
+  // Cấu trúc mapping giữa tên danh mục và categoryId
+  const categoryMap = {
+    "Interior-Paint": 1,
+    "Exterior-Paint": 2,
+    Bedroom: 3,
+    "Living-Room": 4,
+    "Kitchen-Room": 5,
+    "Dining-Room": 6,
+    Floor: 7,
+    "Wall-Decal": 8,
+  };
+
+  // Kiểm tra nếu không có category trong URL, chọn mặc định tất cả sản phẩm
+  const selectedCategoryId = productCategory
+    ? categoryMap[productCategory.replace(/\s+/g, "-")] || ""
+    : ""; // Nếu không có category, trả về chuỗi rỗng
 
   useEffect(() => {
-    setSelectedCategory(categoryId || "");
-  }, [categoryId]);
-
+    // Nếu không có category trong URL, hiển thị tất cả sản phẩm
+    setSelectedCategory(selectedCategoryId || "");
+  }, [productCategory, selectedCategoryId]);
+  
+  // Lọc sản phẩm theo danh mục và các bộ lọc khác
   useEffect(() => {
     const newFilteredProducts = products.filter((product) => {
-      const matchesCategory = selectedCategory ? product.categoryId === parseInt(selectedCategory) : true;
-      const matchesRating = selectedRating.length > 0 ? selectedRating.includes(product.rating) : true;
-      const matchesSurface = selectedSurface.length > 0 ? selectedSurface.includes(product.surface) : true;
-      const matchesFeatures = selectedFeatures.length > 0 
-        ? selectedFeatures.every((feature) => product.features.includes(feature))
+      const matchesCategory = selectedCategoryId
+        ? product.categoryId === parseInt(selectedCategoryId)
         : true;
+      const matchesRating =
+        selectedRating.length > 0
+          ? selectedRating.includes(product.rating)
+          : true;
+      const matchesSurface =
+        selectedSurface.length > 0
+          ? selectedSurface.includes(product.surface)
+          : true;
+      const matchesFeatures =
+        selectedFeatures.length > 0
+          ? selectedFeatures.every((feature) =>
+              product.features.includes(feature)
+            )
+          : true;
 
-      return matchesCategory && matchesRating && matchesSurface && matchesFeatures;
+      return (
+        matchesCategory && matchesRating && matchesSurface && matchesFeatures
+      );
     });
 
     setFilteredProducts(newFilteredProducts);
-    setCurrentPage(1); 
-  }, [selectedRating, selectedSurface, selectedFeatures, selectedCategory, products]);
+    setCurrentPage(1);
+  }, [
+    selectedRating,
+    selectedSurface,
+    selectedFeatures,
+    selectedCategoryId,
+    products,
+  ]);
 
+  // Xử lý thay đổi trang
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
+  // Xử lý thay đổi bộ lọc
   const handleFiltersChange = (filterType, values) => {
     if (filterType === "rating") {
       setSelectedRating(values);
@@ -59,11 +100,11 @@ const ListProducts = () => {
   const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
-    <Container maxWidth="lg" className="my-10">
+    <Container maxWidth="lg" className="my-10" sx={{ paddingBottom: "2rem" }}>
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <SidebarFilters
-            category={selectedCategory}
+            category={selectedCategoryId} // Truyền categoryId để lọc danh mục
             onChange={handleFiltersChange}
           />
         </Grid>
@@ -71,11 +112,16 @@ const ListProducts = () => {
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
             {hasProducts ? (
-              filteredProducts.slice((currentPage - 1) * productsPerPage, currentPage * productsPerPage).map((product) => (
-                <Grid item xs={6} sm={4} md={3} key={product.id}>
-                  <ProductCard product={product} />
-                </Grid>
-              ))
+              filteredProducts
+                .slice(
+                  (currentPage - 1) * productsPerPage,
+                  currentPage * productsPerPage
+                )
+                .map((product) => (
+                  <Grid item xs={6} sm={4} md={3} key={product.id}>
+                    <ProductCard product={product} />
+                  </Grid>
+                ))
             ) : (
               <Grid
                 item
