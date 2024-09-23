@@ -35,6 +35,7 @@ const Navigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { collections } = useSelector((state) => state.collections);
+  const { colorFamily } = useParams();
   const posts = useSelector(selectPosts); 
   const rooms = data.rooms;
   const exteriors = data.exteriors;
