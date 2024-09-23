@@ -8,6 +8,8 @@ import ColorDetail from "../page/detail/ColorDetail";
 
 import Products from "../page/Products";
 import Auth from "../page/Auth";
+import BlogHome from "../page/BlogHome";
+import BlogDetail from "../page/BlogDetail"
 
 export const routesGen = {
   home: "/",
@@ -77,6 +79,23 @@ const routes = [
     path: "/products/:productCategory",
     element: <Products></Products>,
     state: "products",
+  },
+
+  {
+    path: "/blogs",
+    element: <BlogHome></BlogHome>,
+    state: "blogs",
+  },
+  {
+    path: "/blogs/:slug",
+    element: <BlogDetail></BlogDetail>,
+    state: "blogs",
+  },
+  {
+  path: "/blogs/category/:categoryName",
+  element: <BlogHome/>,
+  state: "blogs",
+
   },
 
   {
