@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { emphasize, styled } from "@mui/material/styles";
 import Breadcrumbs from "@mui/material/Breadcrumbs";
 import HomeIcon from "@mui/icons-material/Home";
@@ -8,6 +8,7 @@ import backgroundConfigs from "../../config/background.config";
 import { useSelector } from "react-redux";
 import menuConfigs from "../../config/menu.config";
 import data from "../../data/data";
+import { selectPosts } from '../../redux/reducer/postsSlice';
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
   const backgroundColor =
@@ -33,12 +34,13 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 const Navigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
-  const { colorFamily, productCategory } = useParams();
-
   const { collections } = useSelector((state) => state.collections);
+  const posts = useSelector(selectPosts); 
   const rooms = data.rooms;
   const exteriors = data.exteriors;
-  const { section, collection } = useParams();
+
+  const { section, collection: collectionName, categoryName, slug } = useParams();
+  console.log({ section, collectionName, categoryName, slug });
 
   let datas = [];
 
@@ -60,6 +62,9 @@ const Navigate = () => {
         datas = [];
     }
   }
+
+  const post = posts.find((post) => post.slug === slug);
+  const { productCategory } = useParams();
 
   return (
     <Box className="p-5" sx={{ ...backgroundConfigs.style.backgroundContext }}>
@@ -105,7 +110,7 @@ const Navigate = () => {
           })}
 
           {colorFamilies
-            .filter((item) => item.name === colorFamily)
+            .filter(item => item.name === colorFamily)
             .map((item, index) => (
               <StyledBreadcrumb
                 key={index}
@@ -114,46 +119,52 @@ const Navigate = () => {
                 label={item.name}
                 sx={{ fontSize: "1rem" }}
               />
-            ))}
-
+            ))
+          }
           {productCategory && (
             <StyledBreadcrumb
               component="a"
-              href="#"
+              href={`/products/${encodeURIComponent(productCategory)}`} 
               label={productCategory}
               sx={{ fontSize: "1rem" }}
             />
           )}
 
-          {menuConfigs.sectionColors.map((item, index) => {
-            if (item.path === "/colors/" + section) {
-              return (
-                <StyledBreadcrumb
-                  key={index}
-                  component="a"
-                  href={item.path}
-                  label={item.display}
-                  sx={{ fontSize: "1rem" }}
-                />
-              );
-            } else {
-              return null;
-            }
-          })}
+          {section === "blog" && (
+            <StyledBreadcrumb
+              component="a"
+              href="/blogs"
+              label="Blogs"
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
 
-          {datas
-            .filter((item) => item.name === collection)
-            .map((item, index) => {
-              return (
-                <StyledBreadcrumb
-                  key={index}
-                  component="a"
-                  href={item.name}
-                  label={item.name}
-                  sx={{ fontSize: "1rem" }}
-                />
-              );
-            })}
+          {section === "blog" && categoryName && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/blogs/category/${encodeURIComponent(categoryName)}`} 
+              label={categoryName}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {section === "products" && categoryName && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/products/${encodeURIComponent(categoryName)}`} 
+              label={categoryName}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {post && (
+            <StyledBreadcrumb
+              component={Link}
+              to={`/blogs/${post.slug}`}
+              label={post.title}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
         </Breadcrumbs>
       </Container>
     </Box>

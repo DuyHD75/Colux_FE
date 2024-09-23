@@ -5,12 +5,24 @@ import Checkout from "../page/Checkout";
 import WishList from "../page/WishList";
 import PaymentBilling from "../page/PaymentBilling";
 import ColorDetail from "../page/detail/ColorDetail";
+import OrderHistory from "../page/OrderHistory";
+import Profile from "../page/Profile";
+import ProductReviews from "../page/ProductReviews";
+import PrivacyPolicy from "../page/PrivacyPolicy";
+import ContactUs from "../page/ContactUs";
+
 import Products from "../page/Products";
 import ProductDetail from "../page/detail/ProductDetail"
 import Auth from "../page/Auth";
 import Contractors from "../page/Contractors";
 import Advisory from "../page/Advisory";
 import CalculatePrice from "../page/CalculatePrice";
+import AboutUs from "../page/AboutUs";
+import TermsAndConditions from "../page/TermsAndConditions";
+import Helps from "../page/Helps";
+import Points from "../page/Points";
+import BlogHome from "../page/BlogHome";
+import BlogDetail from "../page/BlogDetail"
 
 export const routesGen = {
   home: "/",
@@ -19,6 +31,16 @@ export const routesGen = {
   cart: "/cart",
   checkout: "/checkout",
   wishlist: "/wishlist",
+  orderHistory: "/orderHistory",
+  paymentBilling: "/billing",
+  profile: "/profile",
+  productReviews: "/product_reviews",
+  privacyPolicy: "/privacyPolicy",
+  contactUs: "/contact",
+  aboutUs: "/about",
+  termsAndConditions: "/terms_and_condition",
+  helps: "/helps",
+  points : "/points"
 };
 
 const routes = [
@@ -86,6 +108,23 @@ const routes = [
   },
 
   {
+    path: "/blogs",
+    element: <BlogHome></BlogHome>,
+    state: "blogs",
+  },
+  {
+    path: "/blogs/:slug",
+    element: <BlogDetail></BlogDetail>,
+    state: "blogs",
+  },
+  {
+  path: "/blogs/category/:categoryName",
+  element: <BlogHome/>,
+  state: "blogs",
+
+  },
+
+  {
     path: "/cart",
     element: <Cart />,
     state: "cart",
@@ -140,6 +179,49 @@ const routes = [
     path: "/calculate-price",
     element: <CalculatePrice />,
     state: "calculate-price",
+    path: "/orderHistory",
+    element: <OrderHistory />,
+    state: "orderHistory"
+  },
+  {
+    path: "/profile",
+    element: <Profile />,
+    state: "profile"
+  },
+  {
+    path: "/product_reviews",
+    element: <ProductReviews />,
+    state: "productReviews"
+  },
+  {
+    path: "/privacy_policy",
+    element: <PrivacyPolicy />,
+    state: "privacy.policy"
+  },
+  {
+    path: "/contact",
+    element: <ContactUs />,
+    state: "contact"
+  },
+  {
+    path: "/about",
+    element: <AboutUs />,
+    state: "about"
+  },
+  {
+    path: "/terms_and_condition",
+    element: <TermsAndConditions />,
+    state: "terms.and.condition"
+  },
+  {
+    path: "/helps",
+    element: <Helps />,
+    state: "helps"
+  },
+  {
+    path: "/points",
+    element: <Points />,
+    state: "points"
   },
 ];
 

@@ -136,7 +136,7 @@ const WishList = () => {
                                                 </DialogContent>
                                                 <DialogActions>
                                                     <Button sx={{
-                                                        backgroundColor: '#0069AF',
+                                                        backgroundColor: '#1C2759',
                                                         ...TextConfig.style.basicFont,
                                                         color: 'white',
                                                         '&:hover': {
@@ -147,7 +147,7 @@ const WishList = () => {
                                                     </Button>
                                                     <Button
                                                         sx={{
-                                                            backgroundColor: '#0069AF',
+                                                            backgroundColor: '#1C2759',
                                                             ...TextConfig.style.basicFont,
                                                             color: 'white',
                                                             '&:hover': {
