@@ -21,14 +21,17 @@ const SidebarFilters = ({ category, onChange }) => {
   const { surfaceOptions = [], featureOptions = [] } = filters;
 
   useEffect(() => {
-    setSelectedCategory(category);
-  }, [category]);
-
-  useEffect(() => {
-    setSelectedRatings([]);
-    setSelectedSurfaces([]);
-    setSelectedFeatures([]);
-  }, [selectedCategory]);
+    if (category !== selectedCategory) {
+      setSelectedCategory(category);
+      setSelectedRatings([]);
+      setSelectedSurfaces([]);
+      setSelectedFeatures([]);
+      onChange('rating', []);
+      onChange('surface', []);
+      onChange('features', []);
+      onChange('category', [category]);
+    }
+  }, [category, selectedCategory, onChange]);
 
   const handleRatingChange = (value) => {
     const newSelectedRatings = selectedRatings.includes(value)
@@ -59,10 +62,28 @@ const SidebarFilters = ({ category, onChange }) => {
   const handleCategoryChange = (e) => {
     const selectedCat = e.target.value;
     const selectedCatName = categories.find((cat) => cat.id === selectedCat)?.name || selectedCat;
-  
-    setSelectedCategory(selectedCat);
-    onChange('category', [selectedCat]);
-    navigate(`/products/${selectedCatName}`);
+
+    if (selectedCat === 'all') {
+      navigate(`/products`);
+      setSelectedCategory('all');
+      setSelectedRatings([]);
+      setSelectedSurfaces([]);
+      setSelectedFeatures([]);
+      onChange('rating', []);
+      onChange('surface', []);
+      onChange('features', []);
+      onChange('category', ['all']);
+    } else {
+      setSelectedCategory(selectedCat);
+      setSelectedRatings([]);
+      setSelectedSurfaces([]);
+      setSelectedFeatures([]);
+      onChange('rating', []);
+      onChange('surface', []);
+      onChange('features', []);
+      onChange('category', [selectedCat]);
+      navigate(`/products/${selectedCatName}`);
+    }
   };
 
   return (

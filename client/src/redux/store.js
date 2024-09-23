@@ -10,6 +10,9 @@ import constructedReducer from './reducer/constructedSlice';
 import globalLoadingReducer from './reducer/globalLoadingSlice';
 import checkoutReducer from './reducer/checkoutSlice';
 import filterCategoriesReducer from './reducer/filtersCategoriesSlice';
+import postsReducer from './reducer/postsSlice';
+import blogCategoriesReducer from './reducer/blogCategoriesSlice';
+
 const store = configureStore({
     reducer: {
         colorFamilies: colorFamiliesReducer,
@@ -23,6 +26,8 @@ const store = configureStore({
         globalLoading: globalLoadingReducer,
         checkout: checkoutReducer,
         filterCategories: filterCategoriesReducer,
+        posts: postsReducer,
+        blogCategories: blogCategoriesReducer,
     }
 });
 

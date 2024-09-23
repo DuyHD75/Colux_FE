@@ -9,7 +9,7 @@ const Blogs = () => {
   const { blogs } = useSelector((state) => state.blogs);
 
   return (
-    <Box sx={{ ...backgroundConfigs.style.backgroundContext,}}>
+    <Box sx={{ ...backgroundConfigs.style.backgroundContext }}>
       <Container maxWidth="lg" className="py-10">
         <Typography
           variant="h3"
@@ -29,33 +29,26 @@ const Blogs = () => {
                 ...backgroundConfigs.style.subBackgroundContext,
               }}
             >
-              <Grid container sx={{display: { xs: "none", md: "flex" }}}>
+              <Grid container spacing={2} sx={{ display: { xs: "none", md: "flex" } }}>
                 {index % 2 === 0 ? (
                   <>
-                    <Grid item xs={12} md={6} sx={{ paddingX: "16px", display: "flex", alignItems: "center"  }}>
+                    <Grid item xs={12} md={6} sx={{ paddingX: "16px", display: "flex", alignItems: "center" }}>
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        style={{ maxWidth: "100%"}}
+                        style={{ maxWidth: "100%" }}
                       />
                     </Grid>
-                    <Grid item xs={12} md={6}  sx={{ paddingX: "16px" }}>
+                    <Grid item xs={12} md={6} sx={{ paddingX: "16px" }}>
                       <Typography
                         variant="h5"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.headerText,
-                        }}
+                        sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
                       >
                         {blog.title}
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.subText,
-                          paddingY: "8px",
-                        }}
+                        sx={{ fontFamily: "Nunito", ...textConfigs.style.subText, paddingY: "8px" }}
                       >
                         {blog.content}
                       </Typography>
@@ -78,23 +71,16 @@ const Blogs = () => {
                   </>
                 ) : (
                   <>
-                    <Grid item xs={12} md={6}  sx={{ paddingX: "16px" }}>
+                    <Grid item xs={12} md={6} sx={{ paddingX: "16px" }}>
                       <Typography
                         variant="h5"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.headerText,
-                        }}
+                        sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
                       >
                         {blog.title}
                       </Typography>
                       <Typography
                         variant="body1"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.subText,
-                          paddingY: "8px",
-                        }}
+                        sx={{ fontFamily: "Nunito", ...textConfigs.style.subText, paddingY: "8px" }}
                       >
                         {blog.content}
                       </Typography>
@@ -125,52 +111,43 @@ const Blogs = () => {
                 )}
               </Grid>
 
-              <Grid container sx={{display: { md: "none" }}}>
-                  <>
-                    <Grid item xs={12} md={6} sx={{ paddingX: "16px", display: "flex", alignItems: "center"  }}>
-                      <img
-                        src={blog.image}
-                        alt={blog.title}
-                        style={{ maxWidth: "100%"}}
-                      />
-                    </Grid>
-                    <Grid item xs={12} md={6}  sx={{ paddingX: "16px" }}>
-                      <Typography
-                        variant="h5"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.headerText,
-                        }}
-                      >
-                        {blog.title}
-                      </Typography>
-                      <Typography
-                        variant="body1"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...textConfigs.style.subText,
-                          paddingY: "8px",
-                        }}
-                      >
-                        {blog.content}
-                      </Typography>
-                      <Button
-                        component={Link}
-                        to="/colors"
-                        variant="contained"
-                        color="primary"
-                        sx={{
-                          fontFamily: "Nunito",
-                          ...backgroundConfigs.style.backgroundPrimary,
-                          ":hover": {
-                            ...backgroundConfigs.style.backgroundSecondary,
-                          },
-                        }}
-                      >
-                        Read More
-                      </Button>
-                    </Grid>
-                  </>
+              <Grid container spacing={2} sx={{ display: { xs: "flex", md: "none" }, flexDirection: "column" }}>
+                <Grid item xs={12} sx={{ paddingX: "16px", display: "flex", alignItems: "center" }}>
+                  <img
+                    src={blog.image}
+                    alt={blog.title}
+                    style={{ maxWidth: "100%" }}
+                  />
+                </Grid>
+                <Grid item xs={12} sx={{ paddingX: "16px" }}>
+                  <Typography
+                    variant="h6"
+                    sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
+                  >
+                    {blog.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontFamily: "Nunito", ...textConfigs.style.subText, paddingY: "8px" }}
+                  >
+                    {blog.content}
+                  </Typography>
+                  <Button
+                    component={Link}
+                    to="/colors"
+                    variant="contained"
+                    color="primary"
+                    sx={{
+                      fontFamily: "Nunito",
+                      ...backgroundConfigs.style.backgroundPrimary,
+                      ":hover": {
+                        ...backgroundConfigs.style.backgroundSecondary,
+                      },
+                    }}
+                  >
+                    Read More
+                  </Button>
+                </Grid>
               </Grid>
             </Box>
           ))}

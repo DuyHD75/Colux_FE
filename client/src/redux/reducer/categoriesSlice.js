@@ -10,6 +10,7 @@ const initialState = {
     { id: 6, name: "Dining Room" },
     { id: 7, name: "Floor" },
     { id: 8, name: "Wall Decal" },
+    // { id: 9, name: "All Product"},
   ],
 };
 
@@ -17,7 +18,6 @@ export const categoriesSlice = createSlice({
   name: 'categories',
   initialState,
   reducers: {
-    // Thêm các reducer nếu cần
   },
 });
 

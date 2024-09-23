@@ -17,6 +17,8 @@ import AboutUs from "../page/AboutUs";
 import TermsAndConditions from "../page/TermsAndConditions";
 import Helps from "../page/Helps";
 import Points from "../page/Points";
+import BlogHome from "../page/BlogHome";
+import BlogDetail from "../page/BlogDetail"
 
 export const routesGen = {
   home: "/",
@@ -94,6 +96,23 @@ const routes = [
     path: "/products/:productCategory",
     element: <Products></Products>,
     state: "products",
+  },
+
+  {
+    path: "/blogs",
+    element: <BlogHome></BlogHome>,
+    state: "blogs",
+  },
+  {
+    path: "/blogs/:slug",
+    element: <BlogDetail></BlogDetail>,
+    state: "blogs",
+  },
+  {
+  path: "/blogs/category/:categoryName",
+  element: <BlogHome/>,
+  state: "blogs",
+
   },
 
   {

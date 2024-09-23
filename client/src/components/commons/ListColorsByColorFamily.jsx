@@ -135,8 +135,9 @@ const ListColorsByColorFamily = () => {
         </Grid>
       </Grid>
       <Grid container spacing={3}>
-        {paginatedColors.map((color, index) => (
-          <Grid item xs={6} md={2.4} key={index}>
+        {paginatedColors.map((color, index) => {
+          return(
+            <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
               to={`/colors/${section}/${collection}/${color.name}`}
@@ -170,7 +171,9 @@ const ListColorsByColorFamily = () => {
               </span>
             </Link>
           </Grid>
-        ))}
+          )
+          
+        })}
       </Grid>
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>

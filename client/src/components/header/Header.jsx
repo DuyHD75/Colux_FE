@@ -333,7 +333,7 @@ export const Header = () => {
                     container
                     maxWidth={"lg"}
                     key={index}
-                    onClick={() => handleCategoryClick(`/products/${item.name}`)}
+                    onClick={() => handleCategoryClick(`/products/${item.name.replace(/\s+/g, "-")}`)} // Thay khoảng trắng bằng dấu gạch ngang
                     className="min-w-[120px] py-0"
                   >
                     <Link

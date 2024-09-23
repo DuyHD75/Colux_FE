@@ -1,7 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 const filtersByCategory = {
-  1: {  // id của "Interior Paint"
+  1: {
     surfaceOptions: [
       'Aluminum',
       'Galvanized Steel',
@@ -17,7 +17,7 @@ const filtersByCategory = {
       'Chống rạn nứt',
     ],
   },
-  2: {  // id của "Exterior Paint"
+  2: { 
     surfaceOptions: [
       'Aluminum',
       'Galvanized Steel',

@@ -33,6 +33,12 @@ const navItems = [
         path: "/ideas",
         state: "ideas"
     },
+
+  {
+    display: "Blogs",
+    path: "/blogs",
+    state: "blogs",
+  },
     {
         display: 'Contractors',
         path: "/contractors",
