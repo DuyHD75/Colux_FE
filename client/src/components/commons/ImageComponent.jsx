@@ -28,6 +28,8 @@ const ImageComponent = ({ src, width, height, className }) => {
                         src={src}
                         alt=''
                         className={className}
+                        width={width}
+                        height={height}
                     />
                 )
             }
