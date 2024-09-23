@@ -1036,5 +1036,94 @@ const customerRoom = [
   }
 ];
 
+const blogs = [
+  {
+    id: 1,
+    title: "Cozy Beige for Living Room",
+    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/color-collections/02_sw7044-amazing-gray-living-room_tn.png",
+    expert: "John Doe",
+    roomId: 2,
+    description: "Perfect for a warm, welcoming living room.",
+    type: "tips"
+  },
+  {
+    id: 2,
+    title: "Ocean Blue for Bedroom",
+    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/color-collections/03_sw-9132-acacia-haze-bedroom_tn.png",
+    expert: "Jane Smith",
+    roomId: 3,
+    description: "Ideal for a calming bedroom.",
+    type: "advice"
+  },
+  {
+    id: 3,
+    title: "Mint Green for Bathroom",
+    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/color-collections/01_sw-9658-fresh-eucalyptus-bathroom_tn.png",
+    expert: "Alex Green",
+    roomId: 1,
+    description: "Bright and refreshing for bathrooms.",
+    type: "tips"
+  },
+];
 
-export default { rooms, exteriors, colors, customerRoom };
+const reviews = [
+  {
+    id: 1,
+    user: "Alice",
+    rating: 5,
+    comment: "Great product, very satisfied!",
+    productId: 16,
+    date: "2024-08-15",
+  },
+  {
+    id: 2,
+    user: "Bob",
+    rating: 4,
+    comment: "Good quality, but delivery was slow.",
+    productId: 16,
+    date: "2024-08-15",
+  },
+  {
+    id: 3,
+    user: "Charlie",
+    rating: 3,
+    comment: "Product is okay, but could be better.",
+    productId: 14,
+    date: "2024-08-15",
+  },
+  {
+    id: 4,
+    user: "David",
+    rating: 4.5,
+    comment: "The product was amazing, highly recommended!",
+    productId: 14,
+    date: "2024-08-15",
+  },
+  {
+    id: 5,
+    user: "Eva",
+    rating: 5,
+    comment: "Absolutely love this wallpaper, looks great in my living room.",
+    productId: 15,
+    date: "2024-08-15",
+  },
+  {
+    id: 6,
+    user: "Fiona",
+    rating: 4.2,
+    comment: "Good product, easy to install.",
+    productId: 15,
+    date: "2024-08-15",
+  },
+  {
+    id: 7,
+    user: "George",
+    rating: 4.8,
+    comment: "This paint color changed the vibe of my bedroom!",
+    productId: 14,
+    date: "2024-08-15",
+  },
+];
+
+
+export default { rooms, exteriors, colors, customerRoom, blogs, reviews };

@@ -21,8 +21,8 @@ const Register = ({ switchAuthState }) => {
 
   const registerForm = useFormik({
     initialValues: {
-      username: "",
-      displayName: "",
+      lastName: "",
+      firstName: "",
       phoneNumber: "",
       email: "",
       password: "",
@@ -30,12 +30,10 @@ const Register = ({ switchAuthState }) => {
       role: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string()
-        .min(8, "Username must be at least 8 characters!")
-        .required("Username is required!"),
-      displayName: Yup.string()
-        .min(8, "Display name must be at least 8 characters!")
-        .required("Display name is required!"),
+      lastName: Yup.string()
+        .required("LastName is required!"),
+      firstName: Yup.string()
+        .required("FirstName name is required!"),
       phoneNumber: Yup.string()
         .matches(/^0\d{9}$/, "Phone number is not valid!")
         .required("Phone number is required!"),
@@ -101,50 +99,50 @@ const Register = ({ switchAuthState }) => {
           <div className="flex flex-col md:flex-row md:space-x-4">
             <div className="w-full">
               <label
-                htmlFor="displayName"
+                htmlFor="firstName"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Display Name
+                First Name
               </label>
               <input
                 type="text"
-                id="displayName"
-                name="displayName"
+                id="firstName"
+                name="firstName"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Display Name"
+                placeholder="First Name"
                 onChange={registerForm.handleChange}
                 onBlur={registerForm.handleBlur}
-                value={registerForm.values.displayName}
+                value={registerForm.values.firstName}
               />
-              {registerForm.errors.displayName &&
-                registerForm.touched.displayName && (
+              {registerForm.errors.firstName &&
+                registerForm.touched.firstName && (
                   <p className="text-red-600 text-sm mt-1">
-                    {registerForm.errors.displayName}
+                    {registerForm.errors.firstName}
                   </p>
                 )}
             </div>
 
             <div className="w-full">
               <label
-                htmlFor="username"
+                htmlFor="lastName"
                 className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
               >
-                Username
+                Last Name
               </label>
               <input
                 type="text"
-                id="username"
-                name="username"
+                id="lastName"
+                name="lastName"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                placeholder="Username"
+                placeholder="Last Name"
                 onChange={registerForm.handleChange}
                 onBlur={registerForm.handleBlur}
-                value={registerForm.values.username}
+                value={registerForm.values.lastName}
               />
-              {registerForm.errors.username &&
-                registerForm.touched.username && (
+              {registerForm.errors.lastName &&
+                registerForm.touched.lastName && (
                   <p className="text-red-600 text-sm mt-1">
-                    {registerForm.errors.username}
+                    {registerForm.errors.lastName}
                   </p>
                 )}
             </div>

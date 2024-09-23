@@ -5,17 +5,18 @@ import Checkout from "../page/Checkout";
 import WishList from "../page/WishList";
 import PaymentBilling from "../page/PaymentBilling";
 import ColorDetail from "../page/detail/ColorDetail";
-
 import Products from "../page/Products";
+import ProductDetail from "../page/detail/ProductDetail"
 import Auth from "../page/Auth";
+import Contractors from "../page/Contractors";
+import Advisory from "../page/Advisory";
+import CalculatePrice from "../page/CalculatePrice";
 
 export const routesGen = {
   home: "/",
   colors: "/colors",
   colorDetail: (colorId) => `/colors/${colorId}`,
   cart: "/cart",
-  checkout: "/checkout",
-  wishlist: "/wishlist",
   checkout: "/checkout",
   wishlist: "/wishlist",
 };
@@ -78,6 +79,11 @@ const routes = [
     element: <Products></Products>,
     state: "products",
   },
+  {
+    path: "/products/:productCategory/:productName",
+    element: <ProductDetail></ProductDetail>,
+    state: "productDetail",
+  },
 
   {
     path: "/cart",
@@ -119,6 +125,21 @@ const routes = [
     path: "/resetPassword",
     element: <Auth />,
     state: "resetPassword",
+  },
+  {
+    path: "/constructors",
+    element: <Contractors />,
+    state: "constructors",
+  },
+  {
+    path: "/advisory",
+    element: <Advisory />,
+    state: "advisory",
+  },
+  {
+    path: "/calculate-price",
+    element: <CalculatePrice />,
+    state: "calculate-price",
   },
 ];
 

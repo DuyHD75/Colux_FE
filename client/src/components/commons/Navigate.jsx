@@ -88,8 +88,24 @@ const Navigate = () => {
             }
           })}
 
+          {menuConfigs.aboutMenu.map((item, index) => {
+            if (appState === item.state) {
+              return (
+                <StyledBreadcrumb
+                  key={index}
+                  component="a"
+                  href={item.path}
+                  label={item.display}
+                  sx={{ fontSize: "1rem" }}
+                />
+              );
+            } else {
+              return null;
+            }
+          })}
+
           {colorFamilies
-            .filter(item => item.name === colorFamily)
+            .filter((item) => item.name === colorFamily)
             .map((item, index) => (
               <StyledBreadcrumb
                 key={index}
@@ -98,8 +114,8 @@ const Navigate = () => {
                 label={item.name}
                 sx={{ fontSize: "1rem" }}
               />
-            ))
-          }
+            ))}
+
           {productCategory && (
             <StyledBreadcrumb
               component="a"

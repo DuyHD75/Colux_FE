@@ -18,11 +18,11 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-
+import { useParams } from "react-router-dom";
 
 const ProductCarousel = () => {
   const { products } = useSelector((state) => state.products);
-
+  const { productCategory } = useParams();
   const theme = useTheme();
 
   const [activeStep, setActiveStep] = useState(0);
@@ -46,7 +46,6 @@ const ProductCarousel = () => {
           variant="h3"
           align="center"
           sx={{
-            fontFamily: "Nunito",
             ...textConfigs.style.headerText,
             color: "#fff",
             paddingBottom: "20px",
@@ -112,6 +111,7 @@ const ProductCarousel = () => {
                   <Card
                     sx={{
                       borderRadius: 0,
+                      minHeight: "400px",
                     }}
                   >
                     <CardContent
@@ -157,7 +157,7 @@ const ProductCarousel = () => {
                           sx={{
                             ...backgroundConfigs.style.backgroundContext,
                             padding: "20px",
-                            marginLeft: "16px",
+                            marginLeft: "10px",
                             display: "flex",
                             flexDirection: "column",
                             alignItems: "center",
@@ -169,8 +169,13 @@ const ProductCarousel = () => {
                             gutterBottom
                             sx={{
                               marginTop: "20px",
-                              fontFamily: "Nunito",
+
                               ...textConfigs.style.headerText,
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              width: "100%",
+                              textAlign: "center",
                             }}
                           >
                             {product.name}
@@ -179,17 +184,23 @@ const ProductCarousel = () => {
                             variant="body1"
                             gutterBottom
                             sx={{
-                              fontFamily: "Nunito",
                               ...textConfigs.style.subText,
+                              overflow: "hidden",
+                              display: "-webkit-box",
+                              WebkitLineClamp: 3,
+                              WebkitBoxOrient: "vertical",
+                              textOverflow: "ellipsis",
+                              width: "100%",
+                              textAlign: "center",
+                              minHeight: "60px",
                             }}
                           >
                             {product.description}
                           </Typography>
                           <Button
                             variant="contained"
-                            href={product.link}
+                            href={`/products/${productCategory}/${product.name}`}
                             sx={{
-                              fontFamily: "Nunito",
                               ...backgroundConfigs.style.backgroundPrimary,
                               marginTop: "16px",
                               ":hover": {

@@ -88,6 +88,29 @@ const sectionColors = [
   },
 ];
 
-const menuConfigs = { navItems, termItems, settings, sectionColors };
+const aboutMenu = [
+  {
+    display: "About Us",
+    path: "/about",
+    state: "/about",
+  },
+  {
+    display: "Constructors",
+    path: "/constructors",
+    state: "/constructors",
+  },
+  {
+    display: "Advisory",
+    path: "/advisory",
+    state: "/advisory",
+  },
+  {
+    display: "Ideas",
+    path: "/ideas",
+    state: "/ideas",
+  }
+]
+
+const menuConfigs = { navItems, termItems, settings, sectionColors, aboutMenu };
 
 export default menuConfigs;
