@@ -9,7 +9,7 @@ const ListProducts = () => {
   const products = useSelector((state) => state.products.products);
   const categories = useSelector((state) => state.categories.categories);
 
-  const { productCategory } = useParams(); // Lấy tên danh mục từ URL
+  const { productCategory } = useParams(); 
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 18;
@@ -20,7 +20,6 @@ const ListProducts = () => {
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [selectCategory, setSelectedCategory] = useState([]);
 
-  // Cấu trúc mapping giữa tên danh mục và categoryId
   const categoryMap = {
     "Interior-Paint": 1,
     "Exterior-Paint": 2,
@@ -32,17 +31,14 @@ const ListProducts = () => {
     "Wall-Decal": 8,
   };
 
-  // Kiểm tra nếu không có category trong URL, chọn mặc định tất cả sản phẩm
   const selectedCategoryId = productCategory
     ? categoryMap[productCategory.replace(/\s+/g, "-")] || ""
-    : ""; // Nếu không có category, trả về chuỗi rỗng
+    : ""; 
 
   useEffect(() => {
-    // Nếu không có category trong URL, hiển thị tất cả sản phẩm
     setSelectedCategory(selectedCategoryId || "");
   }, [productCategory, selectedCategoryId]);
   
-  // Lọc sản phẩm theo danh mục và các bộ lọc khác
   useEffect(() => {
     const newFilteredProducts = products.filter((product) => {
       const matchesCategory = selectedCategoryId
@@ -78,12 +74,10 @@ const ListProducts = () => {
     products,
   ]);
 
-  // Xử lý thay đổi trang
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  // Xử lý thay đổi bộ lọc
   const handleFiltersChange = (filterType, values) => {
     if (filterType === "rating") {
       setSelectedRating(values);
@@ -104,7 +98,7 @@ const ListProducts = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <SidebarFilters
-            category={selectedCategoryId} // Truyền categoryId để lọc danh mục
+            category={selectedCategoryId}
             onChange={handleFiltersChange}
           />
         </Grid>

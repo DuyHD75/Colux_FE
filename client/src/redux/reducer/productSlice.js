@@ -16,8 +16,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-bóng",
       categoryId: 1,
-      rating: 4, // Thêm đánh giá sao
-      surface: "Stucco", // Thêm thông tin surface
+      rating: 4, 
+      surface: "Stucco", 
     },
     {
       id: 2,
@@ -33,8 +33,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-mờ",
       categoryId: 1,
-      rating: 4, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 4, 
+      surface: "Wood", 
     },
     {
       id: 3,
@@ -50,8 +50,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-bóng",
       categoryId: 2,
-      rating: 4, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 4, 
+      surface: "Wood", 
     },
     {
       id: 4,
@@ -67,8 +67,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-mờ",
       categoryId: 1,
-      rating: 3, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 3, 
+      surface: "Wood", 
     },
     {
       id: 5,
@@ -84,8 +84,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-bóng",
       categoryId: 3,
-      rating: 3, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 3, 
+      surface: "Wood", 
     },
     {
       id: 6,
@@ -102,8 +102,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-mờ",
       categoryId: 4,
-      rating: 5, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 5, 
+      surface: "Wood", 
     },
     {
       id: 7,
@@ -120,8 +120,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-bóng",
       categoryId: 5,
-      rating: 5, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 5,
+      surface: "Wood",
     },
     {
       id: 8,
@@ -138,8 +138,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-mờ",
       categoryId: 5,
-      rating: 4, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 4,
+      surface: "Wood",
     },
     {
       id: 9,
@@ -156,8 +156,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/sơn-phủ-pu-nội-thất-cao-cấp-sadolin-–-mờ",
       categoryId: 4,
-      rating: 4, // Thêm đánh giá sao
-      surface: "Wood", // Thêm thông tin surface
+      rating: 4,
+      surface: "Wood", 
     },
     {
       id: 10,
@@ -173,8 +173,8 @@ const initialState = {
       ],
       link: "/vi/san-pham/decal-dán-tường-phòng-khách-hoa-văn",
       categoryId: 8,
-      rating: 4, // Đánh giá sao
-      surface: "Wall", // Bề mặt áp dụng
+      rating: 4,
+      surface: "Wall", 
     },
     {
       id: 11,
@@ -203,8 +203,8 @@ const initialState = {
       features: ["Chống thấm nước", "Độ bền cao", "Dễ lắp đặt và bảo trì"],
       link: "/vi/san-pham/sàn-gỗ-công-nghiệp-chống-thấm-nước",
       categoryId: 7,
-      rating: 4, // Đánh giá sao
-      surface: "Floor", // Bề mặt áp dụng
+      rating: 4, 
+      surface: "Floor",
     },
     {
       id: 13,
@@ -216,8 +216,8 @@ const initialState = {
       features: ["Giả gỗ tự nhiên", "Chống trầy xước", "Dễ vệ sinh"],
       link: "/vi/san-pham/sàn-nhựa-vinyl-giả-gỗ",
       categoryId: 7,
-      rating: 5, // Đánh giá sao
-      surface: "Floor", // Bề mặt áp dụng
+      rating: 5, 
+      surface: "Floor", 
     },
   ],
 };

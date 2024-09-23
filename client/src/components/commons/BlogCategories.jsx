@@ -54,11 +54,12 @@ const BlogCategories = () => {
   return (
     <Container
       sx={{
-        padding: "2rem 0",
+        padding: { xs: "1rem 0", md: "2rem 0" },
       }}
     >
-      <Grid container spacing={4}>
-        <Grid item xs={12} md={3}>
+      <Grid container spacing={2}>
+        <Grid item xs={12} md={3} sx={{ maxWidth: "300px" }}>
+          {" "}
           <div style={{ position: "sticky", top: 0 }}>
             <Sidebar />
           </div>
@@ -66,7 +67,7 @@ const BlogCategories = () => {
         <Grid item xs={12} md={9}>
           {hasPosts ? (
             <>
-              <Grid container spacing={4}>
+              <Grid container spacing={2}>
                 {paginatedPosts.map((post) => (
                   <Grid item xs={12} sm={6} md={4} key={post.id}>
                     <Card
@@ -86,7 +87,7 @@ const BlogCategories = () => {
                       <CardMedia
                         component="img"
                         sx={{
-                          height: 200,
+                          height: { xs: 150, md: 200 },
                           width: "100%",
                           objectFit: "cover",
                         }}
@@ -98,6 +99,7 @@ const BlogCategories = () => {
                           variant="h5"
                           gutterBottom
                           sx={textConfigs.style.basicFont}
+                          fontSize={{ xs: "1.2rem", md: "1.5rem" }}
                         >
                           {post.title}
                         </Typography>

@@ -36,18 +36,27 @@ const SidebarBlog = () => {
   };
 
   return (
-    <div style={{ 
-        padding: '1rem', 
-        borderRight: '1px solid #ddd',
-        width: '250px', 
-        boxSizing: 'border-box'
-      }}>
+    <div style={{
+      padding: '1rem',
+      borderRight: '1px solid #ddd',
+      boxSizing: 'border-box',
+      width: '100%',
+      maxWidth: '300px',
+      '@media (max-width: 600px)': {
+        padding: '0.5rem',
+      },
+    }}>
       
-      <Typography 
-        variant="h6" 
-        gutterBottom 
-        sx={{ color: "#333",  fontFamily: '"Nunito", sans-serif',
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{ 
+          color: "#333",  
+          fontFamily: '"Nunito", sans-serif',
           marginTop: '2rem', 
+          '@media (max-width: 600px)': {
+            marginTop: '1rem',
+          }
         }}
       >
         Search
@@ -61,41 +70,57 @@ const SidebarBlog = () => {
         onChange={handleSearchChange}
         sx={{ 
           marginBottom: '2rem',
-          ...textConfigs.style.basicFont 
+          ...textConfigs.style.basicFont,
+          '@media (max-width: 600px)': {
+            marginBottom: '1rem',
+          }
         }}
       />
 
-      <Typography 
-        variant="h6" 
-        gutterBottom 
-        sx={{color: "#333",  fontFamily: '"Nunito", sans-serif'}} Ư
+      <Typography
+        variant="h6"
+        gutterBottom
+        sx={{
+          color: "#333",
+          fontFamily: '"Nunito", sans-serif',
+          '@media (max-width: 600px)': {
+            fontSize: '1.2rem',
+          },
+        }}
       >
         Categories
       </Typography>
+
       <List>
         {categories.map((category) => {
-          const isSelected = selectedCategory === category.name; 
+          const isSelected = selectedCategory === category.name;
 
           return (
-            <ListItem 
-              button 
+            <ListItem
+              button
               key={category.id}
-              onClick={() => handleCategoryClick(category.name)} 
+              onClick={() => handleCategoryClick(category.name)}
               sx={{
-                backgroundColor: isSelected ? '#e0f7fa' : 'inherit', 
+                backgroundColor: isSelected ? '#e0f7fa' : 'inherit',
                 '&:hover': {
                   backgroundColor: '#b2ebf2',
                 },
-                borderLeft: isSelected ? '4px solid #1976d2' : '4px solid transparent', 
-                paddingLeft: '1rem', 
+                borderLeft: isSelected ? '4px solid #1976d2' : '4px solid transparent',
+                paddingLeft: '1rem',
+                '@media (max-width: 600px)': {
+                  paddingLeft: '0.5rem',
+                },
               }}
             >
-              <ListItemText 
-                primary={category.name} 
-                sx={{ 
-                  fontWeight: isSelected ? 'bold' : 'normal', 
+              <ListItemText
+                primary={category.name}
+                sx={{
+                  fontWeight: isSelected ? 'bold' : 'normal',
                   color: isSelected ? '#1976d2' : 'inherit',
-                  ...textConfigs.style.subHeaderText 
+                  ...textConfigs.style.subHeaderText,
+                  '@media (max-width: 600px)': {
+                    fontSize: '0.9rem',
+                  },
                 }}
               />
             </ListItem>
@@ -105,5 +130,6 @@ const SidebarBlog = () => {
     </div>
   );
 };
+
 
 export default SidebarBlog;

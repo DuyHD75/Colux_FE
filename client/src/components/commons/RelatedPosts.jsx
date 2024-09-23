@@ -10,9 +10,11 @@ import {
   Button,
 } from "@mui/material";
 import { Link, useLocation } from "react-router-dom";
+import textConfigs from "../../config/text.config";
+import backgroundConfigs from "../../config/background.config";
 
 const RelatedPosts = ({ currentPostSlug, textConfigs }) => {
-  const posts = useSelector(selectPosts); // Retrieve all posts from Redux
+  const posts = useSelector(selectPosts);
   const location = useLocation();
 
   useEffect(() => {
@@ -20,9 +22,9 @@ const RelatedPosts = ({ currentPostSlug, textConfigs }) => {
   }, [location.pathname]);
 
   const recentPosts = posts
-    .filter((p) => p.slug !== currentPostSlug) 
+    .filter((p) => p.slug !== currentPostSlug)
     .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-    .slice(0, 3); 
+    .slice(0, 3);
 
   if (recentPosts.length === 0) {
     return null;
@@ -82,11 +84,12 @@ const RelatedPosts = ({ currentPostSlug, textConfigs }) => {
                 component={Link}
                 to={`/blogs/${post.slug}`}
                 variant="contained"
-                color="secondary"
+                color="primary"
                 sx={{
-                  backgroundColor: "#9c27b0",
-                  "&:hover": {
-                    backgroundColor: "#7b1fa2",
+                  fontFamily: "Nunito",
+                  ...backgroundConfigs.style.backgroundPrimary,
+                  ":hover": {
+                    ...backgroundConfigs.style.backgroundSecondary,
                   },
                   marginBottom: "1rem",
                   alignSelf: "center",

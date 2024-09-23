@@ -8,7 +8,7 @@ import backgroundConfigs from "../../config/background.config";
 import { useSelector } from "react-redux";
 import menuConfigs from "../../config/menu.config";
 import data from "../../data/data";
-import { selectPosts } from '../../redux/reducer/postsSlice'; // Import selectPosts if needed
+import { selectPosts } from '../../redux/reducer/postsSlice';
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
   const backgroundColor =
@@ -35,7 +35,7 @@ const Navigate = () => {
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { collections } = useSelector((state) => state.collections);
-  const posts = useSelector(selectPosts); // Select posts from Redux
+  const posts = useSelector(selectPosts); 
   const rooms = data.rooms;
   const exteriors = data.exteriors;
 
@@ -66,7 +66,6 @@ const Navigate = () => {
   const post = posts.find((post) => post.slug === slug);
   const { productCategory } = useParams();
 
-
   return (
     <Box className="p-5" sx={{ ...backgroundConfigs.style.backgroundContext }}>
       <Container maxWidth="lg">
@@ -93,16 +92,16 @@ const Navigate = () => {
               return null;
             }
           })}
-          
+
           {productCategory && (
             <StyledBreadcrumb
               component="a"
-              href={`/products/${productCategory.replace(/\s+/g, "-")}`}
+              href={`/products/${encodeURIComponent(productCategory)}`} 
               label={productCategory}
               sx={{ fontSize: "1rem" }}
             />
           )}
-          
+
           {section === "blog" && (
             <StyledBreadcrumb
               component="a"
@@ -115,17 +114,16 @@ const Navigate = () => {
           {section === "blog" && categoryName && (
             <StyledBreadcrumb
               component="a"
-              href={`/blogs/category/${categoryName}`}
+              href={`/blogs/category/${encodeURIComponent(categoryName)}`} 
               label={categoryName}
               sx={{ fontSize: "1rem" }}
             />
           )}
-          
 
           {section === "products" && categoryName && (
             <StyledBreadcrumb
               component="a"
-              href={`/products/${categoryName.replace(/\s+/g, "-")}`}
+              href={`/products/${encodeURIComponent(categoryName)}`} 
               label={categoryName}
               sx={{ fontSize: "1rem" }}
             />
