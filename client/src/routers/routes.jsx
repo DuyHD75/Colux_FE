@@ -179,6 +179,8 @@ const routes = [
     path: "/calculate-price",
     element: <CalculatePrice />,
     state: "calculate-price",
+  }, 
+  {
     path: "/orderHistory",
     element: <OrderHistory />,
     state: "orderHistory"
