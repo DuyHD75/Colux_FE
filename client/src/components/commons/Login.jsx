@@ -30,13 +30,13 @@ const Login = ({ switchAuthState }) => {
 
   const loginForm = useFormik({
     initialValues: {
-      username: "",
+      email: "",
       password: "",
     },
     validationSchema: Yup.object({
-      username: Yup.string()
-        .min(8, "Username must be at least 8 characters!")
-        .required("Username is required!"),
+      email: Yup.string()
+        .email("Invalid email address!")
+        .required("Email is required!"),
       password: Yup.string()
         .min(8, "Password must be at least 8 characters!")
         .required("Password is required!"),
@@ -91,21 +91,21 @@ const Login = ({ switchAuthState }) => {
               htmlFor="email"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
-              Username
+              Email
             </label>
             <input
               type="text"
-              id="username"
-              name="username"
+              id="email"
+              name="email"
               className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-              placeholder="Your username"
+              placeholder="Your Email"
               onChange={loginForm.handleChange}
               onBlur={loginForm.handleBlur}
-              value={loginForm.values.username}
+              value={loginForm.values.email}
             />
-            {loginForm.errors.username && loginForm.touched.username && (
+            {loginForm.errors.email && loginForm.touched.email && (
               <p className="text-red-600 text-sm mt-1">
-                {loginForm.errors.username}
+                {loginForm.errors.email}
               </p>
             )}
           </div>
@@ -170,7 +170,7 @@ const Login = ({ switchAuthState }) => {
               className="font-medium text-primary-600 hover:underline dark:text-primary-500"
               onClick={() => switchAuthState(actionState.register)}
             >
-              Back
+              Register
             </Link>
           </p>
         </form>
