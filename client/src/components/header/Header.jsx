@@ -430,7 +430,7 @@ export const Header = () => {
           {/* Start User Setting */}
           <Box className="grow-0">
             <Box className="flex justify-between">
-              {user === null ? (
+              {user !== null ? (
                 <Typography className="flex">
                   <MenuItem
                     className="p-0"
