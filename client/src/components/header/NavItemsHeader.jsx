@@ -8,6 +8,7 @@ export const NavItemsHeader = ({
   setAnchorElNav,
   setAnchorElCategories,
   setAnchorElColors,
+  setAnchorElAbout
 }) => {
   const { appState } = useSelector((state) => state.appState);
   console.log();
@@ -24,6 +25,9 @@ export const NavItemsHeader = ({
             } else if (item.display === "Products") {
               event.preventDefault();
               setAnchorElCategories(event.currentTarget);
+            } else if (item.display === "About") {
+              event.preventDefault();
+              setAnchorElAbout(event.currentTarget);
             } else {
               setAnchorElNav(undefined);
             }
@@ -33,7 +37,7 @@ export const NavItemsHeader = ({
           } hover:text-[#1D4Ed8] flex`}
         >
           {item.display}
-          {item.display === "Colors" || item.display === "Products" ? (
+          {item.display === "Colors" || item.display === "Products" || item.display === "About" ? (
             <KeyboardArrowDownIcon />
           ) : null}
         </Link>

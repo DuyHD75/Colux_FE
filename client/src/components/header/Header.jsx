@@ -34,6 +34,7 @@ export const Header = () => {
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
   const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+  const [anchorElAbout, setAnchorElAbout] = useState(false);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -66,6 +67,10 @@ export const Header = () => {
     setAnchorElCategories(null);
     setIsCategoriesMenuOpen(false); 
   };
+
+  const handleCloseAboutMenu = () => {
+    setAnchorElAbout(null);
+  }
 
   const handleCategoryClick = (path) => {
     handleCloseCategoriesMenu();
@@ -198,6 +203,7 @@ export const Header = () => {
             setAnchorElNav={setAnchorElNav}
             setAnchorElCategories={setAnchorElCategories}
             setAnchorElColors={setAnchorElColors}
+            setAnchorElAbout={setAnchorElAbout }
           />
           {/* End nav items */}
 
@@ -349,7 +355,7 @@ export const Header = () => {
                   container
                   maxWidth={"lg"}
                   key="allProducts"
-                  onClick={handleCloseColorsMenu}
+                  onClick={handleCloseCategoriesMenu}
                   className="min-w-[120px] py-0"
                 >
                   <Link
@@ -365,10 +371,66 @@ export const Header = () => {
           </Menu>
           {/* End menu Products */}
 
+          {/* Start menu About */}
+          <Menu
+            sx={{
+              mt: "45px",
+              "& .MuiMenu-list": {
+                paddingY: 0,
+              },
+            }}
+            id="menu-about"
+            anchorEl={anchorElAbout}
+            anchorOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            keepMounted
+            transformOrigin={{
+              vertical: "top",
+              horizontal: "left",
+            }}
+            open={Boolean(anchorElAbout)}
+            onClose={handleCloseAboutMenu}
+          >
+            <Grid
+              container
+              sx={{
+                width: "15vw",
+                padding: 0,
+                ...BackgroundColor.style.backgroundContext,
+              }}
+            >
+              <Grid item xs={12} key="Color">
+                <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
+                  About
+                </h2>
+                {menuConfigs.aboutMenu.map((item, index) => (
+                  <MenuItem
+                    container
+                    maxWidth={"lg"}
+                    key={index}
+                    onClick={handleCloseAboutMenu}
+                    className="min-w-[120px] py-0"
+                  >
+                    <Link
+                      to={`${item.path}`}
+                      key={index}
+                      className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
+                    >
+                      {item.display}
+                    </Link>
+                  </MenuItem>
+                ))}
+              </Grid>
+            </Grid>
+          </Menu>
+          {/* End menu About */}
+
           {/* Start User Setting */}
           <Box className="grow-0">
             <Box className="flex justify-between">
-              {user === null ? (
+              {user !== null ? (
                 <Typography className="flex">
                   <MenuItem
                     className="p-0"

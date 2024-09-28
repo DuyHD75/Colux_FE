@@ -12,7 +12,11 @@ import PrivacyPolicy from "../page/PrivacyPolicy";
 import ContactUs from "../page/ContactUs";
 
 import Products from "../page/Products";
+import ProductDetail from "../page/detail/ProductDetail"
 import Auth from "../page/Auth";
+import Contractors from "../page/Contractors";
+import Advisory from "../page/Advisory";
+import CalculatePrice from "../page/CalculatePrice";
 import AboutUs from "../page/AboutUs";
 import TermsAndConditions from "../page/TermsAndConditions";
 import Helps from "../page/Helps";
@@ -97,6 +101,11 @@ const routes = [
     element: <Products></Products>,
     state: "products",
   },
+  {
+    path: "/products/:productCategory/:productName",
+    element: <ProductDetail></ProductDetail>,
+    state: "productDetail",
+  },
 
   {
     path: "/blogs",
@@ -156,6 +165,21 @@ const routes = [
     element: <Auth />,
     state: "resetPassword",
   },
+  {
+    path: "/constructors",
+    element: <Contractors />,
+    state: "constructors",
+  },
+  {
+    path: "/advisory",
+    element: <Advisory />,
+    state: "advisory",
+  },
+  {
+    path: "/calculate-price",
+    element: <CalculatePrice />,
+    state: "calculate-price",
+  }, 
   {
     path: "/orderHistory",
     element: <OrderHistory />,

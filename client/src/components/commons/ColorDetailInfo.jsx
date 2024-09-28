@@ -17,7 +17,7 @@ const isNearBlack = (hex) => {
   return luminance < 50;
 };
 
-const ColorDetail = ({ color, colors }) => {
+const ColorDetailInfo = ({ color, colors }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const { section, collection, colorName } = useParams();
   const [selectedColor, setSelectedColor] = useState(colorName);
@@ -283,4 +283,4 @@ const ColorDetail = ({ color, colors }) => {
   );
 };
 
-export default ColorDetail;
+export default ColorDetailInfo;
