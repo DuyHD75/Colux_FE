@@ -17,8 +17,6 @@ const ColorDetail = () => {
 
     const selectedColor =  colors.find(color => color.name === colorName);
   return (
-
-
     <Fragment>
       <Box sx={{ marginTop: { xs: "56px", md: "96px" } }}>
         <Navigate></Navigate>

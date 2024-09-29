@@ -1,3 +1,4 @@
+// thêm roomType, content thay bằng description
 const rooms = [
   {
     id: 1,
@@ -352,6 +353,7 @@ const exteriors = [
   },
 ];
 
+//desc = description
 const colors = [
   {
     id: 1,

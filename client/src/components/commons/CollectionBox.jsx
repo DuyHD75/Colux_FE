@@ -1,11 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import textConfigs from "../../config/text.config";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
   const { collections } = useSelector((state) => state.collections);
+  
+  const [ collections1, setCollection ] = useState([]);
+  useEffect(() => {
+    const getCollections = async () => {
+      try {
+        const { responseCollections, err } = await colorsApi.getCollections();
+        if(responseCollections) {
+          setCollection([...responseCollections.data.rooms])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching collections.")
+      }
+    }
+    getCollections();
+  }, [])
 
   return (
     <Box sx={{ padding: "0px !important" }}>

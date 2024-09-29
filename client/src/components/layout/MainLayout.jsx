@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import GlobalLoading from "../commons/GlobalLoading";
+import Cookies from "js-cookie";
+import userApi from "../../api/modules/user.api";
+import { setUser } from "../../redux/reducer/userSlice";
 
 const actionState = {
   login: "login",
@@ -15,6 +18,20 @@ const actionState = {
 
 const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
+  const dispatch = useDispatch();
+  const { user } = useSelector((state) => state.user);
+  console.log(user);
+ 
+  useEffect(() => {
+    const authUser = async () => {
+      const { response, err } = await userApi.getInfo(user.userId);
+
+      if (response) dispatch(setUser(...response.data.user));
+      if (err) dispatch(setUser(null));
+    };
+
+    user && authUser();
+  }, [dispatch, user]);
 
   const showHeaderFooter = !(
     appState === actionState.login ||

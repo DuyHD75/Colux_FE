@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/useSlice";
+import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -28,12 +28,13 @@ const ForgotPassword = ({ switchAuthState }) => {
       const { response, err } = await userApi.forgotPassword(values);
       setIsForgotPasswordRequest(false);
 
-      if (response) {
+      if (response != null && response.code === 200) {
         forgotPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success("Please check your email to reset password!");
+      }else {
+        setErrorMessage(err.message);
       }
-      if (err) setErrorMessage(err.message);
     },
   });
 

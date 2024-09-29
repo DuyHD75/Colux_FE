@@ -3,12 +3,13 @@ import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/useSlice";
+import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
+import { LoadingButton } from '@mui/lab';
 
 const Register = ({ switchAuthState }) => {
   const dispatch = useDispatch();
@@ -23,20 +24,14 @@ const Register = ({ switchAuthState }) => {
     initialValues: {
       lastName: "",
       firstName: "",
-      phoneNumber: "",
       email: "",
       password: "",
       confirmPassword: "",
       role: "",
     },
     validationSchema: Yup.object({
-      lastName: Yup.string()
-        .required("LastName is required!"),
-      firstName: Yup.string()
-        .required("FirstName name is required!"),
-      phoneNumber: Yup.string()
-        .matches(/^0\d{9}$/, "Phone number is not valid!")
-        .required("Phone number is required!"),
+      lastName: Yup.string().required("LastName is required!"),
+      firstName: Yup.string().required("FirstName name is required!"),
       email: Yup.string()
         .email("Invalid email address!")
         .required("Email is required!"),
@@ -52,13 +47,14 @@ const Register = ({ switchAuthState }) => {
       setIsRegisterRequest(true);
       const { response, err } = await userApi.register(values);
       setIsRegisterRequest(false);
-
+      console.log(response);
+      
       if (response) {
         registerForm.resetForm();
-        dispatch(setUser(response));
-        toast.success("Sign up successfully!");
+        toast.success(response.message);
       }
-      if (err) setErrorMessage(err.message);
+      
+      if (err) setErrorMessage(err.exception);
     },
   });
 
@@ -228,13 +224,39 @@ const Register = ({ switchAuthState }) => {
             </div>
           </div>
 
-          <button
+          <LoadingButton
             type="submit"
-            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             loading={isRegisterRequest}
+            variant="contained"
+            sx={{
+              width: "100%",
+              color: "white",
+              bgcolor: "primary.main",
+              "&:hover": {
+                bgcolor: "primary.dark",
+              },
+              fontWeight: "500",
+              fontSize: "0.875rem",
+              padding: "10px 20px",
+              textAlign: "center",
+              borderRadius: "8px",
+              ":focus": {
+                outline: "none",
+                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)", // focus ring
+              },
+              darkMode: {
+                bgcolor: "primary.main",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                "&:focus": {
+                  boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.6)",
+                },
+              },
+            }}
           >
             Create an account
-          </button>
+          </LoadingButton>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
             Already have an account?{" "}

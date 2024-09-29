@@ -13,6 +13,8 @@ import ExteriorBox from "./ExteriorBox";
 import CollectionBox from "./CollectionBox";
 import ColorBanner from "./ColorBanner";
 import data from "../../data/data";
+import { toast } from "react-toastify";
+import colorsApi from "../../api/modules/colors.api";
 
 const sections = ["Color Family", "Room", "Collection", "Exterior"];
 const rooms = data.rooms;
@@ -22,8 +24,20 @@ const ColorSwitcher = () => {
   const { collections } = useSelector((state) => state.collections);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { collection } = useParams();
+
+  const [ colorFamlily, setColorFamily ] = useState([]);
+  const [ rooms1, setRooms ] = useState([]);
+  const [ collections1, setCollection ] = useState([]);
+
+  const [selectedSection, setSelectedSection] = useState(sections[0]);
+  const [selectedRoom, setSelectedRoom] = useState(rooms1[0] || {});
+  const [selectedExterior, setSelectedExterior] = useState(exteriors[0] || {});
+  const [selectedCollection, setSelectedCollection] = useState(
+    collections1[0] || {}
+  );
+
   const extendedColorFamilies = [
-    ...colorFamilies,
+    ...colorFamlily,
     {
       id: 0,
       name: "All Colors",
@@ -35,13 +49,6 @@ const ColorSwitcher = () => {
       collections: [],
     },
   ];
-
-  const [selectedSection, setSelectedSection] = useState(sections[0]);
-  const [selectedRoom, setSelectedRoom] = useState(rooms[0] || {});
-  const [selectedExterior, setSelectedExterior] = useState(exteriors[0] || {});
-  const [selectedCollection, setSelectedCollection] = useState(
-    collections[0] || {}
-  );
   const [selectedColor, setSelectedColor] = useState(
     extendedColorFamilies[0] || {}
   );
@@ -49,14 +56,69 @@ const ColorSwitcher = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
+  
+  useEffect(() => {
+    const getListColofamily = async () => {
+      try {
+        const { responseColorFamily, err } = await colorsApi.getColorFamily();
+
+        if(responseColorFamily) {
+          setColorFamily([...responseColorFamily.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      }
+    }
+
+    const getRooms = async () => {
+      try {
+        const { responseRooms, err } = await colorsApi.getRooms();
+        if(responseRooms) {
+          setRooms([...responseRooms.data.rooms])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching rooms.")
+      }
+    }
+
+    const getCollections = async () => {
+      try {
+        const { responseCollections, err } = await colorsApi.getCollections();
+        if(responseCollections) {
+          setCollection([...responseCollections.data.rooms])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching collections.")
+      }
+    }
+
+    getListColofamily();
+    getRooms();
+    getCollections();
+  }, [])
+
+
+  
+
+
+
   useEffect(() => {
     if (selectedSection === "Room" && collection) {
-      const foundRoom = rooms.find((room) => room.name === collection);
+      const foundRoom = rooms1.find((room) => room.name === collection);
       if (foundRoom) {
         setSelectedRoom(foundRoom);
       }
     } else if (selectedSection === "Collection" && collection) {
-      const foundCollection = collections.find(
+      const foundCollection = collections1.find(
         (col) => col.name === collection
       );
       if (foundCollection) {
@@ -70,7 +132,7 @@ const ColorSwitcher = () => {
         setSelectedExterior(foundExterior);
       }
     }
-  }, [collection, selectedSection, rooms, collections, exteriors]);
+  }, [collection, selectedSection, rooms1, collections1, exteriors]);
 
   useEffect(() => {
     const path = location.pathname;

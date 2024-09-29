@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { Link, useParams } from "react-router-dom";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 // Hàm kiểm tra độ sáng của màu nền
 const getContrastColor = (hex) => {
@@ -17,9 +19,29 @@ const getContrastColor = (hex) => {
 const ColorFamilies = ({ onColorSelect, selectedColor }) => {
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { collection } = useParams();
+  const [ colorFamlily, setColorFamily ] = useState([]);
+
+  useEffect(() => {
+    const getListColofamily = async () => {
+      try {
+        const { responseColorFamily, err } = await colorsApi.getColorFamily();
+
+        if(responseColorFamily) {
+          setColorFamily([...responseColorFamily.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      }
+    }
+    getListColofamily();
+  }, [])
+
 
   const extendedColorFamilies = [
-    ...colorFamilies,
+    ...colorFamlily,
     {
       id: 0,
       name: "All Colors",

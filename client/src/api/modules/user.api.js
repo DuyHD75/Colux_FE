@@ -2,17 +2,41 @@ import privateClient from "../client/private.client";
 import publicClient from "../client/public.client";
 
 const userEndpoints = {
-  login: "accounts/login",
-  register: "accounts/register",
-  getInfo: "accounts/info",
-  passwordUpdate: "accounts/update-password",
+  login: "identity-service/api/v1/users/login",
+  register: "identity-service/api/v1/users/register",
+  forgotPassword:  ({ email }) => `identity-service/api/v1/users/password/reset?email=${email}`,
+  resetPassword:  "identity-service/api/v1/users/password/reset",
+  getInfo: ({userId}) => `identity-service/api/v1/users/${userId}`,
+  passwordUpdate: "identity-service/api/v1/users/change-password",
+  logout: "identity-service/api/v1/users/logout",
 };
 
 const userApi = {
-  login: async ({ username, password }) => {
+  login: async ({ email, password }) => {
     try {
       const response = await publicClient.post(userEndpoints.login, {
-        username,
+        email,
+        password,
+      });
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getInfo: async (userId) => {
+    try {
+      const response = await publicClient.get(userEndpoints.getInfo({userId}));
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  register: async ({ firstName, lastName, email, password }) => {
+    try {
+      const response = await publicClient.post(userEndpoints.register, {
+        firstName,
+        lastName,
+        email,
         password,
       });
 
@@ -21,21 +45,19 @@ const userApi = {
       return { err };
     }
   },
-  register: async ({
-    username,
-    displayName,
-    phoneNumber,
-    email,
-    password,
-    confirmPassword,
-  }) => {
+  forgotPassword: async () => {
     try {
-      const response = await publicClient.post(userEndpoints.register, {
-        username,
-        displayName,
-        phoneNumber,
-        email,
-        password,
+      const response = await publicClient.get(userEndpoints.forgotPassword);
+
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  resetPassword: async ({ newPassword, confirmPassword }) => {
+    try {
+      const response = await publicClient.post(userEndpoints.resetPassword, {
+        newPassword,
         confirmPassword,
       });
 
@@ -44,23 +66,22 @@ const userApi = {
       return { err };
     }
   },
-  forgotPassword: async ({ email }) => {
+  
+  passwordUpdate: async ({ password, newPassword, confirmNewPassword }) => {
     try {
-      const response = await publicClient.post(userEndpoints.resetPassword, {
-        email,
+      const response = await privateClient.put(userEndpoints.passwordUpdate, {
+        password,
+        newPassword,
+        confirmNewPassword,
       });
-
       return { response };
     } catch (err) {
       return { err };
     }
   },
-  resetPassword: async ({ email, password }) => {
+  logout: async () => {
     try {
-      const response = await publicClient.post(userEndpoints.resetPasswovrd, {
-        email, password,
-      });
-
+      const response = await privateClient.get(userEndpoints.logout);
       return { response };
     } catch (err) {
       return { err };

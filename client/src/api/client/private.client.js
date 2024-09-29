@@ -1,7 +1,8 @@
 import axios from "axios";
 import queryString from "query-string"; // parse param to object
 
-const baseURL = "http://127.0.0.1:5000/api/v1";
+const baseURL = "http://10.12.2.182:8765/";
+// const baseURL = "http://34.121.114.152:8765/";
 
 const privateClient = axios.create({
   baseURL,

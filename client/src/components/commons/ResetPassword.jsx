@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/useSlice";
+import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";

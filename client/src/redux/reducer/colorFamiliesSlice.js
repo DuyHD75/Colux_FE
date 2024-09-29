@@ -13,6 +13,8 @@ import { createSlice } from "@reduxjs/toolkit";
 //     {id: 9, name: "Pink", hex: "#ffc0cb", listhex: ["#b0212a", "#93161f", "#8a181f", "#942425", "#bf4a60"]}
 //   ],
 // };
+
+// content thay bằng description
 const initialState = {
   colorFamilies: [
     {

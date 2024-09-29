@@ -1,12 +1,33 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
 import data from "../../data/data";
 import { Link } from "react-router-dom";
 import textConfigs from "../../config/text.config";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const rooms = data.rooms;
 
 const RoomBox = ({ onRoomSelect, selectedRoom }) => {
+  const [ rooms1, setRooms ] = useState([]);
+
+  useEffect(() => {
+    const getRooms = async () => {
+      try {
+        const { responseRooms, err } = await colorsApi.getRooms();
+        if(responseRooms) {
+          setRooms([...responseRooms.data.rooms])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching rooms.")
+      }
+    }
+    getRooms();
+  }, [])
+
   const handleRoomSelect = (room) => {
     onRoomSelect(room);
   };
