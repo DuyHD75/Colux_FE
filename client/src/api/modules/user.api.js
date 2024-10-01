@@ -4,9 +4,9 @@ import publicClient from "../client/public.client";
 const userEndpoints = {
   login: "identity-service/api/v1/users/login",
   register: "identity-service/api/v1/users/register",
-  forgotPassword:  ({ email }) => `identity-service/api/v1/users/password/reset?email=${email}`,
-  resetPassword:  "identity-service/api/v1/users/password/reset",
-  getInfo: ({userId}) => `identity-service/api/v1/users/${userId}`,
+  forgotPassword: ({ email }) => `identity-service/api/v1/users/password/reset?email=${email}`,
+  resetPassword: "identity-service/api/v1/users/password/reset",
+  getInfo: `identity-service/api/v1/users/info`,
   passwordUpdate: "identity-service/api/v1/users/change-password",
   logout: "identity-service/api/v1/users/logout",
 };
@@ -23,9 +23,9 @@ const userApi = {
       return { err };
     }
   },
-  getInfo: async (userId) => {
+  getInfo: async () => {
     try {
-      const response = await publicClient.get(userEndpoints.getInfo({userId}));
+      const response = await publicClient.get(userEndpoints.getInfo);
       return { response };
     } catch (err) {
       return { err };
@@ -66,7 +66,7 @@ const userApi = {
       return { err };
     }
   },
-  
+
   passwordUpdate: async ({ password, newPassword, confirmNewPassword }) => {
     try {
       const response = await privateClient.put(userEndpoints.passwordUpdate, {
