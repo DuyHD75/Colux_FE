@@ -1,8 +1,8 @@
 import axios from "axios";
 import queryString from "query-string"; // parse param to object
 
-const baseURL = "http://10.12.2.182:8765/";
-// const baseURL = "http://34.121.114.152:8765/";
+// const baseURL = "http://10.12.2.182:8765/";
+const baseURL = "http://34.121.114.152:8765/";
 
 const privateClient = axios.create({
   baseURL,
@@ -19,7 +19,7 @@ privateClient.interceptors.request.use(async (config) => {
       headers: {
         ...config.headers,
         "Content-type": "multipart/form-data",
-        Authorization: `Bearer ${localStorage.getItem("actkn")}`,
+        Authorization: `Bearer ${localStorage.getItem("access-token")}`,
       },
     };
   }
@@ -28,7 +28,7 @@ privateClient.interceptors.request.use(async (config) => {
     ...config,
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${localStorage.getItem("actkn")}`,
+      Authorization: `Bearer ${localStorage.getItem("access-token")}`,
     },
   };
 });

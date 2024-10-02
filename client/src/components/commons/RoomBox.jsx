@@ -1,28 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
-import data from "../../data/data";
 import { Link } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
-
-const rooms = data.rooms;
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
 const RoomBox = ({ onRoomSelect, selectedRoom }) => {
-  const [ rooms1, setRooms ] = useState([]);
-
+  const [ rooms, setRooms ] = useState([]);
+  const dispatch = useDispatch();
   useEffect(() => {
     const getRooms = async () => {
+      dispatch(setGlobalLoading(true)); 
       try {
-        const { responseRooms, err } = await colorsApi.getRooms();
-        if(responseRooms) {
-          setRooms([...responseRooms.data.rooms])
+        const { response, err } = await colorsApi.getRooms();
+        if(response) {
+          setRooms([...response.data.rooms])
         } else if (err) {
           toast.error(err)
         }
       } catch (error) {
         console.log("Error", error);
         toast.error("An error occurred while fetching rooms.")
+      } finally {
+        dispatch(setGlobalLoading(false)); // Tắt loading
       }
     }
     getRooms();
@@ -36,7 +38,7 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
     <Box sx={{ padding: "0px !important" }}>
       <Grid container spacing={2}>
         {rooms.map((room) => (
-          <Grid item xs={6} md={2} key={room.name}>
+          <Grid item xs={6} md={2} key={room.id}>
             <Box
               sx={{
                 overflow: "hidden",
@@ -55,7 +57,7 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
               }}
             >
               <Link
-                to={`/colors/rooms/${room.name}`}
+                to={`/colors/rooms/${room.roomType}`}
                 onClick={() => handleRoomSelect(room)}
                 style={{
                   width: "100%",
@@ -70,8 +72,8 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
                   }}
                 >
                   <img
-                    src={room.img}
-                    alt={room.name}
+                    src={room.image}
+                    alt={room.roomType}
                     style={{
                       width: "100%",
                       height: "auto",
@@ -87,13 +89,13 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
                       padding: "8px",
                       transition: "background-color 0.3s ease-in-out",
                       backgroundColor:
-                        selectedRoom?.name === room.name
+                        selectedRoom?.id === room.id
                           ? "#ebebeb"
                           : "transparent",
                       ...textConfigs.style.basicFont,
                     }}
                   >
-                    {room.name}
+                    {room.roomType}
                   </Typography>
                 </Box>
               </Link>

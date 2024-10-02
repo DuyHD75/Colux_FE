@@ -5,6 +5,7 @@ const userEndpoints = {
   getColorFamily: "product-service/api/v1/products/colorFamilies",
   getRooms: "product-service/api/v1/products/rooms",
   getCollections: "product-service/api/v1/products/collections",
+  getColorByColorFamily: ({colorFamilyId}) =>  `product-service/api/v1/products/colorFamilies/${colorFamilyId}/colors/`
 };
 
 const colorsApi = {
@@ -19,7 +20,6 @@ const colorsApi = {
   getRooms: async () => {
     try {
       const response = await publicClient.get(userEndpoints.getRooms);
-
       return { response };
     } catch (err) {
       return { err };

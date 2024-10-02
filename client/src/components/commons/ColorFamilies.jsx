@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
 // Hàm kiểm tra độ sáng của màu nền
 const getContrastColor = (hex) => {
@@ -17,27 +18,28 @@ const getContrastColor = (hex) => {
 };
 
 const ColorFamilies = ({ onColorSelect, selectedColor }) => {
-  const { colorFamilies } = useSelector((state) => state.colorFamilies);
-  const { collection } = useParams();
   const [ colorFamlily, setColorFamily ] = useState([]);
-
+  const dispatch = useDispatch();
   useEffect(() => {
-    const getListColofamily = async () => {
+    const getListColorFamily = async () => {
+      dispatch(setGlobalLoading(true)); 
       try {
-        const { responseColorFamily, err } = await colorsApi.getColorFamily();
+        const { response, err } = await colorsApi.getColorFamily();
 
-        if(responseColorFamily) {
-          setColorFamily([...responseColorFamily.data.colorFalimies])
+        if(response) {
+          setColorFamily([...response.data.colorFalimies])
         } else if (err) {
           toast.error(err)
         }
       } catch (error) {
         console.log("Error", error);
         toast.error("An error occurred while fetching color family.")
+      } finally {
+        dispatch(setGlobalLoading(false)); 
       }
     }
-    getListColofamily();
-  }, [])
+    getListColorFamily();
+  }, [dispatch])
 
 
   const extendedColorFamilies = [
@@ -65,11 +67,14 @@ const ColorFamilies = ({ onColorSelect, selectedColor }) => {
       }`}
     >
       {extendedColorFamilies.map((color, index) => {
-        const isSelected = selectedColor?.name === color.name;
+        const isSelected = selectedColor?.id === color.id;
         return (
           <Link
             key={index}
-            to={`/colors/color-family/${color.name}`}
+            to={{
+              pathname: `/colors/color-family/${color.name}`,
+              state: { colorfamilyId: color.id },  
+            }}
             className={`mx-2 my-2 relative flex flex-col items-center justify-center transition-transform duration-300`}
             style={{
               width: window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",

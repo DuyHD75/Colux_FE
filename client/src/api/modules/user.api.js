@@ -25,7 +25,7 @@ const userApi = {
   },
   getInfo: async (userId) => {
     try {
-      const response = await publicClient.get(userEndpoints.getInfo({userId}));
+      const response = await privateClient.get(userEndpoints.getInfo({userId}));
       return { response };
     } catch (err) {
       return { err };

@@ -20,7 +20,6 @@ const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
-  console.log(user);
  
   useEffect(() => {
     const authUser = async () => {

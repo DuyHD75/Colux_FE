@@ -48,11 +48,10 @@ export const Header = () => {
   useEffect(() => {
     const getListColofamily = async () => {
       try {
-        const { responseColorFamily, err } = await colorsApi.getColorFamily();
-        console.log("responseColorFamily: " + responseColorFamily);
-        if(responseColorFamily) {
+        const { response, err } = await colorsApi.getColorFamily();
+        if(response) {
         
-          setColorFamily([...responseColorFamily.data.colorFalimies])
+          setColorFamily([...response.data.colorFalimies])
         } else if (err) {
           toast.error(err)
         }
@@ -63,11 +62,9 @@ export const Header = () => {
     }
     const getCollections = async () => {
       try {
-        const { responseCollections, err } = await colorsApi.getCollections();
-        console.log("responseCollections: " + responseCollections);
-        
-        if(responseCollections) {
-          setCollection([...responseCollections.data.rooms])
+        const { response, err } = await colorsApi.getCollections();
+        if(response) {
+          setCollection([...response.data.collections])
         } else if (err) {
           toast.error(err)
         }
@@ -107,8 +104,6 @@ export const Header = () => {
     localStorage.clear();
     navigate("/");
   };
-  console.log("colorFamlily" + colorFamlily);
-  console.log("collections" + collections);
   
 
   // const deleteCookie = (name) => {
@@ -306,7 +301,10 @@ export const Header = () => {
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={`/colors/color-family/${item.name}`}
+                      to={{
+                        pathname: `/colors/color-family/${item.name}`,
+                        state: { colorfamilyId: item.id },  
+                      }}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
