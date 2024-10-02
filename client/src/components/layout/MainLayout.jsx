@@ -23,14 +23,22 @@ const MainLayout = () => {
  
   useEffect(() => {
     const authUser = async () => {
-      const { response, err } = await userApi.getInfo(user.userId);
-
-      if (response) dispatch(setUser(...response.data.user));
-      if (err) dispatch(setUser(null));
+      if (!user) {
+        const { response, err } = await userApi.getInfo();
+        if (response) {
+          dispatch(setUser(response.data.user));
+        }
+        if (err) {
+          dispatch(setUser(null));
+        }
+      }
     };
+    authUser();
+  }, []);
 
-    user && authUser();
-  }, [dispatch, user]);
+
+
+
 
   const showHeaderFooter = !(
     appState === actionState.login ||
