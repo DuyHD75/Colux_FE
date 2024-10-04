@@ -23,6 +23,7 @@ import Helps from "../page/Helps";
 import Points from "../page/Points";
 import BlogHome from "../page/BlogHome";
 import BlogDetail from "../page/BlogDetail"
+import ChangePassword from "../page/ChangePassword";
 
 export const routesGen = {
   home: "/",
@@ -40,7 +41,8 @@ export const routesGen = {
   aboutUs: "/about",
   termsAndConditions: "/terms_and_condition",
   helps: "/helps",
-  points : "/points"
+  points : "/points",
+  changePassword: "/changePassword",  
 };
 
 const routes = [
@@ -224,6 +226,11 @@ const routes = [
     path: "/points",
     element: <Points />,
     state: "points"
+  },
+  {
+    path: "/changePassword",
+    element: <ChangePassword />,
+    state: "changePassword"
   },
 ];
 
