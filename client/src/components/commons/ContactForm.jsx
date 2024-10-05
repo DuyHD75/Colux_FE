@@ -75,7 +75,7 @@ const ContactForm = () => {
               Phone: +1234567890
             </Typography>
           </Grid>
-          <Grid container xs={12} md={8}>
+          <Grid container item xs={12} md={8}>
             <Grid item xs={12} md={5}>
               <TextField
                 fullWidth

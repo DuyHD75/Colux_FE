@@ -1,6 +1,6 @@
 import React, { Fragment } from 'react';
-import Navigate from '../components/commons/Navigate';
-import BlogPost from '../components/commons/BlogPost';
+import Navigate from '../../components/commons/Navigate';
+import BlogPost from '../../components/commons/BlogPost';
 
 const BlogDetail = () => {
 

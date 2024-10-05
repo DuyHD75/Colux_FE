@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   AppBar,
   Box,
@@ -18,38 +18,78 @@ import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import menuConfigs from "../../config/menu.config";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import SubHeader from "./SubHeader";
 import NavItemsHeader from "./NavItemsHeader";
 import BackgroundColor from "../../config/background.config";
+import userApi from "../../api/modules/user.api";
+import { setUser } from "../../redux/reducer/userSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 export const Header = () => {
-  const { colorFamilies } = useSelector((state) => state.colorFamilies);
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { categories } = useSelector((state) => state.categories);
-  const { collections } = useSelector((state) => state.collections);
   const { user } = useSelector((state) => state.user);
+
+  const [ colorFamlily, setColorFamily ] = useState([]);
+  const [ collections, setCollection ] = useState([]);
 
   const [anchorElNav, setAnchorElNav] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
-  const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+  // const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
   const [anchorElAbout, setAnchorElAbout] = useState(false);
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  useEffect(() => {
+    const getListColofamily = async () => {
+      try {
+        const { response, err } = await colorsApi.getColorFamily();
+        if(response) {
+        
+          setColorFamily([...response.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      }
+    }
+    const getCollections = async () => {
+      try {
+        const { response, err } = await colorsApi.getCollections();
+        if(response) {
+          setCollection([...response.data.collections])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching collections.")
+      }
+    }
+
+    getCollections();
+    getListColofamily();
+  }, [])
+
+  // const handleOpenNavMenu = (event) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleOpenColorsMenu = (event) => {
-    setAnchorElColors(event.currentTarget);
-  };
+  // const handleOpenColorsMenu = (event) => {
+  //   setAnchorElColors(event.currentTarget);
+  // };
 
-  const handleOpenCategoriesMenu = (event) => {
-    setAnchorElCategories(event.currentTarget);
-  };
+  // const handleOpenCategoriesMenu = (event) => {
+  //   setAnchorElCategories(event.currentTarget);
+  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -59,18 +99,31 @@ export const Header = () => {
     setAnchorElUser(null);
   };
 
+  const handleLogout = async () => {
+    const { response, err } = await userApi.logout();
+    if(response) {
+    dispatch(setUser(null));
+    localStorage.clear();
+    navigate("/");
+    toast.success("Logout Success.")
+    } 
+    if(err) {
+      toast.error(err)
+    }
+  };
+
   const handleCloseColorsMenu = () => {
     setAnchorElColors(null);
   };
 
   const handleCloseCategoriesMenu = () => {
     setAnchorElCategories(null);
-    setIsCategoriesMenuOpen(false); 
+    // setIsCategoriesMenuOpen(false);
   };
 
   const handleCloseAboutMenu = () => {
     setAnchorElAbout(null);
-  }
+  };
 
   const handleCategoryClick = (path) => {
     handleCloseCategoriesMenu();
@@ -203,7 +256,7 @@ export const Header = () => {
             setAnchorElNav={setAnchorElNav}
             setAnchorElCategories={setAnchorElCategories}
             setAnchorElColors={setAnchorElColors}
-            setAnchorElAbout={setAnchorElAbout }
+            setAnchorElAbout={setAnchorElAbout}
           />
           {/* End nav items */}
 
@@ -241,16 +294,19 @@ export const Header = () => {
                 <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
                   Colors
                 </h2>
-                {colorFamilies.map((item, index) => (
+                {colorFamlily.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={`/colors/color-family/${item.name}`}
+                      to={{
+                        pathname: `/colors/color-family/${item.name}`,
+                        state: { colorfamilyId: item.id },  
+                      }}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
@@ -259,8 +315,8 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  container
-                  maxWidth={"lg"}
+                  // container
+                  // maxWidth={"lg"}
                   key="allColors"
                   onClick={handleCloseColorsMenu}
                   className="min-w-[120px] py-0"
@@ -280,8 +336,8 @@ export const Header = () => {
                 </h2>
                 {collections.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
@@ -336,10 +392,14 @@ export const Header = () => {
                 </h2>
                 {categories.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
-                    onClick={() => handleCategoryClick(`/products/${item.name.replace(/\s+/g, "-")}`)} // Thay khoảng trắng bằng dấu gạch ngang
+                    onClick={() =>
+                      handleCategoryClick(
+                        `/products/${item.name.replace(/\s+/g, "-")}`
+                      )
+                    } // Thay khoảng trắng bằng dấu gạch ngang
                     className="min-w-[120px] py-0"
                   >
                     <Link
@@ -352,8 +412,8 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  container
-                  maxWidth={"lg"}
+                  // container
+                  // maxWidth={"lg"}
                   key="allProducts"
                   onClick={handleCloseCategoriesMenu}
                   className="min-w-[120px] py-0"
@@ -407,8 +467,8 @@ export const Header = () => {
                 </h2>
                 {menuConfigs.aboutMenu.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseAboutMenu}
                     className="min-w-[120px] py-0"
@@ -430,26 +490,7 @@ export const Header = () => {
           {/* Start User Setting */}
           <Box className="grow-0">
             <Box className="flex justify-between">
-              {user !== null ? (
-                <Typography className="flex">
-                  <MenuItem
-                    className="p-0"
-                    sx={{
-                      "&:hover": {
-                        backgroundColor: "transparent",
-                      },
-                    }}
-                  >
-                    <Link
-                      component={Link}
-                      to="/login"
-                      className="md:text-[#1c2759] capitalize text-center text-base hover:text-[#1D4Ed8] "
-                    >
-                      Login
-                    </Link>
-                  </MenuItem>
-                </Typography>
-              ) : (
+              {user ? (
                 <Typography className="flex">
                   <IconButton
                     type="button"
@@ -498,6 +539,25 @@ export const Header = () => {
                     </IconButton>
                   </Tooltip>
                 </Typography>
+              ) : (
+                <Typography className="flex">
+                  <MenuItem
+                    className="p-0"
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: "transparent",
+                      },
+                    }}
+                  >
+                    <Link
+                      component={Link}
+                      to="/login"
+                      className="md:text-[#1c2759] capitalize text-center text-base hover:text-[#1D4Ed8] "
+                    >
+                      Login
+                    </Link>
+                  </MenuItem>
+                </Typography>
               )}
             </Box>
 
@@ -534,7 +594,7 @@ export const Header = () => {
                   </Link>
                 </MenuItem>
               ))}
-              <MenuItem key="logout" onClick={handleCloseUserMenu}>
+              <MenuItem key="logout" onClick={handleLogout}>
                 <Link
                   to="/logout/"
                   key="logout"

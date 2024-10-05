@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/useSlice";
+import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -25,15 +25,20 @@ const ForgotPassword = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsForgotPasswordRequest(true);
-      const { response, err } = await userApi.forgotPassword(values);
+      console.log(values);
+      
+      const { response, err } = await userApi.forgotPassword(values.email);
       setIsForgotPasswordRequest(false);
-
-      if (response) {
+      console.log(response);
+      
+      if (response && response.code === 200) {
         forgotPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success("Please check your email to reset password!");
+      }else {
+        setErrorMessage(err.message);
+        toast.error(response.exception)
       }
-      if (err) setErrorMessage(err.message);
     },
   });
 
@@ -83,7 +88,7 @@ const ForgotPassword = ({ switchAuthState }) => {
             <Link
               href="#"
               className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              onClick={() => switchAuthState()}
+              onClick={() => switchAuthState("login")}
             >
               Back
             </Link>

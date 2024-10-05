@@ -3,7 +3,7 @@ import { Box, Typography, Container, Grid } from "@mui/material";
 import textConfigs from "../../config/text.config";
 import Navigate from "./Navigate";
 
-const ColorBanner = ({ img, section, title, content, hex }) => {
+const ColorBanner = ({ img, section, title, description, hex }) => {
   return (
     <Box
       sx={{
@@ -67,7 +67,7 @@ const ColorBanner = ({ img, section, title, content, hex }) => {
                 textAlign: { xs: "center", md: "left" }, 
               }}
             >
-              {content}
+              {description}
             </Typography>
           </Grid>
         </Grid>

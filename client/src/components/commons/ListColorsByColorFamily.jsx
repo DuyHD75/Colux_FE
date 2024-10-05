@@ -9,21 +9,49 @@ import {
   InputLabel,
   Pagination,
 } from "@mui/material";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { Link, useLocation } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const ListColorsByColorFamily = () => {
-  const { colorFamilies } = useSelector((state) => state.colorFamilies);
+  
+  const location = useLocation();
+  const { colorfamilyId } = location.state || {};
   const { section, collection } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
 
-  const matchedColorFamily = colorFamilies.find(
-    (color) => color.name === collection
+  const [ colorFamily, setColorFamily ] = useState([]);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getListColorFamily = async () => {
+      dispatch(setGlobalLoading(true)); 
+      try {
+        const { response, err } = await colorsApi.getColorFamily();
+
+        if(response) {
+          setColorFamily([...response.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      } finally {
+        dispatch(setGlobalLoading(false)); 
+      }
+    }
+    getListColorFamily();
+  }, [dispatch])
+
+  const matchedColorFamily = colorFamily.find(
+    (color) => color.id === colorfamilyId
   );
 
   const initialColorFamily = matchedColorFamily
@@ -47,7 +75,6 @@ const ListColorsByColorFamily = () => {
     } else {
       setSelectedColorFamily(value);
     }
-
     setCurrentPage(1);
   };
 
@@ -55,7 +82,7 @@ const ListColorsByColorFamily = () => {
     setCurrentPage(value);
   };
 
-  const filteredColors = colorFamilies
+  const filteredColors = colorFamily
     .filter((color) => color.name === collection)
     .flatMap((color) => {
       if (selectedColorFamily === "") {
@@ -118,7 +145,7 @@ const ListColorsByColorFamily = () => {
               onChange={handleChange}
               label="Collections"
             >
-              {colorFamilies
+              {colorFamily
                 .filter((color) => color.name === collection)
                 .flatMap((color) =>
                   color.collections.map((collection, index) => (
@@ -142,11 +169,11 @@ const ListColorsByColorFamily = () => {
               key={index}
               to={`/colors/${section}/${collection}/${color.name}`}
               className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
-                hoveredColor && hoveredColor !== color.hex
+                hoveredColor && hoveredColor !== color.id
                   ? "opacity-50"
                   : "opacity-100"
               }`}
-              onMouseEnter={() => setHoveredColor(color.hex)}
+              onMouseEnter={() => setHoveredColor(color.id)}
               onMouseLeave={() => setHoveredColor(null)}
               style={{
                 width:

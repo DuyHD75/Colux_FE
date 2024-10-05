@@ -41,7 +41,7 @@ const Navigate = () => {
   const exteriors = data.exteriors;
 
   const { section, collection: collectionName, categoryName, slug } = useParams();
-  console.log({ section, collectionName, categoryName, slug });
+  // console.log({ section, collectionName, categoryName, slug });
 
   let datas = [];
 

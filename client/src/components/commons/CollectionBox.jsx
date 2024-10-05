@@ -1,17 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import textConfigs from "../../config/text.config";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
 const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
-  const { collections } = useSelector((state) => state.collections);
+  // const { collections } = useSelector((state) => state.collections);
+  const dispatch = useDispatch();
+  const [ collections, setCollection ] = useState([]);
+  useEffect(() => {
+    const getCollections = async () => {
+      dispatch(setGlobalLoading(true)); 
+      try {
+        const { response, err } = await colorsApi.getCollections();
+        if(response) {
+          setCollection([...response.data.collections])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching collections.")
+      } finally {
+        dispatch(setGlobalLoading(false)); 
+      }
+    }
+    getCollections();
+  }, [dispatch])
 
   return (
     <Box sx={{ padding: "0px !important" }}>
       <Grid container spacing={2}>
         {collections.map((collection) => (
-          <Grid item xs={6} md={2} key={collection.name}>
+          <Grid item xs={6} md={2} key={collection.id}>
             <Box
               sx={{
                 overflow: "hidden",
@@ -37,13 +61,14 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
                 <Box
                   sx={{
                     display: "grid",
-                    gridTemplateColumns: "repeat(5, 1fr)",
+                    // gridTemplateColumns: "repeat(5, 1fr)",
                     gap: 0,
                     width: "100%",
                     height: "80px",
+                    backgroundColor: collection.hex,
                   }}
                 >
-                  {collection.colors.slice(0, 5).map((color, index) => (
+                  {/* {collection.colors.slice(0, 5).map((color, index) => (
                     <Box
                       key={index}
                       sx={{
@@ -52,7 +77,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
                         backgroundColor: color.hex,
                       }}
                     />
-                  ))}
+                  ))} */}
                 </Box>
                 <Typography
                   className="collection-name"
@@ -64,7 +89,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
                     transition: "background-color 0.3s ease-in-out",
                     display: "block",
                     backgroundColor:
-                      selectedCollection?.name === collection.name
+                      selectedCollection?.id === collection.id
                         ? "#ebebeb"
                         : "transparent",
                     ...textConfigs.style.basicFont,

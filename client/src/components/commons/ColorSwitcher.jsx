@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useMemo } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Box, Typography, Stack, Button, Container } from "@mui/material";
 import textConfigs from "../../config/text.config";
@@ -13,28 +13,24 @@ import ExteriorBox from "./ExteriorBox";
 import CollectionBox from "./CollectionBox";
 import ColorBanner from "./ColorBanner";
 import data from "../../data/data";
+import { toast } from "react-toastify";
+import colorsApi from "../../api/modules/colors.api";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
 const sections = ["Color Family", "Room", "Collection", "Exterior"];
-const rooms = data.rooms;
 const exteriors = data.exteriors;
 
 const ColorSwitcher = () => {
-  const { collections } = useSelector((state) => state.collections);
-  const { colorFamilies } = useSelector((state) => state.colorFamilies);
+  
+  
+  const navigate = useNavigate();
+  const location = useLocation();
   const { collection } = useParams();
-  const extendedColorFamilies = [
-    ...colorFamilies,
-    {
-      id: 0,
-      name: "All Colors",
-      img: "https://stppgpaints1prd01.blob.core.windows.net/masterbrand/libraries/masterbrand/assets/swatches/choosing-color-for-your-job_2.jpg?ext=.jpg",
-      title: "Explore Paint Colors",
-      content:
-        "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
-      hex: "#c1cbd2",
-      collections: [],
-    },
-  ];
+  const dispatch = useDispatch();
+
+  const [ colorFamlily, setColorFamily ] = useState([]);
+  const [ rooms, setRooms ] = useState([]);
+  const [ collections, setCollection ] = useState([]);
 
   const [selectedSection, setSelectedSection] = useState(sections[0]);
   const [selectedRoom, setSelectedRoom] = useState(rooms[0] || {});
@@ -42,16 +38,106 @@ const ColorSwitcher = () => {
   const [selectedCollection, setSelectedCollection] = useState(
     collections[0] || {}
   );
+  const extendedColorFamilies = useMemo(() => {
+    return [
+      ...colorFamlily,
+      {
+        id: "234bln2k3o23bfw324sd",
+        name: "All Colors",
+        image: "https://stppgpaints1prd01.blob.core.windows.net/masterbrand/libraries/masterbrand/assets/swatches/choosing-color-for-your-job_2.jpg?ext=.jpg",
+        title: "Explore Paint Colors",
+        description:
+          "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
+        hex: "#c1cbd2",
+        collections: [],
+      },
+    ];
+  }, [colorFamlily]);
+
+  const { colorfamilyId } = location.state || {};
+
+  
   const [selectedColor, setSelectedColor] = useState(
     extendedColorFamilies[0] || {}
   );
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  useEffect(() => {
+    if (rooms.length > 0) {
+      setSelectedRoom(rooms[0]);
+    }
+    if (collections.length > 0) {
+      setSelectedCollection(collections[0]);
+    }
+    if (extendedColorFamilies.length > 1) {
+      setSelectedColor(extendedColorFamilies[0]);
+    }
+  }, [rooms, collections, extendedColorFamilies]);
+  
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(setGlobalLoading(true));
+  
+      try {
+        await Promise.all([
+          getListColorFamily(),
+          getRooms(),
+          getCollections(),
+        ]);
+      } catch (error) {
+        console.log("Error occurred during data fetching", error);
+      } finally {
+        dispatch(setGlobalLoading(false));
+      }
+    };
+    const getListColorFamily = async () => {
+      try {
+        const { response, err } = await colorsApi.getColorFamily();
+
+        if(response) {
+          setColorFamily([...response.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      }
+    }
+
+    const getRooms = async () => {
+      try {
+        const { response, err } = await colorsApi.getRooms();
+        if(response) {
+          setRooms([...response.data.rooms])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching rooms.")
+      }
+    }
+
+    const getCollections = async () => {
+      try {
+        const { response, err } = await colorsApi.getCollections();
+        if(response) {
+          setCollection([...response.data.collections])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching collections.")
+      }
+    }
+    fetchData();
+  }, [dispatch])
 
   useEffect(() => {
     if (selectedSection === "Room" && collection) {
-      const foundRoom = rooms.find((room) => room.name === collection);
+      const foundRoom = rooms.find((room) => room.roomType === collection);
       if (foundRoom) {
         setSelectedRoom(foundRoom);
       }
@@ -86,15 +172,15 @@ const ColorSwitcher = () => {
   }, [location.pathname]);
 
   useEffect(() => {
-    if (selectedSection === "Color Family" && collection) {
+    if (selectedSection === "Color Family" && colorfamilyId) {
       const foundColor = extendedColorFamilies.find(
-        (colorFamily) => colorFamily.name === collection
+        (colorFamily) => colorFamily.id === colorfamilyId
       );
       if (foundColor) {
         setSelectedColor(foundColor);
       }
     }
-  }, [collection, selectedSection, extendedColorFamilies]);
+  }, [colorfamilyId, selectedSection, extendedColorFamilies]);
 
   const handleSectionChange = (section) => {
     setSelectedSection(section);
@@ -103,7 +189,7 @@ const ColorSwitcher = () => {
         navigate(`/colors/color-family/${selectedColor?.name}`);
         break;
       case "Room":
-        navigate(`/colors/rooms/${selectedRoom?.name}`);
+        navigate(`/colors/rooms/${selectedRoom?.roomType}`);
         break;
       case "Collection":
         navigate(`/colors/collections/${selectedCollection?.name}`);
@@ -152,36 +238,36 @@ const ColorSwitcher = () => {
     let img = "";
     let section = "";
     let title = "";
-    let content = "";
+    let description = "";
     let hex = "";
 
     switch (selectedSection) {
       case "Color Family":
-        img = selectedColor.img;
+        img = selectedColor.image;
         section = "COLOR FAMILY";
         title = selectedColor.title;
-        content = selectedColor.content;
+        description = selectedColor.description;
         hex = selectedColor.hex;
         break;
       case "Room":
-        img = selectedRoom.img;
+        img = selectedRoom.image;
         section = "ROOM";
         title = selectedRoom.title;
-        content = selectedRoom.content;
+        description = selectedRoom.description;
         hex = selectedRoom.hex;
         break;
       case "Collection":
-        img = selectedCollection.img;
+        img = selectedCollection.image;
         section = "COLLECTION";
         title = selectedCollection.title;
-        content = selectedCollection.content;
+        description = selectedCollection.description;
         hex = selectedCollection.hex;
         break;
       case "Exterior":
         img = selectedExterior.img;
         section = "EXTERIOR";
         title = selectedExterior.title;
-        content = selectedExterior.content;
+        description = selectedExterior.description;
         hex = selectedExterior.hex;
         break;
       default:
@@ -193,7 +279,7 @@ const ColorSwitcher = () => {
         img={img}
         section={section}
         title={title}
-        content={content}
+        description={description}
         hex={hex}
       />
     );

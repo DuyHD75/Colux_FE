@@ -1,9 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/useSlice";
+import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
@@ -11,6 +11,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
+import { LoadingButton } from "@mui/lab";
+import { useNavigate } from "react-router-dom";
 
 const actionState = {
   login: "login",
@@ -19,9 +21,11 @@ const actionState = {
 };
 
 const Login = ({ switchAuthState }) => {
+
   const dispatch = useDispatch();
   const [isLoginRequest, setIsLoginRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+  const navigate = useNavigate();
 
   const [showPassword, setShowPassword] = useState(false);
 
@@ -46,13 +50,16 @@ const Login = ({ switchAuthState }) => {
       setIsLoginRequest(true);
       const { response, err } = await userApi.login(values);
       setIsLoginRequest(false);
-
-      if (response) {
+      
+      if (response.status === "OK" && response.code === 200) {
+        dispatch(setUser(response.data.user));
         loginForm.resetForm();
-        dispatch(setUser(response));
         toast.success("Login Successfully!");
+        navigate("/");
+      } else {
+        setErrorMessage(err.exception);
+        toast.error(err.exception)
       }
-      if (err) setErrorMessage(err.message);
     },
   });
 
@@ -155,13 +162,39 @@ const Login = ({ switchAuthState }) => {
               Forgot password?
             </Link>
           </div>
-          <button
+          <LoadingButton
             type="submit"
-            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             loading={isLoginRequest}
+            variant="contained"
+            sx={{
+              width: "100%",
+              color: "white",
+              bgcolor: "primary.main",
+              "&:hover": {
+                bgcolor: "primary.dark",
+              },
+              fontWeight: "500",
+              fontSize: "0.875rem",
+              padding: "10px 20px",
+              textAlign: "center",
+              borderRadius: "8px",
+              ":focus": {
+                outline: "none",
+                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)", // focus ring
+              },
+              darkMode: {
+                bgcolor: "primary.main",
+                "&:hover": {
+                  bgcolor: "primary.dark",
+                },
+                "&:focus": {
+                  boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.6)",
+                },
+              },
+            }}
           >
             Login
-          </button>
+          </LoadingButton>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
             Don’t have an account yet?{" "}
