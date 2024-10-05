@@ -1,6 +1,6 @@
 export const productss = [
   {
-    id: 1, //y
+    id: 1,
     img: `https://picsum.photos/83/104?random=${Math.floor(
       Math.random() * 1000
     )}`,
@@ -16,7 +16,7 @@ export const productss = [
     colorID: "SW 9030",
     colorName: "Limón Fresco",
     type: "Interior",
-  },
+  },    
   {
     id: 2,
     img: `https://picsum.photos/83/104?random=${Math.floor(

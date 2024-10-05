@@ -6,6 +6,8 @@ import { FiHeart } from "react-icons/fi";
 import { FiDatabase } from "react-icons/fi";
 import { MdOutlineHelpOutline } from "react-icons/md";
 import { FiLogOut } from "react-icons/fi";
+import { LuLock } from "react-icons/lu";
+
 
 const navItems = [
   {
@@ -132,6 +134,16 @@ const user = [
       />
     ),
     state: "profile",
+  },
+  {
+    display: "Change Password",
+    path: "/changePassword",
+    icon: (
+      <LuLock
+        style={{ fontSize: "1.2rem", color: "#1C2759" }}
+      />
+    ),
+    state: "changePassword",
   },
   {
     display: "Manage orders",

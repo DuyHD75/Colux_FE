@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import UserSidebar from '../components/commons/UserSidebar'
 import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material'
 import textConfigs from '../config/text.config'
+import { user } from '../data/Product'
 import { CiEdit } from "react-icons/ci";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
@@ -46,18 +47,12 @@ const Profile = () => {
         initialValues: {
             country: 'United Kingdom',
             city: 'Leeds, East London',
-            postalCode: 'ERT 2354',
-            taxID: 'AS45645756',
+           
         },
         validationSchema: Yup.object({
             country: Yup.string().required('Required'),
             city: Yup.string().required('Required'),
-            postalCode: Yup.string()
-                .matches(/^\d{5}(-\d{4})?$/, 'Invalid postal code')
-                .required('Required'),
-            taxID: Yup.string()
-                .matches(/^\d{3}-\d{2}-\d{4}$/, 'Invalid tax ID')
-                .required('Required'),
+            
         }),
         onSubmit: (values) => {
             alert(JSON.stringify(values, null, 2));
@@ -192,30 +187,7 @@ const Profile = () => {
                                     <div className="text-red-500 text-sm mt-1">{formikAddress.errors.city}</div>
                                 ) : null}
                             </Grid>
-                            <Grid item md={6}>
-                                <Typography sx={{ ...textConfigs.style.headerText, fontSize: '14px', color: 'text.secondary', paddingLeft: '10px' }}>Postal Code</Typography>
-                                <input
-                                    name="postalCode"
-                                    onChange={formikAddress.handleChange}
-                                    onBlur={formikAddress.handleBlur}
-                                    value={formikAddress.values.postalCode}
-                                    type="text" placeholder="Postal Code" disabled={!editAddress} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `${editAddress ? '1px solid #E5E5E5' : 'none'}` }} />
-                                {formikAddress.touched.postalCode && formikAddress.errors.postalCode ? (
-                                    <div className="text-red-500 text-sm mt-1">{formikAddress.errors.postalCode}</div>
-                                ) : null}
-                            </Grid>
-                            <Grid item md={6}>
-                                <Typography sx={{ ...textConfigs.style.headerText, fontSize: '14px', color: 'text.secondary', paddingLeft: '10px' }}>TAX ID</Typography>
-                                <input
-                                    name="taxID"
-                                    onChange={formikAddress.handleChange}
-                                    onBlur={formikAddress.handleBlur}
-                                    value={formikAddress.values.taxID}
-                                    type="text" placeholder="TaxID" disabled={!editAddress} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `${editAddress ? '1px solid #E5E5E5' : 'none'}` }} />
-                                {formikAddress.touched.taxID && formikAddress.errors.taxID ? (
-                                    <div className="text-red-500 text-sm mt-1">{formikAddress.errors.taxID}</div>
-                                ) : null}
-                            </Grid>
+                           
 
                         </Grid>
                         {editAddress && <Button type='submit' size='small' variant="contained" sx={{ bgcolor: '#1c2759', textTransform: 'none', fontSize: '14px', borderRadius: '10px', px: '1rem', mt: '1rem' }}>Save</Button>}
