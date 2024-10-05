@@ -6,10 +6,11 @@ import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
 import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 
 const ResetPassword = ({ switchAuthState }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const [isResetPasswordRequest, setIsResetPasswordRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -20,15 +21,15 @@ const ResetPassword = ({ switchAuthState }) => {
 
   const resetPasswordForm = useFormik({
     initialValues: {
-      password: "",
+      newPassword: "",
       confirmPassword: "",
     },
     validationSchema: Yup.object({
-      password: Yup.string()
+      newPassword: Yup.string()
         .min(8, "Password must be at least 8 characters!")
         .required("Password is required!"),
       confirmPassword: Yup.string()
-        .oneOf([Yup.ref("password"), null], "Passwords must match!")
+        .oneOf([Yup.ref("newPassword"), null], "Passwords must match!")
         .required("Confirm Password is required!"),
     }),
     onSubmit: async (values) => {
@@ -40,7 +41,8 @@ const ResetPassword = ({ switchAuthState }) => {
       if (response) {
         resetPasswordForm.resetForm();
         dispatch(setUser(response));
-        toast.success("Please check your email to reset password!");
+        toast.success(response.message);
+        navigate('/login')
       }
       if (err) setErrorMessage(err.message);
     },
@@ -58,7 +60,7 @@ const ResetPassword = ({ switchAuthState }) => {
         >
           <div className="w-full">
             <label
-              htmlFor="password"
+              htmlFor="newPassword"
               className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
             >
               Password
@@ -66,8 +68,8 @@ const ResetPassword = ({ switchAuthState }) => {
             <div className="relative">
               <input
                 type={showPassword ? "text" : "password"}
-                id="password"
-                name="password"
+                id="newPassword"
+                name="newPassword"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                 placeholder="••••••••"
                 onChange={resetPasswordForm.handleChange}

@@ -14,6 +14,7 @@ const actionState = {
   register: "register",
   forgotPassword: "forgotPassword",
   resetPassword: "resetPassword",
+  verify: "verify",
 };
 
 const MainLayout = () => {
@@ -37,14 +38,12 @@ const MainLayout = () => {
   }, []);
 
 
-
-
-
   const showHeaderFooter = !(
     appState === actionState.login ||
     appState === actionState.register ||
     appState === actionState.forgotPassword ||
-    appState === actionState.resetPassword
+    appState === actionState.resetPassword || 
+    appState === actionState.verify
   );
 
   return (

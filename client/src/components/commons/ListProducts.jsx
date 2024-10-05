@@ -1,24 +1,58 @@
 import React, { useState, useEffect } from "react";
 import { Container, Grid, Typography, Pagination } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import SidebarFilters from "../commons/SidebarFilters";
 import ProductCard from "./ProductCard";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import productsApi from "../../api/modules/products.api";
+import { toast } from "react-toastify";
 
 const ListProducts = () => {
-  const products = useSelector((state) => state.products.products);
+  // const products = useSelector((state) => state.products.products);
   const categories = useSelector((state) => state.categories.categories);
-
+  const [ products, setProducts ] = useState([]);
   const { productCategory } = useParams(); 
 
   const [currentPage, setCurrentPage] = useState(1);
-  const productsPerPage = 18;
+  const productsPerPage = 16;
+  const [pageIndex, setPageIndex] = useState(0);
+  console.log(pageIndex);
+  console.log(productsPerPage);
+  
+  
 
   const [selectedRating, setSelectedRating] = useState([]);
   const [selectedSurface, setSelectedSurface] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [selectCategory, setSelectedCategory] = useState([]);
+
+  
+  const dispatch = useDispatch();
+  useEffect(() => {
+    console.log('PageIndex:', pageIndex); 
+    console.log('ProductsPerPage:', productsPerPage);
+    const getAllProductPageAble = async (page, size) => {
+      dispatch(setGlobalLoading(true)); 
+      try {
+        const { response, err } = await productsApi.getAllProductPageAble(page, size);
+        console.log(response);
+        
+        if(response) {
+          setProducts([...response.data.products.content])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching products.")
+      } finally {
+        dispatch(setGlobalLoading(false)); 
+      }
+    }
+    getAllProductPageAble(pageIndex, productsPerPage);
+  }, [dispatch, pageIndex, productsPerPage])
 
   const categoryMap = {
     "Interior-Paint": 1,
@@ -42,15 +76,15 @@ const ListProducts = () => {
   useEffect(() => {
     const newFilteredProducts = products.filter((product) => {
       const matchesCategory = selectedCategoryId
-        ? product.categoryId === parseInt(selectedCategoryId)
+        ? product.category.categoryId === selectedCategoryId
         : true;
       const matchesRating =
         selectedRating.length > 0
-          ? selectedRating.includes(product.rating)
+          ? selectedRating.includes(product.ratingAverage)
           : true;
       const matchesSurface =
         selectedSurface.length > 0
-          ? selectedSurface.includes(product.surface)
+          ? selectedSurface.includes(product.applicableSurface)
           : true;
       const matchesFeatures =
         selectedFeatures.length > 0
@@ -111,8 +145,8 @@ const ListProducts = () => {
                   (currentPage - 1) * productsPerPage,
                   currentPage * productsPerPage
                 )
-                .map((product) => (
-                  <Grid item xs={6} sm={4} md={3} key={product.id}>
+                .map((product, index) => (
+                  <Grid item xs={6} sm={4} md={3} key={index}>
                     <ProductCard product={product} />
                   </Grid>
                 ))

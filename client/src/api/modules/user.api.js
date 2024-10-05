@@ -1,5 +1,4 @@
-import privateClient from "../client/private.client";
-import publicClient from "../client/public.client";
+import proxyClient from "../client/proxy.client";
 
 const userEndpoints = {
   login: "identity-service/api/v1/users/login",
@@ -9,12 +8,14 @@ const userEndpoints = {
   getInfo: `identity-service/api/v1/users/info`,
   passwordUpdate: "identity-service/api/v1/users/change-password",
   logout: "identity-service/api/v1/users/logout",
+  verifyAccount: ({key}) => `identity-service/api/v1/users/verify/account?key=${key}`,
+  verifyResetPassword: ({key}) => `identity-service/api/v1/users/password/reset/verify?key=${key}`
 };
 
 const userApi = {
   login: async ({ email, password }) => {
     try {
-      const response = await publicClient.post(userEndpoints.login, {
+      const response = await proxyClient.post(userEndpoints.login, {
         email,
         password,
       });
@@ -25,7 +26,7 @@ const userApi = {
   },
   getInfo: async () => {
     try {
-      const response = await publicClient.get(userEndpoints.getInfo);
+      const response = await proxyClient.get(userEndpoints.getInfo);
       return { response };
     } catch (err) {
       return { err };
@@ -33,7 +34,7 @@ const userApi = {
   },
   register: async ({ firstName, lastName, email, password }) => {
     try {
-      const response = await publicClient.post(userEndpoints.register, {
+      const response = await proxyClient.post(userEndpoints.register, {
         firstName,
         lastName,
         email,
@@ -45,9 +46,9 @@ const userApi = {
       return { err };
     }
   },
-  forgotPassword: async () => {
+  forgotPassword: async (email) => {
     try {
-      const response = await publicClient.get(userEndpoints.forgotPassword);
+      const response = await proxyClient.get(userEndpoints.forgotPassword({email}));
 
       return { response };
     } catch (err) {
@@ -56,7 +57,7 @@ const userApi = {
   },
   resetPassword: async ({ newPassword, confirmPassword }) => {
     try {
-      const response = await publicClient.post(userEndpoints.resetPassword, {
+      const response = await proxyClient.post(userEndpoints.resetPassword, {
         newPassword,
         confirmPassword,
       });
@@ -69,7 +70,7 @@ const userApi = {
 
   passwordUpdate: async ({ password, newPassword, confirmNewPassword }) => {
     try {
-      const response = await privateClient.put(userEndpoints.passwordUpdate, {
+      const response = await proxyClient.put(userEndpoints.passwordUpdate, {
         password,
         newPassword,
         confirmNewPassword,
@@ -81,7 +82,23 @@ const userApi = {
   },
   logout: async () => {
     try {
-      const response = await privateClient.get(userEndpoints.logout);
+      const response = await proxyClient.get(userEndpoints.logout);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  verifyAccount: async (key) => {
+    try {
+      const response = await proxyClient.get(userEndpoints.verifyAccount({key}));
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  verifyResetPassword: async (key) => {
+    try {
+      const response = await proxyClient.get(userEndpoints.verifyResetPassword({key}));
       return { response };
     } catch (err) {
       return { err };

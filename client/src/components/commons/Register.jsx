@@ -54,7 +54,10 @@ const Register = ({ switchAuthState }) => {
         toast.success(response.message);
       }
       
-      if (err) setErrorMessage(err.exception);
+      if (err) { 
+        setErrorMessage(err.exception);
+        toast.error(err.exception)
+      }
     },
   });
 
@@ -263,7 +266,7 @@ const Register = ({ switchAuthState }) => {
             <Link
               href="#"
               className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              onClick={() => switchAuthState()}
+              onClick={() => switchAuthState("login")}
             >
               Login here
             </Link>

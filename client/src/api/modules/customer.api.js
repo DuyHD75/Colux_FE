@@ -1,13 +1,21 @@
-import privateClient from "../client/private.client";
-import publicClient from "../client/public.client";
+import proxyClient from "../client/proxy.client";
 
 const customerEndpoints = {
+    getUserByUserId: ({ userId }) => `identity-service/api/v1/users/${userId}`,
 };
 
-const userApi = {
-     
+const customerApi = {
+    getUserByUserId: async (userId) => {
+        try {
+          const response = await proxyClient.get(customerEndpoints.getUserByUserId({userId}));
+    
+          return { response };
+        } catch (err) {
+          return { err };
+        }
+      },
 
 }
 
 
-export default userApi;
+export default customerApi;

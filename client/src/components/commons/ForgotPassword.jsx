@@ -25,15 +25,19 @@ const ForgotPassword = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsForgotPasswordRequest(true);
-      const { response, err } = await userApi.forgotPassword(values);
+      console.log(values);
+      
+      const { response, err } = await userApi.forgotPassword(values.email);
       setIsForgotPasswordRequest(false);
-
-      if (response != null && response.code === 200) {
+      console.log(response);
+      
+      if (response && response.code === 200) {
         forgotPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success("Please check your email to reset password!");
       }else {
         setErrorMessage(err.message);
+        toast.error(response.exception)
       }
     },
   });
@@ -84,7 +88,7 @@ const ForgotPassword = ({ switchAuthState }) => {
             <Link
               href="#"
               className="font-medium text-primary-600 hover:underline dark:text-primary-500"
-              onClick={() => switchAuthState()}
+              onClick={() => switchAuthState("login")}
             >
               Back
             </Link>

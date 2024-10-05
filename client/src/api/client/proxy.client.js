@@ -1,12 +1,11 @@
 import axios from 'axios';
-import queryString from 'query-string'; // parse param to object 
+import queryString from 'query-string';
 
-const baseURL = "http://34.121.114.152:8765/";
-// const baseURL = "http://10.12.2.182:8765/";
+// const baseURL = "http://34.121.114.152:8765/";
 
-const localhostBaseURL = "http://localhost:8765/";
+const baseURL = "http://localhost:8765/";
 
-const publicClient = axios.create({
+const proxyClient = axios.create({
     baseURL,
     withCredentials: true, 
     headers: {
@@ -17,7 +16,7 @@ const publicClient = axios.create({
     },
 });
 
-publicClient.interceptors.request.use(async config => {
+proxyClient.interceptors.request.use(async config => {
     return {
         ...config,
         headers: {
@@ -27,11 +26,11 @@ publicClient.interceptors.request.use(async config => {
     };
 });
 
-publicClient.interceptors.response.use((response) => {
+proxyClient.interceptors.response.use((response) => {
     if (response && response.data) return response.data;
     return response;
 }, (err) => {
     throw err.response.data;
 });
 
-export default publicClient;
+export default proxyClient;

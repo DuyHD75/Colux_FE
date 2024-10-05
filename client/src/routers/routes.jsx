@@ -22,7 +22,8 @@ import TermsAndConditions from "../page/TermsAndConditions";
 import Helps from "../page/Helps";
 import Points from "../page/Points";
 import BlogHome from "../page/BlogHome";
-import BlogDetail from "../page/BlogDetail"
+import BlogDetail from "../page/detail/BlogDetail"
+import VerifyEmail from "../components/commons/VerifyEmail"
 
 export const routesGen = {
   home: "/",
@@ -149,6 +150,11 @@ const routes = [
     path: "/login",
     element: <Auth />,
     state: "login",
+  },
+  {
+    path: "/verify/:user/:key",
+    element: <VerifyEmail />,
+    state: "verify",
   },
   {
     path: "/register",

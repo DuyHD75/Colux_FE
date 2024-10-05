@@ -1,28 +1,32 @@
 import React, { useState } from 'react'
 import UserSidebar from '../components/commons/UserSidebar'
-import { Avatar, Box, Button, Divider, Grid, Stack, TextField, Typography } from '@mui/material'
+import { Avatar, Box, Button, Grid, Stack, Typography } from '@mui/material'
 import textConfigs from '../config/text.config'
-import { IoMaleFemaleOutline } from "react-icons/io5";
-import { user } from '../data/Product'
-import { IoHomeOutline } from "react-icons/io5";
-import { MdOutlineMail } from "react-icons/md";
-import { FiPhone } from "react-icons/fi";
-import { FiLock } from "react-icons/fi";
 import { CiEdit } from "react-icons/ci";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { useSelector } from 'react-redux'
+import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
 
 const Profile = () => {
 
-    const [editInfo, setEditInfo] = useState(false)
-    const [editAddress, setEditAddress] = useState(false)
+    const [editInfo, setEditInfo] = useState(false);
+    const [editAddress, setEditAddress] = useState(false);
+    const { user } = useSelector((state) => state.user);
+    console.log(user&&user.firstName);
 
+    if (!user) {
+        setGlobalLoading(true)
+    } else {
+        setGlobalLoading(false)
+    }  
+    
     const formikInfo = useFormik({
         initialValues: {
-            firstName: 'Rafael',
-            lastName: 'Rahman',
-            email: 'rafaelRahman51@gmail.com',
-            phone: '+09 345 346 46',
+            firstName: user ? user.firstName : '',
+            lastName: user ? user.lastName : '',
+            email: user ? user.email : '',
+            phone: user ? user.phone : '',
         },
         validationSchema: Yup.object({
             firstName: Yup.string().required('Required'),
@@ -73,9 +77,9 @@ const Profile = () => {
                 }}>
                     <Stack direction="row" spacing={2} alignItems="center" justifyContent='space-between'>
                         <Stack direction="row" spacing={2} alignItems="center">
-                            <Avatar alt="Remy Sharp" src={user.avatar} sx={{ width: 60, height: 60 }} />
+                            <Avatar alt="Remy Sharp" src={user&&user.imageURL} sx={{ width: 60, height: 60 }} />
                             <Box>
-                                <Typography sx={{ ...textConfigs.style.headerText, fontWeight: 'bold', fontSize: '18px' }}>{user.name}</Typography>
+                                <Typography sx={{ ...textConfigs.style.headerText, fontWeight: 'bold', fontSize: '18px' }}>{user&&user.firstName} {user&&user.lastName}</Typography>
                                 <Typography sx={{ ...textConfigs.style.headerText, fontWeight: 'bold', fontSize: '18px' }}>Team Manager</Typography>
                                 <Typography sx={{ ...textConfigs.style.headerText, fontSize: '14px', color: 'text.secondary' }}>Leeds, United Kingdom</Typography>
                             </Box>

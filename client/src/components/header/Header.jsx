@@ -30,9 +30,7 @@ import { toast } from "react-toastify";
 export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  // const { colorFamilies } = useSelector((state) => state.colorFamilies);
   const { categories } = useSelector((state) => state.categories);
-  // const { collections } = useSelector((state) => state.collections);
   const { user } = useSelector((state) => state.user);
 
   const [ colorFamlily, setColorFamily ] = useState([]);
@@ -42,7 +40,7 @@ export const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
-  const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
+  // const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
   const [anchorElAbout, setAnchorElAbout] = useState(false);
 
   useEffect(() => {
@@ -78,37 +76,41 @@ export const Header = () => {
     getListColofamily();
   }, [])
 
-  const handleOpenNavMenu = (event) => {
-    setAnchorElNav(event.currentTarget);
-  };
+  // const handleOpenNavMenu = (event) => {
+  //   setAnchorElNav(event.currentTarget);
+  // };
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleOpenColorsMenu = (event) => {
-    setAnchorElColors(event.currentTarget);
-  };
+  // const handleOpenColorsMenu = (event) => {
+  //   setAnchorElColors(event.currentTarget);
+  // };
 
-  const handleOpenCategoriesMenu = (event) => {
-    setAnchorElCategories(event.currentTarget);
-  };
+  // const handleOpenCategoriesMenu = (event) => {
+  //   setAnchorElCategories(event.currentTarget);
+  // };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = async () => {
+  const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = async () => {
     const { response, err } = await userApi.logout();
+    if(response) {
     dispatch(setUser(null));
     localStorage.clear();
     navigate("/");
+    toast.success("Logout Success.")
+    } 
+    if(err) {
+      toast.error(err)
+    }
   };
-  
-
-  // const deleteCookie = (name) => {
-  //   document.cookie = name + '=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
-  // };
 
   const handleCloseColorsMenu = () => {
     setAnchorElColors(null);
@@ -116,7 +118,7 @@ export const Header = () => {
 
   const handleCloseCategoriesMenu = () => {
     setAnchorElCategories(null);
-    setIsCategoriesMenuOpen(false);
+    // setIsCategoriesMenuOpen(false);
   };
 
   const handleCloseAboutMenu = () => {
@@ -294,8 +296,8 @@ export const Header = () => {
                 </h2>
                 {colorFamlily.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
@@ -313,8 +315,8 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  container
-                  maxWidth={"lg"}
+                  // container
+                  // maxWidth={"lg"}
                   key="allColors"
                   onClick={handleCloseColorsMenu}
                   className="min-w-[120px] py-0"
@@ -334,8 +336,8 @@ export const Header = () => {
                 </h2>
                 {collections.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
@@ -390,8 +392,8 @@ export const Header = () => {
                 </h2>
                 {categories.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={() =>
                       handleCategoryClick(
@@ -410,8 +412,8 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  container
-                  maxWidth={"lg"}
+                  // container
+                  // maxWidth={"lg"}
                   key="allProducts"
                   onClick={handleCloseCategoriesMenu}
                   className="min-w-[120px] py-0"
@@ -465,8 +467,8 @@ export const Header = () => {
                 </h2>
                 {menuConfigs.aboutMenu.map((item, index) => (
                   <MenuItem
-                    container
-                    maxWidth={"lg"}
+                    // container
+                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseAboutMenu}
                     className="min-w-[120px] py-0"
@@ -592,7 +594,7 @@ export const Header = () => {
                   </Link>
                 </MenuItem>
               ))}
-              <MenuItem key="logout" onClick={handleCloseUserMenu}>
+              <MenuItem key="logout" onClick={handleLogout}>
                 <Link
                   to="/logout/"
                   key="logout"

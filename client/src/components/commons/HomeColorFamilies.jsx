@@ -101,6 +101,9 @@ const HomeColorFamilies = () => {
     rows.push(row);
   });
 
+  console.log(extendedColorFamilies);
+  
+
   return (
     <div className="flex flex-col items-center mt-5 py-10">
       <div className="text-center mb-4">

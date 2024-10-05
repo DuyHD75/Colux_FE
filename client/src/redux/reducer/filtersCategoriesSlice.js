@@ -146,8 +146,6 @@ const filterCategoriesSlice = createSlice({
 });
 
 export const selectFiltersByCategory = (state, categoryId) => {
-  console.log('State:', state);
-  console.log('Category ID:', categoryId);
   
   // Lấy bộ lọc theo id
   const categoryFilters = state.filterCategories[categoryId];

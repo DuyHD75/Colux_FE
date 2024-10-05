@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -12,7 +12,7 @@ import { Link } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { LoadingButton } from "@mui/lab";
-import { redirect, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const actionState = {
   login: "login",
@@ -21,6 +21,7 @@ const actionState = {
 };
 
 const Login = ({ switchAuthState }) => {
+
   const dispatch = useDispatch();
   const [isLoginRequest, setIsLoginRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -56,7 +57,8 @@ const Login = ({ switchAuthState }) => {
         toast.success("Login Successfully!");
         navigate("/");
       } else {
-        setErrorMessage(err.message);
+        setErrorMessage(err.exception);
+        toast.error(err.exception)
       }
     },
   });

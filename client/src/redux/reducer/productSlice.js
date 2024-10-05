@@ -1,6 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-// image,
 const initialState = {
   products: [
     {
