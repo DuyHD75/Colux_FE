@@ -1,9 +1,9 @@
 import axios from 'axios';
 import queryString from 'query-string';
 
-// const baseURL = "http://34.121.114.152:8765/";
+const baseURL = "http://34.121.114.152:8765/";
 
-const baseURL = "http://localhost:8765/";
+// const baseURL = "http://localhost:8765/";
 
 const proxyClient = axios.create({
     baseURL,
