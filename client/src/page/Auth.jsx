@@ -6,6 +6,8 @@ import Register from "../components/commons/Register";
 import ForgotPassword from "../components/commons/ForgotPassword";
 import ResetPassword from "../components/commons/ResetPassword";
 import GlobalLoading from "../components/commons/GlobalLoading";
+import { useLocation, useNavigate } from "react-router-dom";
+import setAppState from "../redux/reducer/appStateSlice"
 
 const actionState = {
   login: "login",
@@ -43,11 +45,26 @@ const content = {
 };
 
 const Auth = () => {
+  const location = useLocation();
+    const navigate = useNavigate();
   const { appState } = useSelector((state) => state.appState);
 
   const [action, setAction] = useState(actionState);
 
   const switchAuthState = (state) => setAction(state);
+
+
+  useEffect(() => {
+    if (action === actionState.login) {
+        navigate('/login');
+    } else if (action === actionState.register) {
+        navigate('/register');
+    } else if (action === actionState.forgotPassword) {
+        navigate('/forgotPassword');
+    } else if (action === actionState.resetPassword) {
+        navigate('/resetPassword');
+    }
+}, [action, navigate]);
 
   useEffect(() => {
     if (appState) setAction(appState);

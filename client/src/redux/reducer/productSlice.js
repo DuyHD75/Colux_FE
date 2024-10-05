@@ -349,7 +349,7 @@ const initialState = {
       paintId: null,
       wallpaperId: null,
       floorId: 1,
-      size: 2
+      size: 2 //m vuông
     },
     {
       id: 14,

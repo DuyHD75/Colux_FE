@@ -14,6 +14,8 @@ const PaymentBilling = () => {
   const products = useSelector((state) => state.checkout.checkoutData);
 
   const [provinces, setProvinces] = useState([]);
+  const [districts, setDistricts] = useState([]);
+  const [wards, setWards] = useState([]);
 
   useEffect(() => {
     const fetchProvinces = async () => {
@@ -23,13 +25,44 @@ const PaymentBilling = () => {
           throw new Error('Network response was not ok');
         }
         const data = await response.json();
-        setProvinces(data.data); // Assuming the API returns an array of provinces in a 'results' field
+        setProvinces(data.data);
       } catch (error) {
         console.error('Error fetching provinces:', error);
       }
     }
     fetchProvinces();
   }, []);
+
+  const fetchDistricts = async (provinceId) => {
+    try {
+      console.log("provinceId fetch" + provinceId);
+
+      const response = await fetch(`https://esgoo.net/api-tinhthanh/2/${provinceId}.htm`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      console.log("data fetch" + data.data);
+
+      setDistricts(data.data); // Assuming the response has districts array
+      setWards([]); // Reset wards when the province changes
+    } catch (error) {
+      console.error('Error fetching districts:', error);
+    }
+  };
+
+  const fetchWards = async (districtId) => {
+    try {
+      const response = await fetch(`https://esgoo.net/api-tinhthanh/3/${districtId}.htm`);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setWards(data.data); // Assuming the response has wards array
+    } catch (error) {
+      console.error('Error fetching wards:', error);
+    }
+  };
 
   const calculateTotalAmount = () => {
     let totalAmount = products ? products.reduce((acc, product) => acc + product.total, 0) : 0;
@@ -42,29 +75,28 @@ const PaymentBilling = () => {
 
   const billingForm = useFormik({
     initialValues: {
-      firstName: '',
-      lastName: '',
+      fullName: '',
+      phoneNumber: '',
+      province: '',
+      district: '',
+      ward: '',
       address: '',
-      city: '',
-      state: '',
-      zipCode: '',
     },
     validationSchema: Yup.object({
-      firstName: Yup.string()
+      fullName: Yup.string()
         .min(2, "First name at least 8 characters !")
-        .required("First name is required !"),
-      lastName: Yup.string()
-        .min(2, "Last name at least 8 characters !")
-        .required("Last name is required !"),
+        .required("Name is required !"),
+      phoneNumber: Yup.string()
+        .required("Phone is required !")
+        .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone must be a number !"),
+      province: Yup.string()
+        .required("State is required !"),
+      district: Yup.string()
+        .required("District is required !"),
+      ward: Yup.string()
+        .required("Ward is required !"),
       address: Yup.string()
         .required("Address is required !"),
-      city: Yup.string()
-        .required("City is required !"),
-      state: Yup.string()
-        .required("State is required !"),
-      zipCode: Yup.string()
-        .matches(/^\d{5}(?:[-\s]\d{4})?$/, 'Zip code is not valid')
-        .required("Zip code is required!"),
     }),
     onSubmit: async values => {
       console.log('Form data:', values);
@@ -109,77 +141,95 @@ const PaymentBilling = () => {
               <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>Billing & contact information
               </Typography>
               <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>First name:</Typography>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Full name:</Typography>
               </label>
               <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                type='text' name='firstName'
-                fullWidth value={billingForm.values.firstName}
+                type='text' name='fullName'
+                fullWidth value={billingForm.values.fullName}
                 onChange={billingForm.handleChange}
-                error={billingForm.touched.firstName && billingForm.errors.firstName !== undefined}
+                error={billingForm.touched.fullName && billingForm.errors.fullName !== undefined}
                 onBlur={billingForm.handleBlur}
-                helperText={billingForm.touched.firstName && billingForm.errors.firstName}
+                helperText={billingForm.touched.fullName && billingForm.errors.fullName}
                 variant='outlined' size='small' sx={{ width: '100%' }}></TextField>
               <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Last name:</Typography>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Phone Number:</Typography>
               </label>
               <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                type='text' name='lastName'
-                fullWidth value={billingForm.values.lastName}
+                name='phoneNumber'
+                fullWidth value={billingForm.values.phoneNumber}
                 onChange={billingForm.handleChange}
-                error={billingForm.touched.lastName && billingForm.errors.lastName !== undefined}
+                error={billingForm.touched.phoneNumber && billingForm.errors.phoneNumber !== undefined}
                 onBlur={billingForm.handleBlur}
-                helperText={billingForm.touched.lastName && billingForm.errors.lastName}
+                helperText={billingForm.touched.phoneNumber && billingForm.errors.phoneNumber}
                 variant='outlined' size='small' sx={{ width: '100%' }}></TextField>
               <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Street Address:</Typography>
-              </label>
-              <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                type='text' name='streetAddress'
-                fullWidth value={billingForm.values.streetAddress}
-                onChange={billingForm.handleChange}
-                error={billingForm.touched.streetAddress && billingForm.errors.streetAddress !== undefined}
-                onBlur={billingForm.handleBlur}
-                helperText={billingForm.touched.streetAddress && billingForm.errors.streetAddress}
-                variant='outlined' size='small' sx={{ width: '100%' }}></TextField>
-              <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>City:</Typography>
-              </label>
-              <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                name='city'
-                fullWidth value={billingForm.values.city}
-                onChange={billingForm.handleChange}
-                error={billingForm.touched.city && billingForm.errors.city !== undefined}
-                onBlur={billingForm.handleBlur}
-                helperText={billingForm.touched.city && billingForm.errors.city}
-                variant='outlined' size='small' sx={{ width: '100%' }}></TextField>
-              <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>State:</Typography>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Province:</Typography>
               </label>
               <Select
                 style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                name='state'
-                id='state'
-
-                value={billingForm.values.state} // Controlled value
-                onChange={billingForm.handleChange} // Update state on change
-                error={billingForm.touched.state && billingForm.errors.state !== undefined}
+                name='province'
+                value={billingForm.values.province}
+                onChange={(e) => {
+                  billingForm.handleChange(e);
+                  fetchDistricts(e.target.value); // Fetch districts when province changes
+                }}
+                error={billingForm.touched.province && billingForm.errors.province !== undefined}
                 onBlur={billingForm.handleBlur}
                 variant='outlined' size='small' sx={{ width: 'fit-content' }}
               >
                 {provinces.map((province, index) => (
-                  <MenuItem key={index} value={province.full_name}>{province.full_name}</MenuItem>
+                  <MenuItem key={index} value={province.id}>{province.full_name}</MenuItem>
+                ))}
+              </Select>
+
+              {/* District Selection */}
+              <label>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>District:</Typography>
+              </label>
+              <Select
+                style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
+                name='district'
+                value={billingForm.values.district}
+                onChange={(e) => {
+                  billingForm.handleChange(e);
+                  fetchWards(e.target.value); // Fetch wards when district changes
+                }}
+                error={billingForm.touched.district && billingForm.errors.district !== undefined}
+                onBlur={billingForm.handleBlur}
+                variant='outlined' size='small' sx={{ width: 'fit-content' }}
+              >
+                {districts && districts.map((district, index) => (
+                  <MenuItem key={index} value={district.id}>{district.full_name}</MenuItem>
+                ))}
+              </Select>
+
+              {/* Ward Selection */}
+              <label>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Ward:</Typography>
+              </label>
+              <Select
+                style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
+                name='ward'
+                value={billingForm.values.ward}
+                onChange={billingForm.handleChange}
+                error={billingForm.touched.ward && billingForm.errors.ward !== undefined}
+                onBlur={billingForm.handleBlur}
+                variant='outlined' size='small' sx={{ width: 'fit-content' }}
+              >
+                {wards && wards.map((ward, index) => (
+                  <MenuItem key={index} value={ward.id}>{ward.full_name}</MenuItem>
                 ))}
               </Select>
               <label>
-                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Zip code:</Typography>
+                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Street Address:</Typography>
               </label>
               <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                type='text' name='zipCode'
-                fullWidth value={billingForm.values.zipCode}
+                type='text' name='address'
+                fullWidth value={billingForm.values.address}
                 onChange={billingForm.handleChange}
-                error={billingForm.touched.zipCode && billingForm.errors.zipCode !== undefined}
+                error={billingForm.touched.address && billingForm.errors.address !== undefined}
                 onBlur={billingForm.handleBlur}
-                helperText={billingForm.touched.zipCode && billingForm.errors.zipCode}
+                helperText={billingForm.touched.address && billingForm.errors.address}
                 variant='outlined' size='small' sx={{ width: '100%' }}></TextField>
             </Box>
 

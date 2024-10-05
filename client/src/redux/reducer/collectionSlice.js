@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+
+// content thay bằng description
 const initialState = {
   collections: [
     {

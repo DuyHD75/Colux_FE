@@ -10,7 +10,6 @@ import Profile from "../page/Profile";
 import ProductReviews from "../page/ProductReviews";
 import PrivacyPolicy from "../page/PrivacyPolicy";
 import ContactUs from "../page/ContactUs";
-
 import Products from "../page/Products";
 import ProductDetail from "../page/detail/ProductDetail"
 import Auth from "../page/Auth";
@@ -22,7 +21,9 @@ import TermsAndConditions from "../page/TermsAndConditions";
 import Helps from "../page/Helps";
 import Points from "../page/Points";
 import BlogHome from "../page/BlogHome";
-import BlogDetail from "../page/BlogDetail"
+import BlogDetail from "../page/detail/BlogDetail";
+import VerifyEmail from "../components/commons/VerifyEmail";
+import ChangePassword from "../page/ChangePassword";
 
 export const routesGen = {
   home: "/",
@@ -40,7 +41,8 @@ export const routesGen = {
   aboutUs: "/about",
   termsAndConditions: "/terms_and_condition",
   helps: "/helps",
-  points : "/points"
+  points : "/points",
+  changePassword: "/changePassword",  
 };
 
 const routes = [
@@ -151,6 +153,11 @@ const routes = [
     state: "login",
   },
   {
+    path: "/verify/:user/:key",
+    element: <VerifyEmail />,
+    state: "verify",
+  },
+  {
     path: "/register",
     element: <Auth />,
     state: "register",
@@ -224,6 +231,11 @@ const routes = [
     path: "/points",
     element: <Points />,
     state: "points"
+  },
+  {
+    path: "/changePassword",
+    element: <ChangePassword />,
+    state: "changePassword"
   },
 ];
 

@@ -31,9 +31,9 @@ const ProductCard = ({ product }) => {
     return null;
   }
 
-  const { rating = 0, image, name, reviewsCount = 0, features = [] } = product;
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 !== 0;
+
+  const fullStars = Math.floor(product.ratingAverage);
+  const hasHalfStar = product.ratingAverage % 1 !== 0;
 
   return (
     <Card
@@ -56,7 +56,7 @@ const ProductCard = ({ product }) => {
         <HeartOutlineIcon />
       </IconButton>
 
-      <Link to={`/products/${productCategory}/${name}`}>
+      <Link to={`/products/${productCategory}/${product.productName}`}>
         <Box
           sx={{
             display: "flex",
@@ -74,8 +74,8 @@ const ProductCard = ({ product }) => {
               height: 120,
               objectFit: "cover",
             }}
-            image={image}
-            alt={name}
+            image={product.image}
+            alt={product.productName}
           />
         </Box>
       </Link>
@@ -112,7 +112,7 @@ const ProductCard = ({ product }) => {
               justifyContent: "center",
             }}
           >
-            {name}
+            {product.productName}
           </Typography>
           <Box sx={{ mt: 1, marginTop: "-40px" }}>
             <Box
@@ -135,9 +135,9 @@ const ProductCard = ({ product }) => {
                 />
               ))}
             </Box>
-            <Typography variant="body2" sx={{ ml: 0, fontSize: "0.75rem" }}>
+            {/* <Typography variant="body2" sx={{ ml: 0, fontSize: "0.75rem" }}>
               {`(${reviewsCount} Reviews)`}
-            </Typography>
+            </Typography> */}
           </Box>
           <Typography
             variant="body2"
@@ -145,8 +145,8 @@ const ProductCard = ({ product }) => {
             sx={{ mt: 1, fontSize: "0.65rem" }}
           >
             <ul>
-              {features.map((feature, i) => (
-                <li key={i}>{feature}</li>
+              {product.features.map((feature, i) => (
+                <li key={i}>{feature.name}</li>
               ))}
             </ul>
           </Typography>

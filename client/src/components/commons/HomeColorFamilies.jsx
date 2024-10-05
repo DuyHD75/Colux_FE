@@ -1,7 +1,10 @@
-import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 // Hàm kiểm tra độ sáng của màu nền
 const getContrastColor = (hex) => {
@@ -40,14 +43,49 @@ const calculateRowLengths = (numColors) => {
 };
 
 const HomeColorFamilies = () => {
-  const { colorFamilies } = useSelector((state) => state.colorFamilies);
+  const [ colorFamlily, setColorFamily ] = useState([]);
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getListColorFamily = async () => {
+      dispatch(setGlobalLoading(true)); 
+      try {
+        const { response, err } = await colorsApi.getColorFamily();
+
+        if(response) {
+          setColorFamily([...response.data.colorFalimies])
+        } else if (err) {
+          toast.error(err)
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.")
+      } finally {
+        dispatch(setGlobalLoading(false)); 
+      }
+    }
+    getListColorFamily();
+  }, [dispatch])
+
   const [hoveredColor, setHoveredColor] = useState(null);
 
   // Thêm lục giác "All Colors" vào cuối mảng
-  const extendedColorFamilies = [
-    ...colorFamilies,
-    { hex: "010101", name: "All Colors" },
-  ];
+  const extendedColorFamilies = useMemo(() => {
+    return [
+      ...colorFamlily,
+      {
+        id: "234bln2k3o23bfw324sd",
+        name: "All Colors",
+        image: "https://stppgpaints1prd01.blob.core.windows.net/masterbrand/libraries/masterbrand/assets/swatches/choosing-color-for-your-job_2.jpg?ext=.jpg",
+        title: "Explore Paint Colors",
+        description:
+          "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
+        hex: "#010101",
+        collections: [],
+      },
+    ];
+  }, [colorFamlily]);
+
+
   const rowLengths = calculateRowLengths(extendedColorFamilies.length);
   const rows = [];
   let index = 0;
@@ -63,10 +101,13 @@ const HomeColorFamilies = () => {
     rows.push(row);
   });
 
+  console.log(extendedColorFamilies);
+  
+
   return (
     <div className="flex flex-col items-center mt-5 py-10">
       <div className="text-center mb-4">
-        <h1 className="text-5xl text-[#1c2759]">CHOOSE A PAINT COLOR FAMILY</h1>
+        <h1 className="text-3xl text-[#1c2759]">CHOOSE A PAINT COLOR FAMILY</h1>
         <p className="text-xl m-2 text-[#747474]">
           We have over 2,000 paint colors to choose from
         </p>
@@ -84,11 +125,11 @@ const HomeColorFamilies = () => {
                 key={index}
                 to={`/colors/color-family/${color.name}`}
                 className={`mx-4 my-2 relative flex items-center justify-center transition-opacity duration-300 ${
-                  hoveredColor && hoveredColor !== color.hex
+                  hoveredColor && hoveredColor !== color.id
                     ? "opacity-50"
                     : "opacity-100"
                 }`}
-                onMouseEnter={() => setHoveredColor(color.hex)}
+                onMouseEnter={() => setHoveredColor(color.id)}
                 onMouseLeave={() => setHoveredColor(null)}
                 style={{
                   width:

@@ -60,7 +60,7 @@ const Footer = () => {
                 READ MORE ABOUT US
               </Link>
             </Grid>
-            <Grid container xs={12} md={8}>
+            <Grid container item  xs={12} md={8}>
               <Grid
                 item
                 xs={12}

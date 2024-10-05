@@ -1,18 +1,43 @@
-import privateClient from "../client/private.client";
-import publicClient from "../client/public.client";
+import proxyClient from "../client/proxy.client";
 
 const userEndpoints = {
-  login: "accounts/login",
-  register: "accounts/register",
-  getInfo: "accounts/info",
-  passwordUpdate: "accounts/update-password",
+  login: "identity-service/api/v1/users/login",
+  register: "identity-service/api/v1/users/register",
+  forgotPassword: ({ email }) => `identity-service/api/v1/users/password/reset?email=${email}`,
+  resetPassword: "identity-service/api/v1/users/password/reset",
+  getInfo: `identity-service/api/v1/users/info`,
+  passwordUpdate: "identity-service/api/v1/users/change-password",
+  logout: "identity-service/api/v1/users/logout",
+  verifyAccount: ({key}) => `identity-service/api/v1/users/verify/account?key=${key}`,
+  verifyResetPassword: ({key}) => `identity-service/api/v1/users/password/reset/verify?key=${key}`
 };
 
 const userApi = {
-  login: async ({ username, password }) => {
+  login: async ({ email, password }) => {
     try {
-      const response = await publicClient.post(userEndpoints.login, {
-        username,
+      const response = await proxyClient.post(userEndpoints.login, {
+        email,
+        password,
+      });
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getInfo: async () => {
+    try {
+      const response = await proxyClient.get(userEndpoints.getInfo);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  register: async ({ firstName, lastName, email, password }) => {
+    try {
+      const response = await proxyClient.post(userEndpoints.register, {
+        firstName,
+        lastName,
+        email,
         password,
       });
 
@@ -21,21 +46,19 @@ const userApi = {
       return { err };
     }
   },
-  register: async ({
-    username,
-    displayName,
-    phoneNumber,
-    email,
-    password,
-    confirmPassword,
-  }) => {
+  forgotPassword: async (email) => {
     try {
-      const response = await publicClient.post(userEndpoints.register, {
-        username,
-        displayName,
-        phoneNumber,
-        email,
-        password,
+      const response = await proxyClient.get(userEndpoints.forgotPassword({email}));
+
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  resetPassword: async ({ newPassword, confirmPassword }) => {
+    try {
+      const response = await proxyClient.post(userEndpoints.resetPassword, {
+        newPassword,
         confirmPassword,
       });
 
@@ -44,23 +67,38 @@ const userApi = {
       return { err };
     }
   },
-  forgotPassword: async ({ email }) => {
-    try {
-      const response = await publicClient.post(userEndpoints.resetPassword, {
-        email,
-      });
 
+  passwordUpdate: async ({ password, newPassword, confirmNewPassword }) => {
+    try {
+      const response = await proxyClient.put(userEndpoints.passwordUpdate, {
+        password,
+        newPassword,
+        confirmNewPassword,
+      });
       return { response };
     } catch (err) {
       return { err };
     }
   },
-  resetPassword: async ({ email, password }) => {
+  logout: async () => {
     try {
-      const response = await publicClient.post(userEndpoints.resetPasswovrd, {
-        email, password,
-      });
-
+      const response = await proxyClient.get(userEndpoints.logout);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  verifyAccount: async (key) => {
+    try {
+      const response = await proxyClient.get(userEndpoints.verifyAccount({key}));
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  verifyResetPassword: async (key) => {
+    try {
+      const response = await proxyClient.get(userEndpoints.verifyResetPassword({key}));
       return { response };
     } catch (err) {
       return { err };
