@@ -142,7 +142,7 @@ const HomeColorFamilies = () => {
                 />
                 <span
                   className="absolute text-xs md:text-sm font-bold text-center"
-                  style={{ color: getContrastColor(color.hex) }}
+                  style={{ color: color.hex ? getContrastColor(color.hex): '#000000' }}
                 >
                   {color.name}
                 </span>

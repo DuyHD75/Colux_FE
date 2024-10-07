@@ -1,4 +1,4 @@
-// thêm roomType, content thay bằng description
+
 const rooms = [
   {
     id: 1,
@@ -1129,3 +1129,11 @@ const reviews = [
 
 
 export default { rooms, exteriors, colors, customerRoom, blogs, reviews };
+
+
+
+
+
+
+
+
