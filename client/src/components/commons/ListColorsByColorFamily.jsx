@@ -9,8 +9,8 @@ import {
   InputLabel,
   Pagination,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
@@ -19,61 +19,117 @@ import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
 
 const ListColorsByColorFamily = () => {
-  
-  const location = useLocation();
-  const { colorfamilyId } = location.state || {};
-  const { section, collection } = useParams();
+  const { section, collection, collectionId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
+  const [totalPages, setTotalPages] = useState(0);
 
-  const [ colorFamily, setColorFamily ] = useState([]);
+  const [colorFamily, setColorFamily] = useState([]);
+  const [colors, setColors] = useState([]);
+
   const dispatch = useDispatch();
-  useEffect(() => {
-    const getListColorFamily = async () => {
-      dispatch(setGlobalLoading(true)); 
-      try {
-        const { response, err } = await colorsApi.getColorFamily();
-
-        if(response) {
-          setColorFamily([...response.data.colorFalimies])
-        } else if (err) {
-          toast.error(err)
-        }
-      } catch (error) {
-        console.log("Error", error);
-        toast.error("An error occurred while fetching color family.")
-      } finally {
-        dispatch(setGlobalLoading(false)); 
-      }
-    }
-    getListColorFamily();
-  }, [dispatch])
 
   const matchedColorFamily = colorFamily.find(
-    (color) => color.id === colorfamilyId
+    (colorFamily) => colorFamily.id === collectionId
   );
 
   const initialColorFamily = matchedColorFamily
     ? matchedColorFamily.collections[0].id
     : "";
 
-  const [selectedColorFamily, setSelectedColorFamily] =
+  const [selectedCollection, setSelectedCollection] =
     useState(initialColorFamily);
 
   useEffect(() => {
+    const fetchData = async () => {
+      dispatch(setGlobalLoading(true));
+
+      try {
+        await getListColorFamily();
+      } catch (error) {
+        console.log("Error occurred during data fetching", error);
+      } finally {
+        dispatch(setGlobalLoading(false));
+      }
+    };
+
+    const getListColorFamily = async () => {
+      try {
+        const { response } = await colorsApi.getColorFamily();
+        if (response && response.code === 200) {
+          setColorFamily([...response.data.colorFalimies]);
+         
+          const matchedColorFamily = response.data.colorFalimies.find(
+            (colorFamily) => colorFamily.id === collectionId
+          );
+
+          if (matchedColorFamily) {
+            setSelectedCollection(matchedColorFamily.collections[0].id);
+          }
+        } else {
+          toast.error(response.exception);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching color family.");
+      }
+    };
+
+    fetchData();
+  }, [dispatch, collectionId]); 
+  
+  useEffect(() => {
+    const getListColors = async () => {
+      if (selectedCollection) {
+        dispatch(setGlobalLoading(true));
+        try {
+          const { response } = collection === "All Colors" ? 
+          await colorsApi.getAllColors(
+              currentPage - 1,
+              colorsPerPage
+            )
+          :  await colorsApi.getColorByColorFamilyAndCollection(
+            collectionId,
+            selectedCollection,
+            currentPage - 1,
+            colorsPerPage
+          );
+          if (response && response.code === 200) {
+            console.log(response);
+            
+            setColors(response.data.colors.content);
+            setTotalPages(response.data.colors.totalPages);
+          }
+          //  else {
+          //   toast.error(response.exception);
+          // }
+        } catch (error) {
+          console.log("Error", error);
+          toast.error("An error occurred while fetching colors.");
+        } finally {
+          dispatch(setGlobalLoading(false));
+        }
+      }
+    };
+
+    getListColors();
+  }, [dispatch, collectionId, selectedCollection, currentPage]);
+
+  useEffect(() => {
     if (matchedColorFamily) {
-      setSelectedColorFamily(matchedColorFamily.collections[0].id);
+      setSelectedCollection(matchedColorFamily.collections[0].id);
     }
-  }, [collection, matchedColorFamily]);
+  }, [collection, matchedColorFamily, collectionId]);
 
   const handleChange = (event) => {
     const value = event.target.value;
+    console.log(value);
 
     if (value === `All Colors ${collection}`) {
-      setSelectedColorFamily("");
+      setSelectedCollection(value);
     } else {
-      setSelectedColorFamily(value);
+      setSelectedCollection(value);
     }
     setCurrentPage(1);
   };
@@ -82,21 +138,9 @@ const ListColorsByColorFamily = () => {
     setCurrentPage(value);
   };
 
-  const filteredColors = colorFamily
-    .filter((color) => color.name === collection)
-    .flatMap((color) => {
-      if (selectedColorFamily === "") {
-        return color.collections.flatMap((collection) => collection.colors);
-      } else {
-        return color.collections
-          .filter((collection) => collection.id === selectedColorFamily)
-          .flatMap((collection) => collection.colors);
-      }
-    });
-
-  const paginatedColors = filteredColors.slice(
-    (currentPage - 1) * colorsPerPage,
-    currentPage * colorsPerPage
+  const paginatedColors = colors.slice(
+    0 * colorsPerPage,
+    1 * colorsPerPage
   );
 
   return (
@@ -116,7 +160,7 @@ const ListColorsByColorFamily = () => {
           <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
             <InputLabel
               sx={{
-                color: selectedColorFamily ? "#1c2759" : "",
+                color: selectedCollection ? "#1c2759" : "",
                 "&.Mui-focused": {
                   color: "#1c2759",
                 },
@@ -128,10 +172,10 @@ const ListColorsByColorFamily = () => {
             <Select
               sx={{
                 ...textConfigs.style.headerText,
-                borderColor: selectedColorFamily ? "#1c2759" : "",
+                borderColor: selectedCollection ? "#1c2759" : "",
                 "&.MuiOutlinedInput-root": {
                   "& fieldset": {
-                    borderColor: selectedColorFamily ? "#1c2759" : "",
+                    borderColor: selectedCollection ? "#1c2759" : "",
                   },
                   "&:hover fieldset": {
                     borderColor: "#1c2759",
@@ -141,7 +185,7 @@ const ListColorsByColorFamily = () => {
                   },
                 },
               }}
-              value={selectedColorFamily || `All Colors ${collection}`}
+              value={selectedCollection || `All Colors ${collection}`}
               onChange={handleChange}
               label="Collections"
             >
@@ -163,49 +207,50 @@ const ListColorsByColorFamily = () => {
       </Grid>
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {
-          return(
+          return (
             <Grid item xs={6} md={2.4} key={index}>
-            <Link
-              key={index}
-              to={`/colors/${section}/${collection}/${color.name}`}
-              className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
-                hoveredColor && hoveredColor !== color.id
-                  ? "opacity-50"
-                  : "opacity-100"
-              }`}
-              onMouseEnter={() => setHoveredColor(color.id)}
-              onMouseLeave={() => setHoveredColor(null)}
-              style={{
-                width:
-                  window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",
-                transform:
-                  hoveredColor === color.hex ? "scale(1.1)" : "scale(1)",
-                transition: "transform 0.3s ease",
-              }}
-            >
-              <BsFillHexagonFill
-                size={window.innerWidth < 600 ? 100 : 180}
-                style={{
-                  color: color.hex,
-                  filter: "drop-shadow(0px 0px 4px #ccc)",
+              <Link
+                key={index}
+                to={`/colors/${section}/${collection}/${collectionId}/${color.name}/${color.id}`}
+                className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
+                  hoveredColor && hoveredColor !== color.id
+                    ? "opacity-50"
+                    : "opacity-100"
+                }`}
+                onMouseEnter={() => {
+                  setHoveredColor(color.id);
                 }}
-              />
-              <span
-                className="text-xs md:text-lg font-bold text-center mt-1"
-                style={{ color: "#3b3730" }}
+                onMouseLeave={() => setHoveredColor(null)}
+                style={{
+                  width:
+                    window.innerWidth < 600 ? "calc(33.33% - 0.5rem)" : "auto",
+                  transform:
+                    hoveredColor === color.id ? "scale(1.1)" : "scale(1)",
+                  transition: "transform 0.3s ease",
+                }}
               >
-                {color.name}
-              </span>
-            </Link>
-          </Grid>
-          )
-          
+                <BsFillHexagonFill
+                  size={window.innerWidth < 600 ? 100 : 180}
+                  style={{
+                    color: color.hex,
+                    filter: "drop-shadow(0px 0px 4px #ccc)",
+                  }}
+                />
+                <span
+                  className="text-xs md:text-lg font-bold text-center mt-1"
+                  style={{ color: "#3b3730" }}
+                >
+                  {color.name}
+                </span>
+              </Link>
+            </Grid>
+          );
         })}
       </Grid>
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
         <Pagination
-          count={Math.ceil(filteredColors.length / colorsPerPage)}
+          count={totalPages}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"

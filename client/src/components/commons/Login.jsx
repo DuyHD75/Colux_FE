@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -57,8 +57,8 @@ const Login = ({ switchAuthState }) => {
         toast.success("Login Successfully!");
         navigate("/");
       } else {
-        setErrorMessage(err.exception);
-        toast.error(err.exception)
+        setErrorMessage(response.exception);
+        toast.error(response.exception)
       }
     },
   });

@@ -17,7 +17,7 @@ import { toast } from "react-toastify";
 import colorsApi from "../../api/modules/colors.api";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
-const sections = ["Color Family", "Room", "Collection", "Exterior"];
+const sections = ["Color Family", "Room", "Collection", "Exterior & Interior"];
 const exteriors = data.exteriors;
 
 const ColorSwitcher = () => {
@@ -25,7 +25,7 @@ const ColorSwitcher = () => {
   
   const navigate = useNavigate();
   const location = useLocation();
-  const { collection } = useParams();
+  const { collection, collectionId  } = useParams();
   const dispatch = useDispatch();
 
   const [ colorFamlily, setColorFamily ] = useState([]);
@@ -42,9 +42,9 @@ const ColorSwitcher = () => {
     return [
       ...colorFamlily,
       {
-        id: "234bln2k3o23bfw324sd",
+        id: "0",
         name: "All Colors",
-        image: "https://stppgpaints1prd01.blob.core.windows.net/masterbrand/libraries/masterbrand/assets/swatches/choosing-color-for-your-job_2.jpg?ext=.jpg",
+        image: "https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fall-color.jpg?alt=media&token=da5ab063-332e-4808-8905-1747d131c180",
         title: "Explore Paint Colors",
         description:
           "Ready to find the perfect hue? Explore our interior and exterior paint colors by color family or curated color palettes to get inspired. We also offer easy-to-use tools and color samples to help you see which hues look best in your space. Whether you're painting your front door or adding an accent wall to your home office, we have all the color solutions to bring your vision to life.",
@@ -54,9 +54,6 @@ const ColorSwitcher = () => {
     ];
   }, [colorFamlily]);
 
-  const { colorfamilyId } = location.state || {};
-
-  
   const [selectedColor, setSelectedColor] = useState(
     extendedColorFamilies[0] || {}
   );
@@ -148,7 +145,7 @@ const ColorSwitcher = () => {
       if (foundCollection) {
         setSelectedCollection(foundCollection);
       }
-    } else if (selectedSection === "Exterior" && collection) {
+    } else if (selectedSection === "Exterior & Interior" && collection) {
       const foundExterior = exteriors.find(
         (exterior) => exterior.name === collection
       );
@@ -166,36 +163,36 @@ const ColorSwitcher = () => {
       setSelectedSection("Room");
     } else if (path.includes(`/colors/collections`)) {
       setSelectedSection("Collection");
-    } else if (path.includes(`/colors/exteriors`)) {
-      setSelectedSection("Exterior");
+    } else if (path.includes(`/colors/exteriors&interiors`)) {
+      setSelectedSection("Exterior & Interior");
     }
   }, [location.pathname]);
 
   useEffect(() => {
-    if (selectedSection === "Color Family" && colorfamilyId) {
+    if (selectedSection === "Color Family" && collectionId) {
       const foundColor = extendedColorFamilies.find(
-        (colorFamily) => colorFamily.id === colorfamilyId
+        (colorFamily) => colorFamily.id === collectionId
       );
       if (foundColor) {
         setSelectedColor(foundColor);
       }
     }
-  }, [colorfamilyId, selectedSection, extendedColorFamilies]);
+  }, [collectionId, selectedSection, extendedColorFamilies]);
 
   const handleSectionChange = (section) => {
     setSelectedSection(section);
     switch (section) {
       case "Color Family":
-        navigate(`/colors/color-family/${selectedColor?.name}`);
+        navigate(`/colors/color-family/${selectedColor?.name}/${selectedColor?.id}`);
         break;
       case "Room":
-        navigate(`/colors/rooms/${selectedRoom?.roomType}`);
+        navigate(`/colors/rooms/${selectedRoom?.roomType}/${selectedRoom?.id}`);
         break;
       case "Collection":
-        navigate(`/colors/collections/${selectedCollection?.name}`);
+        navigate(`/colors/collections/${selectedCollection?.name}/${selectedCollection?.id}`);
         break;
-      case "Exterior":
-        navigate(`/colors/exteriors/${selectedExterior?.name}`);
+      case "Exterior & Interior":
+        navigate(`/colors/exteriors&interiors/${selectedExterior?.name}/${selectedExterior?.id}`);
         break;
       default:
         break;
@@ -222,7 +219,7 @@ const ColorSwitcher = () => {
             selectedCollection={selectedCollection}
           />
         );
-      case "Exterior":
+      case "Exterior & Interior":
         return (
           <ExteriorBox
             onExteriorSelect={setSelectedExterior}
@@ -263,9 +260,9 @@ const ColorSwitcher = () => {
         description = selectedCollection.description;
         hex = selectedCollection.hex;
         break;
-      case "Exterior":
+      case "Exterior & Interior":
         img = selectedExterior.img;
-        section = "EXTERIOR";
+        section = "EXTERIOR & INTERIOR";
         title = selectedExterior.title;
         description = selectedExterior.description;
         hex = selectedExterior.hex;
@@ -288,12 +285,12 @@ const ColorSwitcher = () => {
   const renderListColors = () => {
     switch (selectedSection) {
       case "Color Family":
-        return <ListColorsByColorFamily />;
+        return <ListColorsByColorFamily/>;
       case "Room":
         return <ListColorsByRoom />;
       case "Collection":
         return <ListColorsByCollection />;
-      case "Exterior":
+      case "Exterior & Interior":
         return <ListColorsByExterior />;
       default:
         return null;

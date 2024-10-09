@@ -17,10 +17,6 @@ const ListProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
   const [pageIndex, setPageIndex] = useState(0);
-  console.log(pageIndex);
-  console.log(productsPerPage);
-  
-  
 
   const [selectedRating, setSelectedRating] = useState([]);
   const [selectedSurface, setSelectedSurface] = useState([]);
@@ -31,8 +27,6 @@ const ListProducts = () => {
   
   const dispatch = useDispatch();
   useEffect(() => {
-    console.log('PageIndex:', pageIndex); 
-    console.log('ProductsPerPage:', productsPerPage);
     const getAllProductPageAble = async (page, size) => {
       dispatch(setGlobalLoading(true)); 
       try {

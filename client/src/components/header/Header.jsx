@@ -33,8 +33,8 @@ export const Header = () => {
   const { categories } = useSelector((state) => state.categories);
   const { user } = useSelector((state) => state.user);
 
-  const [ colorFamlily, setColorFamily ] = useState([]);
-  const [ collections, setCollection ] = useState([]);
+  const [colorFamlily, setColorFamily] = useState([]);
+  const [collections, setCollection] = useState([]);
 
   const [anchorElNav, setAnchorElNav] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(false);
@@ -47,34 +47,33 @@ export const Header = () => {
     const getListColofamily = async () => {
       try {
         const { response, err } = await colorsApi.getColorFamily();
-        if(response) {
-        
-          setColorFamily([...response.data.colorFalimies])
+        if (response) {
+          setColorFamily([...response.data.colorFalimies]);
         } else if (err) {
-          toast.error(err)
+          toast.error(err);
         }
       } catch (error) {
         console.log("Error", error);
-        toast.error("An error occurred while fetching color family.")
+        toast.error("An error occurred while fetching color family.");
       }
-    }
+    };
     const getCollections = async () => {
       try {
         const { response, err } = await colorsApi.getCollections();
-        if(response) {
-          setCollection([...response.data.collections])
+        if (response) {
+          setCollection([...response.data.collections]);
         } else if (err) {
-          toast.error(err)
+          toast.error(err);
         }
       } catch (error) {
         console.log("Error", error);
-        toast.error("An error occurred while fetching collections.")
+        toast.error("An error occurred while fetching collections.");
       }
-    }
+    };
 
     getCollections();
     getListColofamily();
-  }, [])
+  }, []);
 
   // const handleOpenNavMenu = (event) => {
   //   setAnchorElNav(event.currentTarget);
@@ -101,14 +100,14 @@ export const Header = () => {
 
   const handleLogout = async () => {
     const { response, err } = await userApi.logout();
-    if(response) {
-    dispatch(setUser(null));
-    localStorage.clear();
-    navigate("/");
-    toast.success("Logout Success.")
-    } 
-    if(err) {
-      toast.error(err)
+    if (response) {
+      dispatch(setUser(null));
+      localStorage.clear();
+      navigate("/");
+      toast.success("Logout Success.");
+    }
+    if (err) {
+      toast.error(err);
     }
   };
 
@@ -296,17 +295,12 @@ export const Header = () => {
                 </h2>
                 {colorFamlily.map((item, index) => (
                   <MenuItem
-                    // container
-                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={{
-                        pathname: `/colors/color-family/${item.name}`,
-                        state: { colorfamilyId: item.id },  
-                      }}
+                      to={`/colors/color-family/${item.name}/${item.id}`}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
@@ -315,14 +309,12 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  // container
-                  // maxWidth={"lg"}
                   key="allColors"
                   onClick={handleCloseColorsMenu}
                   className="min-w-[120px] py-0"
                 >
                   <Link
-                    to={`/colors/`}
+                    to={`/colors/color-family/All Colors/0`}
                     key="allColors"
                     className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                   >
@@ -336,14 +328,12 @@ export const Header = () => {
                 </h2>
                 {collections.map((item, index) => (
                   <MenuItem
-                    // container
-                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseColorsMenu}
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={`/colors/collections/${item.name}`}
+                      to={`/colors/collections/${item.name}/${item.id}`}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
@@ -392,8 +382,6 @@ export const Header = () => {
                 </h2>
                 {categories.map((item, index) => (
                   <MenuItem
-                    // container
-                    // maxWidth={"lg"}
                     key={index}
                     onClick={() =>
                       handleCategoryClick(
@@ -412,8 +400,6 @@ export const Header = () => {
                   </MenuItem>
                 ))}
                 <MenuItem
-                  // container
-                  // maxWidth={"lg"}
                   key="allProducts"
                   onClick={handleCloseCategoriesMenu}
                   className="min-w-[120px] py-0"
@@ -467,8 +453,6 @@ export const Header = () => {
                 </h2>
                 {menuConfigs.aboutMenu.map((item, index) => (
                   <MenuItem
-                    // container
-                    // maxWidth={"lg"}
                     key={index}
                     onClick={handleCloseAboutMenu}
                     className="min-w-[120px] py-0"

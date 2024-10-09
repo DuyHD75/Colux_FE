@@ -4,7 +4,7 @@ import Cart from "../page/Cart";
 import Checkout from "../page/Checkout";
 import WishList from "../page/WishList";
 import PaymentBilling from "../page/PaymentBilling";
-import ColorDetail from "../page/detail/ColorDetail";
+import ColorDetail from "../page/ColorDetail";
 import OrderHistory from "../page/OrderHistory";
 import Profile from "../page/Profile";
 import ProductReviews from "../page/ProductReviews";
@@ -62,12 +62,12 @@ const routes = [
     state: "colorsSection",
   },
   {
-    path: "/colors/:section/:collection",
+    path: "/colors/:section/:collection/:collectionId",
     element: <Colors />,
     state: "colorsSectionCollection",
   },
   {
-    path: "/colors/:section/:collection/:colorName",
+    path: "/colors/:section/:collection/:collectionId/:colorName/:colorId",
     element: <ColorDetail />,
     state: "colorDetail",
   },

@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
@@ -73,7 +73,7 @@ const HomeColorFamilies = () => {
     return [
       ...colorFamlily,
       {
-        id: "234bln2k3o23bfw324sd",
+        id: "0",
         name: "All Colors",
         image: "https://stppgpaints1prd01.blob.core.windows.net/masterbrand/libraries/masterbrand/assets/swatches/choosing-color-for-your-job_2.jpg?ext=.jpg",
         title: "Explore Paint Colors",
@@ -101,9 +101,6 @@ const HomeColorFamilies = () => {
     rows.push(row);
   });
 
-  console.log(extendedColorFamilies);
-  
-
   return (
     <div className="flex flex-col items-center mt-5 py-10">
       <div className="text-center mb-4">
@@ -120,16 +117,16 @@ const HomeColorFamilies = () => {
               window.innerWidth < 600 ? "gap-1" : ""
             }`}
           >
-            {row.map((color, index) => (
+            {row.map((colorFamily, index) => (
               <Link
                 key={index}
-                to={`/colors/color-family/${color.name}`}
+                to={`/colors/color-family/${colorFamily.name}/${colorFamily.id}`}
                 className={`mx-4 my-2 relative flex items-center justify-center transition-opacity duration-300 ${
-                  hoveredColor && hoveredColor !== color.id
+                  hoveredColor && hoveredColor !== colorFamily.id
                     ? "opacity-50"
                     : "opacity-100"
                 }`}
-                onMouseEnter={() => setHoveredColor(color.id)}
+                onMouseEnter={() => setHoveredColor(colorFamily.id)}
                 onMouseLeave={() => setHoveredColor(null)}
                 style={{
                   width:
@@ -138,13 +135,13 @@ const HomeColorFamilies = () => {
               >
                 <BsFillHexagonFill
                   size={window.innerWidth < 600 ? 100 : 150}
-                  style={{ color: color.hex }}
+                  style={{ color: colorFamily.hex }}
                 />
                 <span
                   className="absolute text-xs md:text-sm font-bold text-center"
-                  style={{ color: color.hex ? getContrastColor(color.hex): '#000000' }}
+                  style={{ color: colorFamily.hex ? getContrastColor(colorFamily.hex): '#000000' }}
                 >
-                  {color.name}
+                  {colorFamily.name}
                 </span>
               </Link>
             ))}

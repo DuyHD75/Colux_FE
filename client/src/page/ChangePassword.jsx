@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import UserSidebar from "../components/commons/UserSidebar";
-import { Box, Button, Grid, Typography } from "@mui/material";
+import { Alert, Box, Button, Grid, Typography } from "@mui/material";
 import textConfigs from "../config/text.config";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -9,8 +9,7 @@ import customerApi from "../api/modules/customer.api";
 import userApi from "../api/modules/user.api";
 
 const ChangePassword = () => {
-//   const [errorMessage, setErrorMessage] = useState();
-
+  const [errorMessage, setErrorMessage] = useState();
 
   const formikPassword = useFormik({
     initialValues: {
@@ -31,17 +30,16 @@ const ChangePassword = () => {
         .required("Password confirmation is required"),
     }),
     onSubmit: async (values) => {
-    //   setErrorMessage(undefined);
-      const { response, err } = await customerApi.changePassword(values);
+      setErrorMessage(undefined);
+      const { response } = await customerApi.changePassword(values);
 
       if (response && response.code === 200) {
         formikPassword.resetForm();
         toast.success(response.message);
-      } 
-      if (err) {
-        // setErrorMessage(err.exception);
-        console.log(err.exception);
-        toast.error(err.exception);
+      } else {
+        setErrorMessage(response.exception);
+        console.log(response.exception);
+        toast.error(response.exception);
       }
     },
   });
@@ -184,6 +182,7 @@ const ChangePassword = () => {
                 ) : null}
               </Grid>
             </Grid>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
             <Button
               type="submit"
               size="small"
