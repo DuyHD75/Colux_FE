@@ -3,13 +3,17 @@ import proxyClient from "../client/proxy.client";
 const userEndpoints = {
   login: "identity-service/api/v1/users/login",
   register: "identity-service/api/v1/users/register",
-  forgotPassword: ({ email }) => `identity-service/api/v1/users/password/reset?email=${email}`,
+  forgotPassword: ({ email }) =>
+    `identity-service/api/v1/users/password/reset?email=${email}`,
   resetPassword: "identity-service/api/v1/users/password/reset",
   getInfo: `identity-service/api/v1/users/info`,
   passwordUpdate: "identity-service/api/v1/users/change-password",
   logout: "identity-service/api/v1/users/logout",
-  verifyAccount: ({key}) => `identity-service/api/v1/users/verify/account?key=${key}`,
-  verifyResetPassword: ({key}) => `identity-service/api/v1/users/password/reset/verify?key=${key}`
+  verifyAccount: ({ key }) =>
+    `identity-service/api/v1/users/verify/account?key=${key}`,
+  verifyResetPassword: ({ key }) =>
+    `identity-service/api/v1/users/password/reset/verify?key=${key}`,
+  changePassword: "identity-service/api/v1/users/change-password",
 };
 
 const userApi = {
@@ -48,7 +52,9 @@ const userApi = {
   },
   forgotPassword: async (email) => {
     try {
-      const response = await proxyClient.get(userEndpoints.forgotPassword({email}));
+      const response = await proxyClient.get(
+        userEndpoints.forgotPassword({ email })
+      );
 
       return { response };
     } catch (err) {
@@ -90,7 +96,9 @@ const userApi = {
   },
   verifyAccount: async (key) => {
     try {
-      const response = await proxyClient.get(userEndpoints.verifyAccount({key}));
+      const response = await proxyClient.get(
+        userEndpoints.verifyAccount({ key })
+      );
       return { response };
     } catch (err) {
       return { err };
@@ -98,7 +106,21 @@ const userApi = {
   },
   verifyResetPassword: async (key) => {
     try {
-      const response = await proxyClient.get(userEndpoints.verifyResetPassword({key}));
+      const response = await proxyClient.get(
+        userEndpoints.verifyResetPassword({ key })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  changePassword: async (oldPassword, newPassword, confirmPassword) => {
+    try {
+      const response = await proxyClient.post(userEndpoints.changePassword, {
+        oldPassword,
+        newPassword,
+        confirmPassword,
+      });
       return { response };
     } catch (err) {
       return { err };

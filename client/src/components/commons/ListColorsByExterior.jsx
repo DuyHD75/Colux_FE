@@ -3,18 +3,17 @@ import {
   Container,
   Grid,
   Typography,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
+
   Pagination,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
-import data from "../../data/data";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const isColorSimilarToWhite = (hex) => {
   hex = hex.replace("#", "");
@@ -26,124 +25,87 @@ const isColorSimilarToWhite = (hex) => {
 };
 
 const ListColorsByExterior = () => {
-  const exteriors = data.exteriors;
   const { section, collection } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
+  const [totalPages, setTotalPages] = useState(0);
+  const [interior, setInterior] = useState(false);
+  const [exterior, setExterior] = useState(false);
 
-  const matchedExterior = exteriors.find(
-    (exterior) => exterior.name === collection
-  );
+  const [colors, setColors] = useState([]);
 
-  const initialExteriorCollection = matchedExterior
-    ? matchedExterior.collections[0].id
-    : "";
-
-  const [selectedExteriorCollection, setSelectedExteriorCollection] = useState(
-    initialExteriorCollection
-  );
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (matchedExterior) {
-      setSelectedExteriorCollection(matchedExterior.collections[0].id);
-    }
-  }, [collection, matchedExterior]);
-
-  const handleChange = (event) => {
-    const value = event.target.value;
-
-    if (value === `All Colors ${collection}`) {
-      setSelectedExteriorCollection("");
+    if (collection === "Exterior") {
+      setExterior(true);
+      setInterior(false);
+    } else if (collection === "Interior") {
+      setInterior(true);
+      setExterior(false); 
+    } else if (collection === "Exterior&Interior") {
+      setExterior(true);
+      setInterior(true);
     } else {
-      setSelectedExteriorCollection(value);
+      setExterior(false);
+      setInterior(false);
     }
+  }, [collection]); 
 
-    setCurrentPage(1);
-  };
+  useEffect(() => {
+    const getListColors = async () => {
+      if (interior === true || exterior === true) {
+        dispatch(setGlobalLoading(true));
+        try {
+          const { response } =
+            await colorsApi.getColorByExteriorAndInterior(
+              interior,
+              exterior,
+              currentPage - 1,
+              colorsPerPage
+            );
+
+          if (response && response.code === 200) {
+            setColors(response.data.colors.content);
+            setTotalPages(response.data.colors.totalPages);
+          } else {
+            toast.error(response.exception);
+          }
+        } catch (error) {
+          console.log("Error", error);
+          toast.error("An error occurred while fetching colors.");
+        } finally {
+          dispatch(setGlobalLoading(false));
+        }
+      }
+      
+    };
+
+    getListColors();
+  }, [dispatch, interior, exterior, currentPage]);
+
+
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const filteredColors = exteriors
-    .filter((exterior) => exterior.name === collection)
-    .flatMap((exterior) => {
-      if (selectedExteriorCollection === "") {
-        return exterior.collections.flatMap((collection) => collection.colors);
-      } else {
-        return exterior.collections
-          .filter((collection) => collection.id === selectedExteriorCollection)
-          .flatMap((collection) => collection.colors);
-      }
-    });
 
-  const paginatedColors = filteredColors.slice(
-    (currentPage - 1) * colorsPerPage,
-    currentPage * colorsPerPage
+  const paginatedColors = colors.slice(
+    0 * colorsPerPage,
+    1 * colorsPerPage
   );
 
   return (
     <Container maxWidth="lg" className="my-10">
       <Grid container>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           <Typography variant="h3" sx={{ ...textConfigs.style.headerText }}>
             {collection} Paint Colors
           </Typography>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={4}
-          sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
-        >
-          <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
-            <InputLabel
-              sx={{
-                color: selectedExteriorCollection ? "#1c2759" : "",
-                "&.Mui-focused": {
-                  color: "#1c2759",
-                },
-                ...textConfigs.style.basicFont,
-              }}
-            >
-              Collections
-            </InputLabel>
-            <Select
-              sx={{
-                ...textConfigs.style.headerText,
-                borderColor: selectedExteriorCollection ? "#1c2759" : "",
-                "&.MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: selectedExteriorCollection ? "#1c2759" : "",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#1c2759",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1c2759",
-                  },
-                },
-              }}
-              value={selectedExteriorCollection || `All Colors ${collection}`}
-              onChange={handleChange}
-              label="Collections"
-            >
-              {exteriors
-                .filter((exterior) => exterior.name === collection)
-                .flatMap((exterior) =>
-                  exterior.collections.map((collection, index) => (
-                    <MenuItem key={index} value={collection.id}>
-                      {collection.name}
-                    </MenuItem>
-                  ))
-                )}
-              <MenuItem value={`All Colors ${collection}`}>
-                All Colors {collection}
-              </MenuItem>
-            </Select>
-          </FormControl>
-        </Grid>
+    
       </Grid>
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {
@@ -151,7 +113,7 @@ const ListColorsByExterior = () => {
             <Grid item xs={6} md={2.4} key={index}>
               <Link
                 key={index}
-                to={`/colors/${section}/${collection}/${color.name}`}
+                to={`/colors/${section}/${collection}/${color.name}/${color.id}`}
                 className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
                   hoveredColor && hoveredColor !== color.hex
                     ? "opacity-50"
@@ -188,7 +150,7 @@ const ListColorsByExterior = () => {
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
         <Pagination
-          count={Math.ceil(filteredColors.length / colorsPerPage)}
+          count={totalPages}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"

@@ -35,7 +35,7 @@ const ForgotPassword = ({ switchAuthState }) => {
         forgotPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success("Please check your email to reset password!");
-      }else {
+      } else {
         setErrorMessage(err.message);
         toast.error(response.exception)
       }

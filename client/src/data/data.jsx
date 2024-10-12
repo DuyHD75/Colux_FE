@@ -1,4 +1,4 @@
-// thêm roomType, content thay bằng description
+
 const rooms = [
   {
     id: 1,
@@ -237,7 +237,7 @@ const rooms = [
 const exteriors = [
   {
     id: 1,
-    name: "Main Exterior",
+    name: "Exterior",
     hex: "#679199",
     title: "Exterior House Colors",
     content:
@@ -266,7 +266,7 @@ const exteriors = [
   },
   {
     id: 2,
-    name: "Front Door",
+    name: "Interior",
     hex: "#2f2f30",
     title: "Exterior Front Door Colors",
     content:
@@ -295,7 +295,7 @@ const exteriors = [
   },
   {
     id: 3,
-    name: "Garage Door",
+    name: "Exterior&Interior",
     hex: "#d7c5ae",
     title: "Exterior Garage Door Colors",
     content:
@@ -318,35 +318,6 @@ const exteriors = [
           { id: 16, name: "Earth Brown", hex: "#a52a2a" },
           { id: 17, name: "Forest Green", hex: "#228b22" },
           { id: 18, name: "Cranberry Red", hex: "#9b111e" },
-        ],
-      },
-    ],
-  },
-  {
-    id: 4,
-    name: "Accents",
-    hex: "#b9b292",
-    title: "Exterior Accents Colors",
-    content:
-      "Use these exterior accent colors to complement your primary and trim paint colors, showcase your style and make a great first impression on visitors.",
-    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/exterior-colors-exterior-accents.jpg",
-    collections: [
-      {
-        id: 7,
-        name: "Modern Kitchen",
-        colors: [
-          { id: 19, name: "Eggshell", hex: "#f0ead6" },
-          { id: 20, name: "Bright White", hex: "#ffffff" },
-          { id: 21, name: "Ocean Blue", hex: "#4682b4" },
-        ],
-      },
-      {
-        id: 8,
-        name: "Classic Kitchen",
-        colors: [
-          { id: 22, name: "Cherry Red", hex: "#ff0800" },
-          { id: 23, name: "Granite Gray", hex: "#676767" },
-          { id: 24, name: "Pine Green", hex: "#01796f" },
         ],
       },
     ],
@@ -1129,3 +1100,11 @@ const reviews = [
 
 
 export default { rooms, exteriors, colors, customerRoom, blogs, reviews };
+
+
+
+
+
+
+
+

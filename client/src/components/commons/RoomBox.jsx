@@ -24,7 +24,7 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
         console.log("Error", error);
         toast.error("An error occurred while fetching rooms.")
       } finally {
-        dispatch(setGlobalLoading(false)); // Tắt loading
+        dispatch(setGlobalLoading(false)); 
       }
     }
     getRooms();
@@ -57,7 +57,7 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
               }}
             >
               <Link
-                to={`/colors/rooms/${room.roomType}`}
+                to={`/colors/rooms/${room.roomType}${room.id}`}
                 onClick={() => handleRoomSelect(room)}
                 style={{
                   width: "100%",
