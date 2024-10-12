@@ -11,8 +11,11 @@ import {
 } from "@mui/material";
 import { Link, useParams } from "react-router-dom";
 import { BsFillHexagonFill } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import textConfigs from "../../config/text.config";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const isColorSimilarToWhite = (hex) => {
   hex = hex.replace("#", "");
@@ -24,59 +27,61 @@ const isColorSimilarToWhite = (hex) => {
 };
 
 const ListColorsByCollection = () => {
-  const { collections } = useSelector((state) => state.collections);
-  const { section, collection } = useParams();
+  // const { collections } = useSelector((state) => state.collections);
+  const { section, collection, collectionId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
+  const [totalPages, setTotalPages] = useState(0);
 
-  const matchedCollection = useMemo(() => {
-    return collections.find((col) => col.name === collection);
-  }, [collections, collection]);
+  const [colors, setColors] = useState([]);
 
-  const initialCollection = matchedCollection ? matchedCollection.colors : [];
+  const dispatch = useDispatch();
 
-  const [selectedCollectionColors, setSelectedCollectionColors] =
-    useState(initialCollection);
+    useEffect(() => {
+      const getListColors = async () => {
 
-  useEffect(() => {
-    if (matchedCollection) {
-      setSelectedCollectionColors(matchedCollection.colors);
-    }
-  }, [collection, matchedCollection]);
+          dispatch(setGlobalLoading(true));
+          try {
+            const { response } =
+              await colorsApi.getColorByCollectionId(
+                collectionId,
+                currentPage - 1,
+                colorsPerPage
+              );
+  
+            if (response && response.code === 200) {
+              setColors(response.data.colors.content);
+              setTotalPages(response.data.colors.totalPages);
+            } else {
+              toast.error(response.exception);
+            }
+          } catch (error) {
+            console.log("Error", error);
+            toast.error("An error occurred while fetching colors.");
+          } finally {
+            dispatch(setGlobalLoading(false));
+          }
+      };
+  
+      getListColors();
+    }, [dispatch, collectionId, currentPage]);
 
-  const handleChange = (event) => {
-    const value = event.target.value;
-
-    if (value === `All Colors ${collection}`) {
-      setSelectedCollectionColors(matchedCollection.colors);
-    } else {
-      const filteredColors = matchedCollection.colors.filter(
-        (color) => color.collectionId === value
-      );
-      setSelectedCollectionColors(filteredColors);
-    }
-
-    setCurrentPage(1);
-  };
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
-  const paginatedColors = useMemo(
-    () =>
-      selectedCollectionColors.slice(
-        (currentPage - 1) * colorsPerPage,
-        currentPage * colorsPerPage
-      ),
-    [selectedCollectionColors, currentPage]
+  const paginatedColors = 
+      colors.slice(
+        0 * colorsPerPage,
+        1 * colorsPerPage
   );
 
   return (
     <Container maxWidth="lg" className="my-10">
       <Grid container>
-        <Grid item xs={12} md={8}>
+        <Grid item xs={12} md={12}>
           <Typography
             variant="h3"
             sx={{
@@ -88,65 +93,6 @@ const ListColorsByCollection = () => {
             {collection} Paint Colors
           </Typography>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={4}
-          sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
-        >
-          <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
-            <InputLabel
-              sx={{
-                color: selectedCollectionColors ? "#1c2759" : "",
-                "&.Mui-focused": {
-                  color: "#1c2759",
-                },
-                ...textConfigs.style.basicFont,
-              }}
-            >
-              Collections
-            </InputLabel>
-            <Select
-              sx={{
-                ...textConfigs.style.basicFont,
-                borderColor: selectedCollectionColors ? "#1c2759" : "",
-                "&.MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: selectedCollectionColors ? "#1c2759" : "",
-                  },
-                  "&:hover fieldset": {
-                    borderColor: "#1c2759",
-                  },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1c2759",
-                  },
-                },
-              }}
-              value={
-                selectedCollectionColors.length
-                  ? `All Colors ${collection}`
-                  : ""
-              }
-              onChange={handleChange}
-              label="Collections"
-            >
-              <MenuItem value={`All Colors ${collection}`}>
-                All Colors {collection}
-              </MenuItem>
-              {matchedCollection &&
-              matchedCollection.collections &&
-              matchedCollection.collections.length > 0 ? (
-                matchedCollection.collections.map((col, index) => (
-                  <MenuItem key={index} value={col.id}>
-                    {col.name}
-                  </MenuItem>
-                ))
-              ) : (
-                <MenuItem disabled>No collections available</MenuItem>
-              )}
-            </Select>
-          </FormControl>
-        </Grid>
       </Grid>
 
       <Grid container spacing={3}>
@@ -154,7 +100,7 @@ const ListColorsByCollection = () => {
           <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
-              to={`/colors/${section}/${collection}/${color.name}`}
+              to={`/colors/${section}/${collection}/${color.name}/${color.id}`}
               className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
                 hoveredColor && hoveredColor !== color.hex
                   ? "opacity-50"
@@ -188,7 +134,7 @@ const ListColorsByCollection = () => {
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
         <Pagination
-          count={Math.ceil(selectedCollectionColors.length / colorsPerPage)}
+          count={totalPages}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"

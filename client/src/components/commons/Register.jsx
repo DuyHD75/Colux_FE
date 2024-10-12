@@ -45,18 +45,16 @@ const Register = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsRegisterRequest(true);
-      const { response, err } = await userApi.register(values);
+      const { response } = await userApi.register(values);
       setIsRegisterRequest(false);
       console.log(response);
       
-      if (response) {
+      if (response && response.code === 200) {
         registerForm.resetForm();
         toast.success(response.message);
-      }
-      
-      if (err) { 
-        setErrorMessage(err.exception);
-        toast.error(err.exception)
+      } else { 
+        setErrorMessage(response.exception);
+        toast.error(response.exception)
       }
     },
   });

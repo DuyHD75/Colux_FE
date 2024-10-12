@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Box, Typography, Grid, Container } from "@mui/material";
 import {
   FaHome,
@@ -8,6 +8,10 @@ import {
 } from "react-icons/fa";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import { toast } from "react-toastify";
+import colorsApi from "../../api/modules/colors.api";
 
 const isNearBlack = (hex) => {
   let r = parseInt(hex.slice(1, 3), 16);
@@ -17,37 +21,33 @@ const isNearBlack = (hex) => {
   return luminance < 50;
 };
 
-const ColorDetailInfo = ({ color, colors }) => {
+const ColorDetailInfo = ({ color }) => {
   const [isExpanded, setIsExpanded] = useState(false);
-  const { section, collection, colorName } = useParams();
-  const [selectedColor, setSelectedColor] = useState(colorName);
+  const { section, collection } = useParams();
+  const [selectedColor, setSelectedColor] = useState();
+  const dispatch = useDispatch();
+  const [relatedColors, setRelatedColors] = useState([]);
 
   const navigate = useNavigate();
-  const colorContainerRef = useRef(null);
 
-  const relatedColors = colors.filter((c) =>
-    c.collection.some((col) => color.collection.includes(col))
-  );
+  useEffect(() => {
+    if (color.colorFamily && color.colorFamily.length > 0) {
+      setRelatedColors(color.colorFamily[0].collections);
+    }
+  }, [color]);
 
   const handleToggle = () => {
     setIsExpanded(!isExpanded);
   };
 
   const handleColorClick = (color) => {
-    navigate(`/colors/${section}/${collection}/${color.name}`);
+    navigate(`/colors/${section}/${collection}/${color.name}/${color.id}`);
     setSelectedColor(color.name);
   };
 
-  const textColor = isNearBlack(color.hex) ? "#ffffff" : "#000000";
-
   return (
-    <Box
-      bgcolor={color.hex}
-      color={textColor}
-      position="relative"
-      sx={{ minHeight: { xs: "800px", md: "600px" } }}
-    >
-      <Container maxWidth="lg" sx={{ padding: "0px !important"}}>
+    <Box bgcolor={color.hex} position="relative" sx={{ minHeight: { xs: "800px", md: "600px" } }}>
+      <Container maxWidth="lg" sx={{ padding: "0px !important" }}>
         <Box display="flex" flexDirection={{ xs: "column", md: "row" }}>
           <Box
             mb={{ xs: 0, md: 0 }}
@@ -62,7 +62,7 @@ const ColorDetailInfo = ({ color, colors }) => {
             minHeight={{ xs: "auto", md: "648px" }}
             width="100%"
             sx={{
-              backgroundImage: `url(${color.img})`,
+              backgroundImage: `url(${color.image})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
               aspectRatio: "16/9",
@@ -72,7 +72,7 @@ const ColorDetailInfo = ({ color, colors }) => {
 
           <Box
             sx={{
-              position: "relative", 
+              position: "relative",
               top: "0",
               left: { xs: "0px", md: "340px" },
               overflowX: "auto",
@@ -88,47 +88,44 @@ const ColorDetailInfo = ({ color, colors }) => {
             }}
           >
             <Box display="inline-flex" minWidth="max-content">
-              {relatedColors.map((relatedColor) => (
-                <Box
-                  key={relatedColor.id}
-                  display="inline-block"
-                  sx={{ padding: "0px !important", minWidth: "100px" }}
-                  onClick={() => handleColorClick(relatedColor)}
-                >
-                  <div
-                    style={{
-                      backgroundColor: relatedColor.hex,
-                      color: isNearBlack(relatedColor.hex)
-                        ? "#ffffff"
-                        : "#000000",
-                      padding: "10px",
-                      width: "150px",
-                      textAlign: "center",
-                      position: "relative",
-                    }}
+              {relatedColors.map((collection) =>
+                collection.colors.map((item) => (
+                  <Box
+                    key={item.id}
+                    display="inline-block"
+                    sx={{ padding: "0px !important", minWidth: "100px" }}
+                    onClick={() => handleColorClick(item)}
                   >
-                    {relatedColor.code}
-                    {selectedColor === relatedColor.name && (
-                      <span
-                        style={{
-                          content: '""',
-                          position: "absolute",
-                          bottom: 0,
-                          left: 0,
-                          width: "100%",
-                          height: "2px",
-                          backgroundColor:
-                            relatedColor.hex === color.hex
-                              ? isNearBlack(relatedColor.hex)
-                                ? "#ffffff"
-                                : "#000000"
+                    <div
+                      style={{
+                        backgroundColor: item.hex,
+                        color: isNearBlack(item.hex) ? "#ffffff" : "#000000",
+                        padding: "10px",
+                        width: "150px",
+                        textAlign: "center",
+                        position: "relative",
+                      }}
+                    >
+                      {item.code}
+                      {selectedColor === item.name && (
+                        <span
+                          style={{
+                            content: '""',
+                            position: "absolute",
+                            bottom: 0,
+                            left: 0,
+                            width: "100%",
+                            height: "2px",
+                            backgroundColor: item.hex === color.hex
+                              ? isNearBlack(item.hex) ? "#ffffff" : "#000000"
                               : "none",
-                        }}
-                      />
-                    )}
-                  </div>
-                </Box>
-              ))}
+                          }}
+                        />
+                      )}
+                    </div>
+                  </Box>
+                ))
+              )}
             </Box>
           </Box>
 
@@ -190,13 +187,15 @@ const ColorDetailInfo = ({ color, colors }) => {
                     variant="body2"
                     sx={{ ...textConfigs.style.basicFont }}
                   >
-                    Color Collections: {color.collection.join(", ")}
+                    Color Collections: {color.collections.map((item) => (
+                      item.name + ", "
+                    ))}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ ...textConfigs.style.basicFont }}
                   >
-                    Color Family: {color.colorFamily}
+                    Color Family: {color.colorFamily[0].name}
                   </Typography>
                 </Grid>
               </Grid>
@@ -227,18 +226,19 @@ const ColorDetailInfo = ({ color, colors }) => {
                       sx={{
                         backgroundColor: "transparent",
                         display: "flex",
-                        flexDirection: { xs:"row", md: "column" },
-                        border: `1px solid ${textColor}`,
-                        color: textColor,
-                        padding: { xs:"1rem", md: "1rem" },
+                        flexDirection: { xs: "row", md: "column" },
+                        padding: { xs: "1rem", md: "1rem" },
                         alignItems: "center",
-                        justifyContent: { xs:"start", md: "center" },
+                        justifyContent: { xs: "start", md: "center" },
                       }}
                     >
                       <FaHome style={{ fontSize: "2rem" }} />
                       <Typography
                         variant="caption"
-                        sx={{ ...textConfigs.style.basicFont, paddingLeft: {xs: "1rem"} }}
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          paddingLeft: { xs: "1rem" },
+                        }}
                       >
                         Interior
                       </Typography>
@@ -256,18 +256,19 @@ const ColorDetailInfo = ({ color, colors }) => {
                       sx={{
                         backgroundColor: "transparent",
                         display: "flex",
-                        flexDirection:  { xs:"row", md: "column" },
-                        border: `1px solid ${textColor}`,
-                        color: textColor,
-                        padding: { xs:"1rem", md: "1rem" },
+                        flexDirection: { xs: "row", md: "column" },
+                        padding: { xs: "1rem", md: "1rem" },
                         alignItems: "center",
-                        justifyContent: { xs:"start", md: "center" },
+                        justifyContent: { xs: "start", md: "center" },
                       }}
                     >
                       <FaWarehouse style={{ fontSize: "2rem" }} />
                       <Typography
                         variant="caption"
-                        sx={{ ...textConfigs.style.basicFont, paddingLeft: {xs: "1rem"} }}
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          paddingLeft: { xs: "1rem" },
+                        }}
                       >
                         Exterior
                       </Typography>

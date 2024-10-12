@@ -14,7 +14,6 @@ const Profile = () => {
     const [editInfo, setEditInfo] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
     const { user } = useSelector((state) => state.user);
-    console.log(user);
 
     const formikInfo = useFormik({
         initialValues: {

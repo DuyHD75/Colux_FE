@@ -9,12 +9,15 @@ import {
   InputLabel,
   Pagination,
 } from "@mui/material";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
 import data from "../../data/data";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import colorsApi from "../../api/modules/colors.api";
+import { toast } from "react-toastify";
 
 const isColorSimilarToWhite = (hex) => {
   hex = hex.replace("#", "");
@@ -26,13 +29,19 @@ const isColorSimilarToWhite = (hex) => {
 };
 
 const ListColorsByRoom = () => {
-  const rooms = data.rooms;
-  const { section, collection } = useParams();
+  // const rooms = data.rooms;
+  const { section, collection, collectionId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
-  const colorsPerPage = 20;
+  const colorsPerPage = 5;
+  const [totalPages, setTotalPages] = useState(0);
 
-  const matchedRoom = rooms.find((room) => room.name === collection);
+  const [rooms, setRooms] = useState([]);
+  const [colors, setColors] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const matchedRoom = rooms.find((room) => room.id === collection);
 
   const initialRoomCollection = matchedRoom
     ? matchedRoom.collections[0].id
@@ -41,6 +50,81 @@ const ListColorsByRoom = () => {
   const [selectedRoomCollection, setSelectedRoomCollection] = useState(
     initialRoomCollection
   );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      dispatch(setGlobalLoading(true));
+
+      try {
+        await getListColorFamily();
+      } catch (error) {
+        console.log("Error occurred during data fetching", error);
+      } finally {
+        dispatch(setGlobalLoading(false));
+      }
+    };
+
+    const getListColorFamily = async () => {
+      try {
+        const { response } = await colorsApi.getRooms();
+        if (response && response.code === 200) {
+          setRooms([...response.data.rooms]);
+         
+          const matchedColorFamily = response.data.rooms.find(
+            (colorFamily) => colorFamily.id === collectionId
+          );
+
+          if (matchedColorFamily) {
+            setSelectedRoomCollection(matchedColorFamily.collections[0].id);
+          }
+        } else {
+          toast.error(response.exception);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching rooms.");
+      }
+    };
+
+    fetchData();
+  }, [dispatch, collectionId]); 
+  
+  useEffect(() => {
+    const getListColors = async () => {
+      if (selectedRoomCollection) {
+        dispatch(setGlobalLoading(true));
+        try {
+          const { response } = collection === "All Colors" ? 
+          await colorsApi.getAllColors(
+              currentPage - 1,
+              colorsPerPage
+            )
+          :  await colorsApi.getColorByRoomAndCollection(
+            collectionId,
+            selectedRoomCollection,
+            currentPage - 1,
+            colorsPerPage
+          );
+          if (response && response.code === 200) {
+            console.log(response);
+            
+            // setColors(response.data.colors.content);
+            setTotalPages(response.data.colors.totalPages);
+          }
+          //  else {
+          //   toast.error(response.exception);
+          // }
+        } catch (error) {
+          console.log("Error", error);
+          toast.error("An error occurred while fetching colors.");
+        } finally {
+          dispatch(setGlobalLoading(false));
+        }
+      }
+    };
+
+    getListColors();
+  }, [dispatch, collectionId, selectedRoomCollection, currentPage]);
 
   useEffect(() => {
     if (matchedRoom) {
@@ -64,21 +148,9 @@ const ListColorsByRoom = () => {
     setCurrentPage(value);
   };
 
-  const filteredColors = rooms
-    .filter((room) => room.name === collection)
-    .flatMap((room) => {
-      if (selectedRoomCollection === "") {
-        return room.collections.flatMap((collection) => collection.colors);
-      } else {
-        return room.collections
-          .filter((collection) => collection.id === selectedRoomCollection)
-          .flatMap((collection) => collection.colors);
-      }
-    });
-
-  const paginatedColors = filteredColors.slice(
-    (currentPage - 1) * colorsPerPage,
-    currentPage * colorsPerPage
+  const paginatedColors = colors.slice(
+    0 * colorsPerPage,
+    1 * colorsPerPage
   );
 
   return (
@@ -149,7 +221,7 @@ const ListColorsByRoom = () => {
             <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
-              to={`/colors/${section}/${collection}/${color.name}`}
+              to={`/colors/${section}/${collection}/${color.name}/${color.id}`}
               className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
                 hoveredColor && hoveredColor !== color.hex
                   ? "opacity-50"
@@ -186,7 +258,7 @@ const ListColorsByRoom = () => {
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
         <Pagination
-          count={Math.ceil(filteredColors.length / colorsPerPage)}
+          count={totalPages}
           page={currentPage}
           onChange={handlePageChange}
           color="primary"

@@ -34,7 +34,7 @@ const ExteriorBox = ({ onExteriorSelect, selectedExterior }) => {
             }}
           >
             <Link
-              to={`/colors/exteriors/${exterior.name}`}
+              to={`/colors/exteriors&interiors/${exterior.name}/${exterior.id}`}
               onClick={() => handleExteriorSelect(exterior)}
               style={{
                 width: "100%",

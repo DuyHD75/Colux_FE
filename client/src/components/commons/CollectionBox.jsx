@@ -51,7 +51,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
               }}
             >
               <Link
-                to={`/colors/collections/${collection.name}`}
+                to={`/colors/collections/${collection.name}/${collection.id}`}
                 onClick={() => onCollectionSelect(collection)}
                 style={{
                   width: "100%",
@@ -61,14 +61,14 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
                 <Box
                   sx={{
                     display: "grid",
-                    // gridTemplateColumns: "repeat(5, 1fr)",
+                    gridTemplateColumns: "repeat(5, 1fr)",
                     gap: 0,
                     width: "100%",
                     height: "80px",
-                    backgroundColor: collection.hex,
+                    // backgroundColor: collection.hex,
                   }}
                 >
-                  {/* {collection.colors.slice(0, 5).map((color, index) => (
+                  {collection.colors.slice(0, 5).map((color, index) => (
                     <Box
                       key={index}
                       sx={{
@@ -77,7 +77,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
                         backgroundColor: color.hex,
                       }}
                     />
-                  ))} */}
+                  ))}
                 </Box>
                 <Typography
                   className="collection-name"

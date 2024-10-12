@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -51,14 +51,14 @@ const Login = ({ switchAuthState }) => {
       const { response, err } = await userApi.login(values);
       setIsLoginRequest(false);
       
-      if (response.status === "OK" && response.code === 200) {
+      if (response && response.code === 200) {
         dispatch(setUser(response.data.user));
         loginForm.resetForm();
         toast.success("Login Successfully!");
         navigate("/");
       } else {
-        setErrorMessage(err.exception);
-        toast.error(err.exception)
+        setErrorMessage(response.exception);
+        toast.error(response.exception)
       }
     },
   });

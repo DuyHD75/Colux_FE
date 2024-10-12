@@ -8,6 +8,7 @@ import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import { Link, useNavigate } from "react-router-dom";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
+import { LoadingButton } from "@mui/lab";
 
 const ResetPassword = ({ switchAuthState }) => {
   const navigate = useNavigate();
@@ -15,8 +16,11 @@ const ResetPassword = ({ switchAuthState }) => {
   const [isResetPasswordRequest, setIsResetPasswordRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
+  const handleClickShowConfirmPassword = () =>
+    setShowConfirmPassword(!showConfirmPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
   const resetPasswordForm = useFormik({
@@ -38,13 +42,14 @@ const ResetPassword = ({ switchAuthState }) => {
       const { response, err } = await userApi.resetPassword(values);
       setIsResetPasswordRequest(false);
 
-      if (response) {
+      if (response && response.code === 200) {
         resetPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success(response.message);
-        navigate('/login')
+        navigate("/login");
+      } else {
+        setErrorMessage(err.message);
       }
-      if (err) setErrorMessage(err.message);
     },
   });
 
@@ -74,7 +79,7 @@ const ResetPassword = ({ switchAuthState }) => {
                 placeholder="••••••••"
                 onChange={resetPasswordForm.handleChange}
                 onBlur={resetPasswordForm.handleBlur}
-                value={resetPasswordForm.values.password}
+                value={resetPasswordForm.values.newPassword}
               />
               <button
                 type="button"
@@ -89,10 +94,10 @@ const ResetPassword = ({ switchAuthState }) => {
                 )}
               </button>
             </div>
-            {resetPasswordForm.errors.password &&
-              resetPasswordForm.touched.password && (
+            {resetPasswordForm.errors.newPassword &&
+              resetPasswordForm.touched.newPassword && (
                 <p className="text-red-600 text-sm mt-1">
-                  {resetPasswordForm.errors.password}
+                  {resetPasswordForm.errors.newPassword}
                 </p>
               )}
           </div>
@@ -106,7 +111,7 @@ const ResetPassword = ({ switchAuthState }) => {
             </label>
             <div className="relative">
               <input
-                type={showPassword ? "text" : "password"}
+                type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
                 className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -117,11 +122,11 @@ const ResetPassword = ({ switchAuthState }) => {
               />
               <button
                 type="button"
-                onClick={handleClickShowPassword}
+                onClick={handleClickShowConfirmPassword}
                 onMouseDown={handleMouseDownPassword}
                 className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
               >
-                {showPassword ? (
+                {showConfirmPassword ? (
                   <Visibility className="text-gray-900 dark:text-white" />
                 ) : (
                   <VisibilityOff className="text-gray-900 dark:text-white" />
@@ -135,8 +140,8 @@ const ResetPassword = ({ switchAuthState }) => {
                 </p>
               )}
           </div>
-          <div class="flex items-start">
-            <div class="flex items-center h-5">
+          <div className="flex items-start">
+            <div className="flex items-center h-5">
               <input
                 id="newsletter"
                 aria-describedby="newsletter"
@@ -145,14 +150,14 @@ const ResetPassword = ({ switchAuthState }) => {
                 required=""
               />
             </div>
-            <div class="ml-3 text-sm">
+            <div className="ml-3 text-sm">
               <label
-                for="newsletter"
-                class="font-light text-gray-500 dark:text-gray-300"
+                htmlFor="newsletter"
+                className="font-light text-gray-500 dark:text-gray-300"
               >
                 I accept the{" "}
                 <Link
-                  class="font-medium text-primary-600 hover:underline dark:text-primary-500"
+                  className="font-medium text-primary-600 hover:underline dark:text-primary-500"
                   href="#"
                 >
                   Terms and Conditions
@@ -160,13 +165,30 @@ const ResetPassword = ({ switchAuthState }) => {
               </label>
             </div>
           </div>
-          <button
+          <LoadingButton
             type="submit"
-            className="w-full text-white bg-primary-600 hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             loading={isResetPasswordRequest}
+            variant="contained"
+            sx={{
+              width: "100%",
+              color: "white",
+              backgroundColor: "primary.600",
+              "&:hover": {
+                backgroundColor: "primary.700",
+              },
+              "&.Mui-focusVisible": {
+                outline: "none",
+                boxShadow: "0 0 0 4px rgba(0, 0, 0, 0.1)",
+              },
+              fontWeight: "medium",
+              borderRadius: "8px",
+              fontSize: "0.875rem",
+              padding: "10px 20px",
+              textAlign: "center",
+            }}
           >
             Reset
-          </button>
+          </LoadingButton>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
         </form>
       </div>
