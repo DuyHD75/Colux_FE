@@ -4,8 +4,10 @@ import Box from "@mui/material/Box";
 import backgroundConfigs from "../../config/background.config";
 import textConfigs from "../../config/text.config";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Banner = () => {
+  const { t } = useTranslation();
   return (
     <Box
       className="banner"
@@ -14,7 +16,7 @@ const Banner = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: `url(https://sonnano40.vn/upload/images/s%C6%A1n-nh%C3%A0-m%C3%A0u-ghi-sang-tr%E1%BB%8Dng.jpg)`,
+        backgroundImage: `url(https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fhome-baner.jpg?alt=media&token=dad62ec0-b3aa-4bab-851f-14e27f61b18a)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "20px",
@@ -25,10 +27,10 @@ const Banner = () => {
       }}
     >
       <Typography variant="h4" gutterBottom sx={{...textConfigs.style.headerText,}}>
-      Experience a new living space with 3D Interior Paint
+      {t('home.baner.title')}
       </Typography>
       <Typography variant="body1" paragraph sx={{...textConfigs.style.headerText,}}>
-      Exquisite colors and patterns create an impressive and unique space for your home!
+      {t('home.baner.desc')}
       </Typography>
       <Button
         component={Link}
@@ -41,7 +43,7 @@ const Banner = () => {
           ...textConfigs.style.normalText,
         }}
       >
-        Explore now!
+        {t('home.baner.btn')}
       </Button>
     </Box>
   );

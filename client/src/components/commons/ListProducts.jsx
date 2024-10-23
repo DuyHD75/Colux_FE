@@ -9,86 +9,110 @@ import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
 
 const ListProducts = () => {
-  // const products = useSelector((state) => state.products.products);
-  const categories = useSelector((state) => state.categories.categories);
-  const [ products, setProducts ] = useState([]);
-  const { productCategory } = useParams(); 
+  const [categories, setCategories] = useState([]);
+
+  const [products, setProducts] = useState([]);
+  const { productCategoryId } = useParams();
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
   const [pageIndex, setPageIndex] = useState(0);
 
   const [selectedRating, setSelectedRating] = useState([]);
-  const [selectedSurface, setSelectedSurface] = useState([]);
+  const [selectedProperty, setSelectedProperty] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
   const [selectCategory, setSelectedCategory] = useState([]);
 
-  
   const dispatch = useDispatch();
   useEffect(() => {
     const getAllProductPageAble = async (page, size) => {
-      dispatch(setGlobalLoading(true)); 
+      dispatch(setGlobalLoading(true));
       try {
-        const { response, err } = await productsApi.getAllProductPageAble(page, size);
+        let response, err;
+        if (productCategoryId) {
+          ({ response, err } = await productsApi.getProductByCategory(
+            productCategoryId,
+            page,
+            size
+          ));
+        } else {
+          ({ response, err } = await productsApi.getAllProductPageAble(
+            page,
+            size
+          ));
+        }
         console.log(response);
-        
-        if(response) {
-          setProducts([...response.data.products.content])
+
+        if (response) {
+          setProducts([...response.data.products.content]);
         } else if (err) {
-          toast.error(err)
+          toast.error(err);
         }
       } catch (error) {
         console.log("Error", error);
-        toast.error("An error occurred while fetching products.")
+        toast.error("An error occurred while fetching products.");
       } finally {
-        dispatch(setGlobalLoading(false)); 
+        dispatch(setGlobalLoading(false));
       }
-    }
+    };
     getAllProductPageAble(pageIndex, productsPerPage);
-  }, [dispatch, pageIndex, productsPerPage])
-
-  const categoryMap = {
-    "Interior-Paint": 1,
-    "Exterior-Paint": 2,
-    Bedroom: 3,
-    "Living-Room": 4,
-    "Kitchen-Room": 5,
-    "Dining-Room": 6,
-    Floor: 7,
-    "Wall-Decal": 8,
-  };
-
-  const selectedCategoryId = productCategory
-    ? categoryMap[productCategory.replace(/\s+/g, "-")] || ""
-    : ""; 
+  }, [dispatch, pageIndex, productsPerPage, productCategoryId]);
 
   useEffect(() => {
-    setSelectedCategory(selectedCategoryId || "");
-  }, [productCategory, selectedCategoryId]);
-  
+    const getAllcategory = async () => {
+      dispatch(setGlobalLoading(true));
+      try {
+        const { response, err } = await productsApi.getAllCategory();
+        if (response) {
+          setCategories([...response.data.categories]);
+        } else if (err) {
+          toast.error(err);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching products.");
+      } finally {
+        dispatch(setGlobalLoading(false));
+      }
+    };
+    getAllcategory();
+  }, [dispatch]);
+
+  useEffect(() => {
+    setSelectedCategory(productCategoryId || "");
+  }, [productCategoryId]);
+
   useEffect(() => {
     const newFilteredProducts = products.filter((product) => {
-      const matchesCategory = selectedCategoryId
-        ? product.category.categoryId === selectedCategoryId
+      const matchesCategory = productCategoryId
+        ? product.category.categoryId === productCategoryId
         : true;
       const matchesRating =
         selectedRating.length > 0
           ? selectedRating.includes(product.ratingAverage)
           : true;
-      const matchesSurface =
-        selectedSurface.length > 0
-          ? selectedSurface.includes(product.applicableSurface)
+      const matchesProperty =
+        selectedProperty.length > 0
+          ? selectedProperty.every((selectedId) =>
+              product.properties.some(
+                (propertyItem) =>
+                  propertyItem.property.propertyId === selectedId
+              )
+            )
           : true;
+
       const matchesFeatures =
         selectedFeatures.length > 0
-          ? selectedFeatures.every((feature) =>
-              product.features.includes(feature)
+          ? selectedFeatures.every((selectedId) =>
+              product.features.some(
+                (featureItem) => featureItem.feature.featureId === selectedId
+              )
             )
           : true;
 
       return (
-        matchesCategory && matchesRating && matchesSurface && matchesFeatures
+        matchesCategory && matchesRating && matchesProperty && matchesFeatures
       );
     });
 
@@ -96,9 +120,9 @@ const ListProducts = () => {
     setCurrentPage(1);
   }, [
     selectedRating,
-    selectedSurface,
+    selectedProperty,
     selectedFeatures,
-    selectedCategoryId,
+    productCategoryId,
     products,
   ]);
 
@@ -109,8 +133,8 @@ const ListProducts = () => {
   const handleFiltersChange = (filterType, values) => {
     if (filterType === "rating") {
       setSelectedRating(values);
-    } else if (filterType === "surface") {
-      setSelectedSurface(values);
+    } else if (filterType === "property") {
+      setSelectedProperty(values);
     } else if (filterType === "features") {
       setSelectedFeatures(values);
     } else if (filterType === "category") {
@@ -126,7 +150,8 @@ const ListProducts = () => {
       <Grid container spacing={2}>
         <Grid item xs={12} md={3}>
           <SidebarFilters
-            category={selectedCategoryId}
+            categories={categories}
+            category={productCategoryId}
             onChange={handleFiltersChange}
           />
         </Grid>

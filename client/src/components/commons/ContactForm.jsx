@@ -2,8 +2,11 @@ import React, { useState } from "react";
 import { TextField, Button, Grid, Typography, Container } from "@mui/material";
 import backgroundConfigs from "../../config/background.config";
 import textConfigs from "../../config/text.config";
+import { useTranslation } from "react-i18next";
 
 const ContactForm = () => {
+  const { t } = useTranslation();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -37,7 +40,7 @@ const ContactForm = () => {
             marginBottom: 5,
           }}
         >
-          Contact Us
+          {t('home.contact.title')}
         </Typography>
         <Grid container spacing={2} alignItems="center">
           <Grid item xs={12} md={4}>
@@ -72,7 +75,7 @@ const ContactForm = () => {
                 marginY: 2,
               }}
             >
-              Phone: +1234567890
+              {t('home.contact.phone')}: +1234567890
             </Typography>
           </Grid>
           <Grid container item xs={12} md={8}>
@@ -80,7 +83,7 @@ const ContactForm = () => {
               <TextField
                 fullWidth
                 name="name"
-                label="Your Name"
+                label={t('home.contact.input.name')}
                 variant="outlined"
                 value={formData.name}
                 onChange={handleChange}
@@ -92,7 +95,7 @@ const ContactForm = () => {
               <TextField
                 fullWidth
                 name="email"
-                label="Your Email"
+                label={t('home.contact.input.email')}
                 variant="outlined"
                 value={formData.email}
                 onChange={handleChange}
@@ -103,7 +106,7 @@ const ContactForm = () => {
               <TextField
                 fullWidth
                 name="message"
-                label="Your Message"
+                label={t('home.contact.input.mess')}
                 multiline
                 rows={4}
                 variant="outlined"
@@ -126,7 +129,7 @@ const ContactForm = () => {
                 ":hover": { ...backgroundConfigs.style.backgroundSecondary },
               }}
             >
-              Submit
+              {t('home.contact.btn')}
             </Button>
           </Grid>
         </Grid>

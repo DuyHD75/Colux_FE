@@ -16,15 +16,11 @@ const customerApi = {
       return { err };
     }
   },
-  changePassword: async (oldPassword, newPassword, confirmPassword) => {
+  changePassword: async (changePasswordData) => {
     try {
       const response = await proxyClient.post(
         customerEndpoints.changePassword,
-        {
-          oldPassword,
-          newPassword,
-          confirmPassword,
-        }
+        changePasswordData
       );
       return { response };
     } catch (err) {

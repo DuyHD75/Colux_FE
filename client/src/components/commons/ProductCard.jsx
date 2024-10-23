@@ -12,6 +12,8 @@ import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import { Link, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import textConfigs from "../../config/text.config";
 
 const HeartOutlineIcon = (props) => (
   <SvgIcon {...props} sx={{ fontSize: "1rem" }}>
@@ -25,15 +27,22 @@ const HeartOutlineIcon = (props) => (
 );
 
 const ProductCard = ({ product }) => {
-  const { productCategory } = useParams();
-
+  const { t } = useTranslation();
+  const { productCategory, productCategoryId } = useParams();
   if (!product) {
     return null;
   }
 
+  const ratingAverage = product.ratingAverage || 0;
+  const fullStars = Math.floor(ratingAverage);
+  const hasHalfStar = ratingAverage % 1 !== 0;
+  const reviewsCount = product.reviewsCount || 0;
+  
 
-  const fullStars = Math.floor(product.ratingAverage);
-  const hasHalfStar = product.ratingAverage % 1 !== 0;
+  const handleClick = () => {
+    // Lưu sản phẩm vào localStorage
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
+  };
 
   return (
     <Card
@@ -56,7 +65,7 @@ const ProductCard = ({ product }) => {
         <HeartOutlineIcon />
       </IconButton>
 
-      <Link to={`/products/${productCategory}/${product.productName}`}>
+      <Link to={`/products/${productCategory}/${productCategoryId}/${product.productName}/${product.productId}`} onClick={handleClick}>
         <Box
           sx={{
             display: "flex",
@@ -74,7 +83,7 @@ const ProductCard = ({ product }) => {
               height: 120,
               objectFit: "cover",
             }}
-            image={product.image}
+            image={product.images.length > 0 && product.images[0].url}
             alt={product.productName}
           />
         </Box>
@@ -103,18 +112,21 @@ const ProductCard = ({ product }) => {
             component="div"
             sx={{
               fontSize: "0.75rem",
-              height: 80,
-              paddingBottom: "40px",
+              display: "-webkit-box",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              display: "flex",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 2, // Giới hạn số dòng
               alignItems: "center",
               justifyContent: "center",
+              fontWeight: "bold",
+              ...textConfigs.style.basicFont,
             }}
           >
             {product.productName}
           </Typography>
-          <Box sx={{ mt: 1, marginTop: "-40px" }}>
+          {Number.isFinite(fullStars) && (
+          <Box sx={{ mt: 1,}}>
             <Box
               sx={{
                 display: "flex",
@@ -135,21 +147,23 @@ const ProductCard = ({ product }) => {
                 />
               ))}
             </Box>
-            {/* <Typography variant="body2" sx={{ ml: 0, fontSize: "0.75rem" }}>
-              {`(${reviewsCount} Reviews)`}
-            </Typography> */}
+            <Typography variant="body2" sx={{ ml: 0, fontSize: "0.75rem", ...textConfigs.style.basicFont, }}>
+              {`(${reviewsCount} ${t("reviews")})`}
+            </Typography>
           </Box>
-          <Typography
+          )}
+          <Box
             variant="body2"
             color="text.secondary"
-            sx={{ mt: 1, fontSize: "0.65rem" }}
+            sx={{ fontSize: "0.65rem", ...textConfigs.style.basicFont, }}
           >
             <ul>
-              {product.features.map((feature, i) => (
-                <li key={i}>{feature.name}</li>
+              {product.features.slice(0, 3).map((feature, i) => (
+                <li key={i}>{feature.feature.name}</li>
               ))}
+              {product.features.length > 3 && <li>...</li>}
             </ul>
-          </Typography>
+          </Box>
         </Box>
       </CardContent>
     </Card>

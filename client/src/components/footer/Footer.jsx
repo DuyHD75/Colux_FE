@@ -2,10 +2,13 @@ import React from "react";
 import { Box, Typography, Container, Grid } from "@mui/material/";
 import BackgroundColor from "../../config/background.config";
 import { Link } from "react-router-dom";
-import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import menuConfigs from "../../config/menu.config";
+import { useTranslation } from "react-i18next";
 
 const Footer = () => {
+
+  const { t } = useTranslation();
+
   return (
     <Box
       className="font-['Nunito']"
@@ -41,7 +44,7 @@ const Footer = () => {
                 KOLUX
               </Typography>
               <Typography variant="h5" sx={{ fontFamily: "Nunito" }}>
-                Get to know our Company
+                {t("footer.title")}
               </Typography>
               <Typography
                 sx={{
@@ -50,14 +53,13 @@ const Footer = () => {
                   marginBottom: "8px",
                 }}
               >
-                Whether around the corner or across the world, KOLUX people and
-                products have been making an impact for over 150 years.
+                {t("footer.desc")}
               </Typography>
               <Link
                 to="/about"
                 className="text-white capitalize text-xl font-['Nunito']"
               >
-                READ MORE ABOUT US
+                {t("footer.btn")}
               </Link>
             </Grid>
             <Grid container item  xs={12} md={8}>
@@ -73,7 +75,7 @@ const Footer = () => {
                   variant="h5"
                   sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  Our Company
+                  {t("footer.our")}
                 </Typography>
                 {menuConfigs.navItems.map((item, index) => (
                   <Link
@@ -81,7 +83,7 @@ const Footer = () => {
                     key={index}
                     className="my-1 mx-2 text-white flex"
                   >
-                    {item.display}
+                    {t(item.display)}
                   </Link>
                 ))}
               </Grid>
@@ -98,7 +100,7 @@ const Footer = () => {
                   variant="h5"
                   sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  Terms of Use
+                  {t("footer.term")}
                 </Typography>
                 {menuConfigs.termItems.map((item, index) => (
                   <Link
@@ -106,7 +108,7 @@ const Footer = () => {
                     key={index}
                     className="my-1 mx-2 text-white flex"
                   >
-                    {item.display}
+                    {t(item.display)}
                   </Link>
                 ))}
               </Grid>
@@ -116,7 +118,7 @@ const Footer = () => {
                   variant="h5"
                   sx={{ fontFamily: "Nunito", marginX: "8px" }}
                 >
-                  User
+                  {t("footer.user")}
                 </Typography>
                 {menuConfigs.settings.map((item, index) => (
                   <Link
@@ -124,7 +126,7 @@ const Footer = () => {
                     key={index}
                     className="my-1 mx-2 text-white flex"
                   >
-                    {item.display}
+                    {t(item.display)}
                   </Link>
                 ))}
               </Grid>

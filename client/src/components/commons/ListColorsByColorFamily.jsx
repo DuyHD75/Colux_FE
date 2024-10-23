@@ -56,7 +56,7 @@ const ListColorsByColorFamily = () => {
 
     const getListColorFamily = async () => {
       try {
-        const { response } = await colorsApi.getColorFamily();
+        const { response, err } = await colorsApi.getColorFamily();
         if (response && response.code === 200) {
           setColorFamily([...response.data.colorFalimies]);
          
@@ -68,7 +68,7 @@ const ListColorsByColorFamily = () => {
             setSelectedCollection(matchedColorFamily.collections[0].id);
           }
         } else {
-          toast.error(response.exception);
+          toast.error(err.exception);
         }
       } catch (error) {
         console.log("Error", error);

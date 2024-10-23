@@ -4,10 +4,11 @@ import { Box, Typography, Grid, Container, Button } from "@mui/material";
 import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const Blogs = () => {
   const { blogs } = useSelector((state) => state.blogs);
-
+  const { t } = useTranslation();
   return (
     <Box sx={{ ...backgroundConfigs.style.backgroundContext }}>
       <Container maxWidth="lg" className="py-10">
@@ -15,7 +16,7 @@ const Blogs = () => {
           variant="h3"
           sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
         >
-          New blogs every day
+          {t('home.blogs.title')}
         </Typography>
         <Box>
           {blogs.map((blog, index) => (

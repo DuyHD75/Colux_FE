@@ -242,7 +242,7 @@ const exteriors = [
     title: "Exterior House Colors",
     content:
       "Choosing the right exterior house color for your home can heighten your curb appeal while highlighting your personal style.",
-    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/exterior-colors-main.jpg",
+    img: "https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fexterior-colors-main.jpg?alt=media&token=813d653b-063e-4237-8c5c-31c23b6b9801",
     collections: [
       {
         id: 1,
@@ -271,7 +271,7 @@ const exteriors = [
     title: "Exterior Front Door Colors",
     content:
       "By choosing a new front door paint color, you can quickly upgrade your exterior while infusing it with a splash of personal style.",
-    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/exterior-colors-front-doors.jpg",
+    img: "https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fexterior-colors-front-doors.jpg?alt=media&token=ab3f696b-d1cc-49ae-9c21-557b088e1608",
     collections: [
       {
         id: 3,
@@ -300,7 +300,7 @@ const exteriors = [
     title: "Exterior Garage Door Colors",
     content:
       "Browse garage door paint colors and boost your exterior style. Stand out with a contrasting hue choice or harmonize by coordinating with your home's exterior colors.",
-    img: "https://www.sherwin-williams.com/content/dam/sherwin/tag/us/en_us/color-journey/exterior-colors-garage-doors.jpg",
+    img: "https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fexterior-colors-garage-doors.jpg?alt=media&token=51129ade-3b6d-43bd-8b44-a059fa44d2d8",
     collections: [
       {
         id: 5,
