@@ -37,7 +37,6 @@ const ForgotPassword = ({ switchAuthState }) => {
         toast.success("Please check your email to reset password!");
       } else {
         setErrorMessage(err.message);
-        toast.error(response.exception)
       }
     },
   });

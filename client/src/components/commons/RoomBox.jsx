@@ -57,7 +57,7 @@ const RoomBox = ({ onRoomSelect, selectedRoom }) => {
               }}
             >
               <Link
-                to={`/colors/rooms/${room.roomType}${room.id}`}
+                to={`/colors/rooms/${room.roomType}/${room.id}`}
                 onClick={() => handleRoomSelect(room)}
                 style={{
                   width: "100%",

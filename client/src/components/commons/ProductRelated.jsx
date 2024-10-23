@@ -7,7 +7,6 @@ import {
   Grid,
   Typography,
 } from "@mui/material";
-import { useSelector } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/navigation";
@@ -17,17 +16,14 @@ import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
 import { useParams } from "react-router-dom";
 
-const ProductsRelated = ({ product }) => {
-  const { products } = useSelector((state) => state.products);
-  const { productCategory } = useParams();
 
+const ProductsRelated = ({ products }) => {
 
-  const relatedProducts = products.filter(
-    (p) => p.categoryId === product.categoryId && p.id !== product.id
-  );
+  const { productCategory, productCategoryId } = useParams();
+
 
   const [activeStep, setActiveStep] = useState(0);
-  const maxSteps = Math.ceil(relatedProducts.length / 3);
+  const maxSteps = Math.ceil(products.length / 3);
 
   const handleNext = () => {
     setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -53,7 +49,7 @@ const ProductsRelated = ({ product }) => {
         container
         sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}
       >
-        {relatedProducts.length > 3 && (
+        {products.length > 3 && (
           <Grid
             item
             xs={0}
@@ -94,7 +90,7 @@ const ProductsRelated = ({ product }) => {
             }}
             spaceBetween={20}
             navigation={
-              relatedProducts.length > 3
+              products.length > 3
                 ? {
                     nextEl: ".button-next",
                     prevEl: ".button-prev",
@@ -104,8 +100,8 @@ const ProductsRelated = ({ product }) => {
             modules={[Navigation]}
             className="swiperRelated"
           >
-            {relatedProducts.map((relatedProduct) => (
-              <SwiperSlide key={relatedProduct.id}>
+            {products.map((relatedProduct, index) => (
+              <SwiperSlide key={index}>
                 <Card
                   sx={{
                     borderRadius: 0,
@@ -137,7 +133,7 @@ const ProductsRelated = ({ product }) => {
                           }}
                         >
                           <img
-                            src={relatedProduct.image}
+                            src={relatedProduct.images.length > 0 && relatedProduct.images[0].url}
                             alt={relatedProduct.name}
                             style={{
                               width: "100%",
@@ -172,6 +168,7 @@ const ProductsRelated = ({ product }) => {
                             textOverflow: "ellipsis",
                             width: "100%",
                             textAlign: "center",
+                            fontWeight: "bold",
                           }}
                         >
                           {relatedProduct.name}
@@ -194,12 +191,13 @@ const ProductsRelated = ({ product }) => {
                         </Typography>
                         <Button
                           variant="contained"
-                          href={`/products/${productCategory}/${relatedProduct.name}`}
+                          href={`/products/${productCategory}/${productCategoryId}/${relatedProduct.productName}/${relatedProduct.productId}`}
                           sx={{
                             ...backgroundConfigs.style.backgroundPrimary,
                             marginTop: "8px",
                             ":hover": {
                               ...backgroundConfigs.style.backgroundSecondary,
+                              ...textConfigs.style.basicFont,
                             },
                           }}
                         >
@@ -213,7 +211,7 @@ const ProductsRelated = ({ product }) => {
             ))}
           </Swiper>
         </Grid>
-        {relatedProducts.length > 3 && (
+        {products.length > 3 && (
           <Grid
             item
             xs={0}

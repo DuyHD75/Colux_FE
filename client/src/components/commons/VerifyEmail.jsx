@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { FaCheckCircle, FaTimesCircle } from "react-icons/fa";
 import { MoonLoader } from "react-spinners";
-import { useParams, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import userApi from "../../api/modules/user.api";
 import { toast } from "react-toastify";
 
@@ -12,50 +12,57 @@ const VerifyEmail = () => {
   const [showIcon, setShowIcon] = useState(false);
   const [fade, setFade] = useState(0);
   const [redirectMessage, setRedirectMessage] = useState("");
+  const [errMessage, setErrMessage] = useState("");
 
-  const param = useParams();
+  const location = useLocation();
   const navigate = useNavigate();
+
+  // Lấy giá trị key từ query parameters
+  const queryParams = new URLSearchParams(location.search);
+  const key = queryParams.get("key");
+  const userType = location.pathname.split("/")[2]; // Lấy kiểu người dùng từ đường dẫn
 
   useEffect(() => {
     const verifyAccount = async () => {
-      if (param.key) {
+      if (key) {
         setFade(0);
         try {
-          let response;
-          if (param.user === "account") {
-            ({ response } = await userApi.verifyAccount(param.key));
-          } else if (param.user === "reset") {
-            ({ response } = await userApi.verifyResetPassword(param.key));
+          let response, err;
+          if (userType === "account") {
+            ({ response, err } = await userApi.verifyAccount(key));
+          } else if (userType === "reset") {
+            ({ response, err } = await userApi.verifyResetPassword(key));
           }
           if (response && response.code === 200) {
-            setLoading(false);
             setSuccess(true);
-            setShowIcon(true);
-            setFade(1);
             toast.success(response.message);
-            setRedirectMessage("Redirecting to login...");
-            setTimeout(() => navigate("/login"), 2000);
+            if (userType === "account") {
+              setRedirectMessage("Redirecting to login...");
+              const timer = setTimeout(() => navigate("/login"), 2000);
+              return () => clearTimeout(timer); 
+            } else {
+              setRedirectMessage("Redirecting to reset password...");
+              const timer = setTimeout(() => navigate("/resetPassword"), 2000);
+              return () => clearTimeout(timer); 
+            }
           } else {
-            setLoading(false);
             setSuccess(false);
-            setShowIcon(true);
-            setFade(1);
-            console.log(response.message);
-            toast.error(response.message);
-            setRedirectMessage("Redirecting to reset password...");
-            setTimeout(() => navigate("/resetPassword"), 2000);
+            toast.error(err.exception);
+            setErrMessage(err.exception)
           }
         } catch (error) {
-          setLoading(false);
-          setSuccess(false);
-          setShowIcon(true);
           console.log("Error", error);
           toast.error(error);
+          setErrMessage(error)
+        } finally {
+          setLoading(false);
+          setShowIcon(true);
+          setFade(1);
         }
       }
     };
     verifyAccount();
-  }, [param, navigate]);
+  }, [key, userType, navigate]);
 
   return (
     <Box
@@ -99,6 +106,7 @@ const VerifyEmail = () => {
           </Typography>
           <Typography variant="body1" marginTop={2} color="#1c2759">
             {redirectMessage}
+            {errMessage}
           </Typography>
         </Box>
       )}

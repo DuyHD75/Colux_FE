@@ -9,14 +9,13 @@ import ProductDetailInfo from "../../components/commons/ProductDetailInfo"
 const colors = data.colors;
 
 const ProductDetail = () => {
-  const products = useSelector((state) => state.products.products);
-  const { productCategory, productName } = useParams();
-
-  const selectedProduct = products.find((product) => product.name === productName);
+  const selectedProduct =  JSON.parse(localStorage.getItem("selectedProduct"));
 
   if (!selectedProduct) {
     return <div>Product not found</div>; 
   }
+  console.log(selectedProduct);
+  
   
   return (
     <Fragment>

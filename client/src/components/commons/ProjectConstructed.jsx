@@ -11,8 +11,12 @@ import "swiper/css/thumbs";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import { useSelector } from "react-redux";
 import classNames from "classnames";
+import { useTranslation } from "react-i18next";
+
 
 const ProjectConstructed = () => {
+  const { t } = useTranslation();
+
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
   const [selectedSlideIndex, setSelectedSlideIndex] = useState(0);
 
@@ -45,7 +49,7 @@ const ProjectConstructed = () => {
           gutterBottom
           sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
         >
-          The project has been constructed
+          {t('home.project.title')}
         </Typography>
         <Box mt={3}>
           <Swiper

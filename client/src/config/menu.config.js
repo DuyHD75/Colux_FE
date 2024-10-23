@@ -11,34 +11,34 @@ import { LuLock } from "react-icons/lu";
 
 const navItems = [
   {
-    display: "Home",
+    display: "home",
     path: "/",
     state: "home",
   },
   {
-    display: "Colors",
+    display: "colors",
     path: "/colors",
     state: "colors",
   },
   {
-    display: "Products",
+    display: "products",
     path: "/products",
     state: "products",
   },
 
   {
-    display: "About",
+    display: "about",
     path: "/about",
     state: "about",
   },
   {
-    display: "Blogs",
+    display: "blogs",
     path: "/blogs",
     state: "blogs",
   },
 
   {
-    display: "Contact",
+    display: "contact",
     path: "/contact",
     state: "contact",
   },
@@ -46,17 +46,17 @@ const navItems = [
 
 const termItems = [
   {
-    display: "Privacy Policy",
+    display: "privacy.policy",
     path: "/privacy_policy",
     state: "privacy.policy",
   },
   {
-    display: "Terms and Condition",
+    display: "terms.and.condition",
     path: "/terms_and_condition",
     state: "terms.and.condition",
   },
   {
-    display: "Shipping and Return",
+    display: "shipping.and.return",
     path: "/shipping_and_return",
     state: "shipping.and.return",
   },

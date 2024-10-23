@@ -1,10 +1,7 @@
 import React, { useState } from "react";
-import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/userSlice";
-import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
@@ -12,13 +9,17 @@ import { Link } from "react-router-dom";
 import { LoadingButton } from '@mui/lab';
 
 const Register = ({ switchAuthState }) => {
-  const dispatch = useDispatch();
   const [isRegisterRequest, setIsRegisterRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
+  const [successMessage, setSuccessMessage] = useState();
   const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
+  const handleClickShowConfirmPassword = () => setShowConfirmPassword(!showConfirmPassword);
+  const handleMouseDownConfirmPassword = (event) => event.preventDefault();
 
   const registerForm = useFormik({
     initialValues: {
@@ -45,16 +46,15 @@ const Register = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsRegisterRequest(true);
-      const { response } = await userApi.register(values);
+      const { response, err } = await userApi.register(values);
       setIsRegisterRequest(false);
       console.log(response);
       
       if (response && response.code === 200) {
         registerForm.resetForm();
-        toast.success(response.message);
+        setSuccessMessage(response.message);
       } else { 
-        setErrorMessage(response.exception);
-        toast.error(response.exception)
+        setErrorMessage(err.exception);
       }
     },
   });
@@ -167,7 +167,7 @@ const Register = ({ switchAuthState }) => {
                 <button
                   type="button"
                   onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
+                  onMouseDown={handleMouseDownConfirmPassword}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
                 >
                   {showPassword ? (
@@ -194,7 +194,7 @@ const Register = ({ switchAuthState }) => {
               </label>
               <div className="relative">
                 <input
-                  type={showPassword ? "text" : "password"}
+                  type={showConfirmPassword ? "text" : "password"}
                   id="confirmPassword"
                   name="confirmPassword"
                   className="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -205,11 +205,11 @@ const Register = ({ switchAuthState }) => {
                 />
                 <button
                   type="button"
-                  onClick={handleClickShowPassword}
+                  onClick={handleClickShowConfirmPassword}
                   onMouseDown={handleMouseDownPassword}
                   className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
                 >
-                  {showPassword ? (
+                  {showConfirmPassword ? (
                     <Visibility className="text-gray-900 dark:text-white" />
                   ) : (
                     <VisibilityOff className="text-gray-900 dark:text-white" />
@@ -259,6 +259,7 @@ const Register = ({ switchAuthState }) => {
             Create an account
           </LoadingButton>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+          {successMessage && <Alert severity="success">{successMessage}</Alert>}
           <p className="text-sm font-light text-gray-500 dark:text-gray-400">
             Already have an account?{" "}
             <Link

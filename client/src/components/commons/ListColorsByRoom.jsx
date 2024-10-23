@@ -108,12 +108,12 @@ const ListColorsByRoom = () => {
           if (response && response.code === 200) {
             console.log(response);
             
-            // setColors(response.data.colors.content);
+            setColors(response.data.colors.content);
             setTotalPages(response.data.colors.totalPages);
           }
-          //  else {
-          //   toast.error(response.exception);
-          // }
+           else {
+            toast.error(response.exception);
+          }
         } catch (error) {
           console.log("Error", error);
           toast.error("An error occurred while fetching colors.");

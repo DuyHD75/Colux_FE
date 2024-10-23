@@ -130,7 +130,7 @@ const Profile = () => {
                                     onChange={formikInfo.handleChange}
                                     onBlur={formikInfo.handleBlur}
                                     value={formikInfo.values.email}
-                                    type="text" placeholder="Mail" disabled={!editInfo} style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `${editInfo ? '1px solid #E5E5E5' : 'none'}` }} />
+                                    type="text" placeholder="Mail" disabled style={{ width: '100%', padding: '10px', borderRadius: '10px', border: `${editInfo ? '1px solid #E5E5E5' : 'none'}` }} />
                                 {formikInfo.touched.email && formikInfo.errors.email ? (
                                     <div className="text-red-500 text-sm mt-1">{formikInfo.errors.email}</div>
                                 ) : null}
