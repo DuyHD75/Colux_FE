@@ -6,8 +6,11 @@ import menuConfigs from "../../config/menu.config";
 import { Link } from "react-router-dom";
 import BackgroundConfigs from "../../config/background.config";
 import textConfigs from "../../config/text.config";
+import { useTranslation } from "react-i18next";
 
 export const SubHeader = () => {
+  const { t } = useTranslation();
+
   return (
     <Box
       className="w-full"
@@ -51,7 +54,7 @@ export const SubHeader = () => {
                 to={item.path}
                 className="text-white capitalize text-xs hover:text-[#6dacd5]"
               >
-                {item.display}
+                {t(item.display)}
               </Link>
             </MenuItem>
           ))}

@@ -10,8 +10,12 @@ import Box from "@mui/material/Box";
 import backgroundConfigs from "../../config/background.config";
 import textConfigs from "../../config/text.config";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const AdvisoryBanner = () => {
+
+  const { t } = useTranslation();
+
   return (
     <Box
       className="banner"
@@ -20,7 +24,7 @@ const AdvisoryBanner = () => {
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        backgroundImage: `url(https://sonnano40.vn/upload/images/s%C6%A1n-nh%C3%A0-m%C3%A0u-ghi-sang-tr%E1%BB%8Dng.jpg)`,
+        backgroundImage: `url(https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fhome-baner.jpg?alt=media&token=dad62ec0-b3aa-4bab-851f-14e27f61b18a)`,
         backgroundSize: "cover",
         backgroundPosition: "center",
         padding: "20px",
@@ -36,21 +40,21 @@ const AdvisoryBanner = () => {
               gutterBottom
               sx={{ ...textConfigs.style.headerText }}
             >
-              Custom Home Design Advisory
+              {t('home.advansory.title')}
             </Typography>
             <Typography
               variant="body1"
               paragraph
               sx={{ ...textConfigs.style.subText }}
             >
-              Unlock the Door to Your Dream Home with KOLUX 3D Home Design Services 
+              {t('home.advansory.desc1')}
             </Typography>
             <Typography
               variant="body1"
               paragraph
               sx={{ ...textConfigs.style.subText }}
             >
-              Discover the Art of Personalized Home Design with KOLUX's 3D Advisory
+              {t('home.advansory.desc2')}
             </Typography>
             <Button
               component={Link}
@@ -63,7 +67,7 @@ const AdvisoryBanner = () => {
                 ...textConfigs.style.normalText,
               }}
             >
-              Get advice now!
+              {t('home.advansory.btn')}
             </Button>
           </CardContent>
         </Card>

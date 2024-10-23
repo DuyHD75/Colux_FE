@@ -99,12 +99,12 @@ const routes = [
   },
 
   {
-    path: "/products/:productCategory",
+    path: "/products/:productCategory/:productCategoryId",
     element: <Products></Products>,
     state: "products",
   },
   {
-    path: "/products/:productCategory/:productName",
+    path: "/products/:productCategory/:productCategoryId/:productName/:productId",
     element: <ProductDetail></ProductDetail>,
     state: "productDetail",
   },
@@ -153,7 +153,12 @@ const routes = [
     state: "login",
   },
   {
-    path: "/verify/:user/:key",
+    path: "/verify/account",
+    element: <VerifyEmail />,
+    state: "verify",
+  },
+  {
+    path: "/verify/reset",
     element: <VerifyEmail />,
     state: "verify",
   },

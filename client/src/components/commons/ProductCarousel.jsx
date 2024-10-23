@@ -19,11 +19,13 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 const ProductCarousel = () => {
   const { products } = useSelector((state) => state.products);
   const { productCategory } = useParams();
   const theme = useTheme();
+  const { t } = useTranslation();
 
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = Math.ceil(products.length / 3);
@@ -51,7 +53,7 @@ const ProductCarousel = () => {
             paddingBottom: "20px",
           }}
         >
-          View our most popular products
+          {t('home.products.title')}
         </Typography>
         <Grid
           container

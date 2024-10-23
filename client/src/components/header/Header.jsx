@@ -13,6 +13,9 @@ import {
   Tooltip,
   MenuItem,
   Grid,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -26,12 +29,16 @@ import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
+import "../../i18n";
+import { useTranslation } from "react-i18next";
+import productsApi from "../../api/modules/products.api";
 
 export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { categories } = useSelector((state) => state.categories);
+  const [categories, setCategories] = useState([]);
   const { user } = useSelector((state) => state.user);
+  const { t, i18n } = useTranslation();
 
   const [colorFamlily, setColorFamily] = useState([]);
   const [collections, setCollection] = useState([]);
@@ -40,8 +47,11 @@ export const Header = () => {
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
-  // const [isCategoriesMenuOpen, setIsCategoriesMenuOpen] = useState(false);
   const [anchorElAbout, setAnchorElAbout] = useState(false);
+
+  const handleChangeLanguage = (language) => {
+    i18n.changeLanguage(language);
+  };
 
   useEffect(() => {
     const getListColofamily = async () => {
@@ -75,6 +85,23 @@ export const Header = () => {
     getListColofamily();
   }, []);
 
+  useEffect(() => {
+    const getAllCategory = async () => {
+      try {
+        const { response, err } = await productsApi.getAllCategory();
+        if (response && response.code === 200) {
+          setCategories([...response.data.categories]);
+        } else if (err) {
+          toast.error(err);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching products.");
+      }
+    };
+    getAllCategory();
+  }, []);
+
   // const handleOpenNavMenu = (event) => {
   //   setAnchorElNav(event.currentTarget);
   // };
@@ -99,6 +126,7 @@ export const Header = () => {
   };
 
   const handleLogout = async () => {
+    setAnchorElUser(null);
     const { response, err } = await userApi.logout();
     if (response) {
       dispatch(setUser(null));
@@ -193,35 +221,37 @@ export const Header = () => {
               }}
             >
               <Grid container spacing={1}>
-                {menuConfigs.navItems.map((item, index) => (
-                  <Grid
-                    item
-                    xs={12}
-                    key={index}
-                    sx={{ width: "100vw", overflowY: "auto" }}
-                  >
-                    <MenuItem
+                {menuConfigs.navItems.map((item, index) => {
+                  return (
+                    <Grid
+                      item
+                      xs={12}
                       key={index}
-                      onClick={(event) => {
-                        handleCloseNavMenu(event);
-                      }}
+                      sx={{ width: "100vw", overflowY: "auto" }}
                     >
-                      <Button
-                        component={Link}
-                        to={item.path}
+                      <MenuItem
                         key={index}
-                        sx={{
-                          color: "#214252",
-                          textTransform: "capitalize",
-                          justifyContent: "left",
-                          fontSize: "1rem",
+                        onClick={(event) => {
+                          handleCloseNavMenu(event);
                         }}
                       >
-                        {item.display}
-                      </Button>
-                    </MenuItem>
-                  </Grid>
-                ))}
+                        <Button
+                          component={Link}
+                          to={item.path}
+                          key={index}
+                          sx={{
+                            color: "#214252",
+                            textTransform: "capitalize",
+                            justifyContent: "left",
+                            fontSize: "1rem",
+                          }}
+                        >
+                          {t(item.display)}
+                        </Button>
+                      </MenuItem>
+                    </Grid>
+                  );
+                })}
               </Grid>
             </Menu>
           </Box>
@@ -291,7 +321,7 @@ export const Header = () => {
             >
               <Grid item xs={6} key="Color">
                 <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
-                  Colors
+                  {t("colors")}
                 </h2>
                 {colorFamlily.map((item, index) => (
                   <MenuItem
@@ -318,13 +348,13 @@ export const Header = () => {
                     key="allColors"
                     className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                   >
-                    All Colors
+                    {t("all.colors")}
                   </Link>
                 </MenuItem>
               </Grid>
               <Grid item xs={6} key="Collections">
                 <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
-                  Collections
+                  {t("collections")}
                 </h2>
                 {collections.map((item, index) => (
                   <MenuItem
@@ -378,20 +408,16 @@ export const Header = () => {
             >
               <Grid item xs={12} key="Color">
                 <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
-                  Products
+                  {t("products")}
                 </h2>
                 {categories.map((item, index) => (
                   <MenuItem
                     key={index}
-                    onClick={() =>
-                      handleCategoryClick(
-                        `/products/${item.name.replace(/\s+/g, "-")}`
-                      )
-                    } // Thay khoảng trắng bằng dấu gạch ngang
+                    onClick={handleCloseCategoriesMenu}
                     className="min-w-[120px] py-0"
                   >
                     <Link
-                      to={`/products/${item.name}`}
+                      to={`/products/${item.name}/${item.categoryId}`}
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
@@ -409,7 +435,7 @@ export const Header = () => {
                     key="allProducts"
                     className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                   >
-                    All Products
+                    {t("all.product")}
                   </Link>
                 </MenuItem>
               </Grid>
@@ -449,7 +475,7 @@ export const Header = () => {
             >
               <Grid item xs={12} key="Color">
                 <h2 className="px-[16px] py-[6px] text-[#1c2759] font-bold">
-                  About
+                  {t("about")}
                 </h2>
                 {menuConfigs.aboutMenu.map((item, index) => (
                   <MenuItem
@@ -470,7 +496,29 @@ export const Header = () => {
             </Grid>
           </Menu>
           {/* End menu About */}
+          <Box sx={{ display: "flex", gap: 0 }}>
+            <Button
+              onClick={() => handleChangeLanguage("vi")}
+              sx={{ minWidth: 50, padding: 1 }}
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fviet-nam-flat.png?alt=media&token=ee236707-6f4c-47c4-998f-4ccc2416caf3"
+                alt="Vietnamese"
+                style={{ width: "30px", opacity: i18n.language === "vi" ? 1 : 0.5, }}
+              />
+            </Button>
 
+            <Button
+              onClick={() => handleChangeLanguage("en")}
+              sx={{ minWidth: 50, padding: 1 }}
+            >
+              <img
+                src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fenglish-flat.webp?alt=media&token=b0c4d065-3f2b-4605-9be3-670dac602b82"
+                alt="English"
+                style={{ width: "30px", opacity: i18n.language === "en" ? 1 : 0.5, }}
+              />
+            </Button>
+          </Box>
           {/* Start User Setting */}
           <Box className="grow-0">
             <Box className="flex justify-between">
@@ -538,7 +586,7 @@ export const Header = () => {
                       to="/login"
                       className="md:text-[#1c2759] capitalize text-center text-base hover:text-[#1D4Ed8] "
                     >
-                      Login
+                      {t("login")}
                     </Link>
                   </MenuItem>
                 </Typography>

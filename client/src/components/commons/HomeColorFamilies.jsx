@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 // Hàm kiểm tra độ sáng của màu nền
 const getContrastColor = (hex) => {
@@ -43,6 +44,7 @@ const calculateRowLengths = (numColors) => {
 };
 
 const HomeColorFamilies = () => {
+  const { t } = useTranslation();
   const [ colorFamlily, setColorFamily ] = useState([]);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -104,9 +106,9 @@ const HomeColorFamilies = () => {
   return (
     <div className="flex flex-col items-center mt-5 py-10">
       <div className="text-center mb-4">
-        <h1 className="text-3xl text-[#1c2759]">CHOOSE A PAINT COLOR FAMILY</h1>
+        <h1 className="text-3xl text-[#1c2759]">{t('home.colors.title')}</h1>
         <p className="text-xl m-2 text-[#747474]">
-          We have over 2,000 paint colors to choose from
+        {t('home.colors.desc')}
         </p>
       </div>
       <div className="flex flex-col w-full">
