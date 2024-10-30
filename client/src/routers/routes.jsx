@@ -29,9 +29,9 @@ export const routesGen = {
   home: "/",
   colors: "/colors",
   colorDetail: (colorId) => `/colors/${colorId}`,
-  cart: "/cart",
+  cart: "/carts",
   checkout: "/checkout",
-  wishlist: "/wishlist",
+  favorite: "/favorites", 
   orderHistory: "/orderHistory",
   paymentBilling: "/billing",
   profile: "/profile",
@@ -72,7 +72,7 @@ const routes = [
     state: "colorDetail",
   },
   {
-    path: "/cart",
+    path: "/carts",
     element: <Cart />,
     state: "cart",
   },
@@ -82,9 +82,9 @@ const routes = [
     state: "checkout",
   },
   {
-    path: "/wishlist",
+    path: "/favorites",
     element: <WishList />,
-    state: "cart",
+    state: "favorites",
   },
   {
     path: "/billing",

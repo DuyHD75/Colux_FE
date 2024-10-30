@@ -21,10 +21,13 @@ import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 import textConfigs from "../../config/text.config";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
+import cartApi from "../../api/modules/cart.api";
+
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
 import "swiper/css";
@@ -42,7 +45,12 @@ const ProductDetailInfo = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [products, setProducts] = useState([]);
   const productsPerPage = 20;
-  const pageIndex= 0;
+  const { user } = useSelector((state) => state.user);
+  const [cart, setCart] = useState(null);
+
+
+
+  const pageIndex = 0;
 
   const rating = 0;
   const reviewsCount = 0;
@@ -107,6 +115,65 @@ const ProductDetailInfo = ({ product }) => {
     setSelectedProduct(productType);
     setSelectedVariant(productType.variants[0]);
   };
+
+  useEffect(() => {
+    const getCart = async () => {
+      if (user) {
+        try {
+          dispatch(setGlobalLoading(true));
+          const { response, err } = await cartApi.getCart(user.userId);
+          if (response) {
+            dispatch(setGlobalLoading(false));
+            setCart(response.data.carts);
+          }
+          if (err) {
+            toast.error('Failed to fetch cart data');
+          }
+        } catch (error) {
+          toast.error('An error occurred while fetching cart data');
+        }
+      }
+    };
+    getCart();
+  }, [user]);
+  console.log('paintID', selectedProduct?.id);
+
+  const handleAddToCart = (quantity) => {
+    const status = 1;
+    const updateQuantityType = 'INCREMENTAL';
+    const customerId = user.userId;
+
+    const cartItems = [{
+      ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
+      productId: product.productId,
+      quantity: quantity,
+      ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
+    }];
+
+    updateCart(
+
+      cart.cartId,
+      customerId,
+      status,
+      updateQuantityType,
+      cartItems
+
+    );
+  };
+
+  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
+    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
+    if (!response) {
+      toast.error('Quantity not enough to add');
+    }
+    else {
+      toast.success('Added to cart successfully');
+    }
+  }, []);
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
@@ -523,6 +590,7 @@ const ProductDetailInfo = ({ product }) => {
                 sx={{
                   display: "flex",
                   flexDirection: { xs: "column", sm: "row" },
+
                 }}
               >
                 <Box
@@ -548,9 +616,8 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${
-                          selectedVariant.quantity
-                        } ${t("products")})`
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -624,6 +691,7 @@ const ProductDetailInfo = ({ product }) => {
                     ...textConfigs.style.basicFont,
                   }}
                   fullWidth
+                  onClick={() => { handleAddToCart(quantity) }}
                 >
                   {t("add.to.cart")}
                 </Button>
