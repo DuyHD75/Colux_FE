@@ -187,9 +187,9 @@ const user = [
   },
   {
     display: "Log Out",
-    path: "/Logout",
+    path: "/logout",
     icon: <FiLogOut style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
-    state: "Logout",
+    state: "logout",
   },
 ];
 

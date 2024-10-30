@@ -62,6 +62,12 @@ const Login = ({ switchAuthState }) => {
 
   return (
     <div className="w-full bg-gray-800 rounded-lg shadow dark:border-gray-700 sm:max-w-lg xl:p-0">
+      {/* Nút Back Home */}
+      <div className="absolute top-4 left-4">
+        <Link to="/" className="text-white underline">
+          Back Home
+        </Link>
+      </div>
       <div className="p-6 space-y-4 sm:p-8">
         <div className="grid grid-cols-12 gap-4 items-center">
           <div className="col-span-4 flex justify-start">
@@ -184,7 +190,7 @@ const Login = ({ switchAuthState }) => {
           <p className="text-sm font-light text-gray-400">
             Don’t have an account yet?{" "}
             <Link
-              href="#"
+              href="register"
               className="font-medium text-primary-500 hover:underline"
               onClick={() => switchAuthState(actionState.register)}
             >

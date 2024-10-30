@@ -96,14 +96,9 @@ const ListColorsByColorFamily = () => {
             colorsPerPage
           );
           if (response && response.code === 200) {
-            console.log(response);
-            
             setColors(response.data.colors.content);
             setTotalPages(response.data.colors.totalPages);
           }
-          //  else {
-          //   toast.error(response.exception);
-          // }
         } catch (error) {
           console.log("Error", error);
           toast.error("An error occurred while fetching colors.");
@@ -190,7 +185,7 @@ const ListColorsByColorFamily = () => {
               label="Collections"
             >
               {colorFamily
-                .filter((color) => color.name === collection)
+                .filter((color) => color.id === collectionId)
                 .flatMap((color) =>
                   color.collections.map((collection, index) => (
                     <MenuItem key={index} value={collection.id}>
@@ -198,9 +193,9 @@ const ListColorsByColorFamily = () => {
                     </MenuItem>
                   ))
                 )}
-              <MenuItem value={`All Colors ${collection}`}>
+              {/* <MenuItem value={`All Colors ${collection}`}>
                 All Colors {collection}
-              </MenuItem>
+              </MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
@@ -241,6 +236,12 @@ const ListColorsByColorFamily = () => {
                   style={{ color: "#3b3730" }}
                 >
                   {color.name}
+                </span>
+                <span
+                  className="text-xs md:text-lg text-center mt-1"
+                  style={{ color: "#3b3730" }}
+                >
+                  {color.code}
                 </span>
               </Link>
             </Grid>

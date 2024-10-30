@@ -5,7 +5,7 @@ import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import { toast } from "react-toastify";
 import productsApi from "../../api/modules/products.api";
-import { useTranslation } from "react-i18next"; 
+import { useTranslation } from "react-i18next";
 import textConfigs from "../../config/text.config";
 
 const { Panel } = Collapse;
@@ -16,41 +16,40 @@ const SidebarFilters = ({ categories, category, onChange }) => {
   const [selectedPropertys, setSelectedPropertys] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(category);
-  const [ properties, setProperties ] = useState([]);
-  const [ features, setFeatures ] = useState([]);
+  const [properties, setProperties] = useState([]);
+  const [features, setFeatures] = useState([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setGlobalLoading(true)); 
-  
+      dispatch(setGlobalLoading(true));
+
       try {
-       
-        const { response: propertiesResponse, err: propertiesErr } = await productsApi.getAllProperties();
+        const { response: propertiesResponse, err: propertiesErr } =
+          await productsApi.getAllProperties();
         if (propertiesResponse) {
           setProperties([...propertiesResponse.data.properties]);
         } else if (propertiesErr) {
           toast.error(propertiesErr);
         }
 
-        const { response: featuresResponse, err: featuresErr } = await productsApi.getAllFeatures();
+        const { response: featuresResponse, err: featuresErr } =
+          await productsApi.getAllFeatures();
         if (featuresResponse) {
           setFeatures([...featuresResponse.data.features]);
         } else if (featuresErr) {
           toast.error(featuresErr);
         }
-  
       } catch (error) {
         console.log("Error", error);
         toast.error("An error occurred while fetching products.");
       } finally {
-        dispatch(setGlobalLoading(false)); 
+        dispatch(setGlobalLoading(false));
       }
     };
-  
+
     fetchData();
   }, [dispatch]);
-
 
   useEffect(() => {
     if (category !== selectedCategory) {
@@ -76,15 +75,15 @@ const SidebarFilters = ({ categories, category, onChange }) => {
   const handlepropertyChange = (checked, propertyId) => {
     const newSelectedpropertys = checked
       ? [...selectedPropertys, propertyId]
-      : selectedPropertys.filter((item) => item !== propertyId); 
+      : selectedPropertys.filter((item) => item !== propertyId);
     setSelectedPropertys(newSelectedpropertys);
     onChange("property", newSelectedpropertys);
   };
-  
+
   const handleFeatureChange = (checked, featureId) => {
     const newSelectedFeatures = checked
       ? [...selectedFeatures, featureId]
-      : selectedFeatures.filter((item) => item !== featureId); 
+      : selectedFeatures.filter((item) => item !== featureId);
     setSelectedFeatures(newSelectedFeatures);
     onChange("features", newSelectedFeatures);
   };
@@ -103,7 +102,7 @@ const SidebarFilters = ({ categories, category, onChange }) => {
       onChange("category", ["all"]);
     } else {
       setSelectedCategory(selectedCat);
-      onChange('category', [selectedCat]);
+      onChange("category", [selectedCat]);
       navigate(`/products/${selectedCatName}/${selectedCat}`);
     }
   };
@@ -118,7 +117,11 @@ const SidebarFilters = ({ categories, category, onChange }) => {
       }}
     >
       <Collapse defaultActiveKey={[]} ghost>
-        <Panel header={t("category")} key="0" style={{ marginBottom: "10px", ...textConfigs.style.basicFont, }}>
+        <Panel
+          header={t("category")}
+          key="0"
+          style={{ marginBottom: "10px", ...textConfigs.style.basicFont }}
+        >
           <Radio.Group onChange={handleCategoryChange} value={selectedCategory}>
             {categories.length > 0 ? (
               categories.map((cat) => (
@@ -140,7 +143,11 @@ const SidebarFilters = ({ categories, category, onChange }) => {
             )}
           </Radio.Group>
         </Panel>
-        <Panel header={t("rating")} key="1" style={{ marginBottom: "10px", ...textConfigs.style.basicFont, }}>
+        <Panel
+          header={t("rating")}
+          key="1"
+          style={{ marginBottom: "10px", ...textConfigs.style.basicFont }}
+        >
           {[1, 2, 3, 4, 5].map((value) => (
             <div
               key={value}
@@ -163,53 +170,101 @@ const SidebarFilters = ({ categories, category, onChange }) => {
             </div>
           ))}
         </Panel>
-    
-        <Panel header={t("property")} key="2" style={{ marginBottom: "10px", ...textConfigs.style.basicFont, }}>
-          {properties.length > 0 ? (
-            properties.map((property, index) => (
-              <Checkbox
-                key={index}
-                checked={selectedPropertys.includes(property.propertyId)} 
-                onChange={(e) =>
-                  handlepropertyChange(e.target.checked, property.propertyId)
-                } 
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "5px 0",
-                  ...textConfigs.style.basicFont,
-                }}
-              >
-                {property.name}
-              </Checkbox>
-            ))
-          ) : (
-            <div>{t("no.property")}</div>
-          )}
+
+        <Panel
+          header={t("property")}
+          key="2"
+          style={{
+            marginBottom: "10px",
+            ...textConfigs.style.basicFont,
+          }}
+        >
+          <div
+            style={{
+              maxHeight: "200px",
+              overflowY: "auto",
+              padding: "10px",
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
+            <style>
+              {`
+                ::-webkit-scrollbar {
+                  display: none;
+                }
+              `}
+            </style>
+            {properties.length > 0 ? (
+              properties.map((property, index) => (
+                <Checkbox
+                  key={index}
+                  checked={selectedPropertys.includes(property.propertyId)}
+                  onChange={(e) =>
+                    handlepropertyChange(e.target.checked, property.propertyId)
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "5px 0",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  {property.name}
+                </Checkbox>
+              ))
+            ) : (
+              <div>{t("no.property")}</div>
+            )}
+          </div>
         </Panel>
-       
-        <Panel header={t("features")} key="3" style={{ marginBottom: "10px", ...textConfigs.style.basicFont, }}>
-          {features.length > 0 ? (
-            features.map((feature, index) => (
-              <Checkbox
-                key={index}
-                checked={selectedFeatures.includes(feature.featureId)} 
-                onChange={(e) =>
-                  handleFeatureChange(e.target.checked, feature.featureId)
-                } 
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  padding: "5px 0",
-                  ...textConfigs.style.basicFont,
-                }}
-              >
-                {feature.name}
-              </Checkbox>
-            ))
-          ) : (
-            <div>{t("no.features")}</div>
-          )}
+
+        <Panel
+          header={t("features")}
+          key="3"
+          style={{
+            marginBottom: "10px",
+            ...textConfigs.style.basicFont,
+          }}
+        >
+          <div
+            style={{
+              maxHeight: "200px", 
+              overflowY: "auto", 
+              padding: "10px",
+              scrollbarWidth: "none", 
+              msOverflowStyle: "none", 
+            }}
+          >
+            <style>
+              {`
+                ::-webkit-scrollbar {
+                  display: none;
+                }
+              `}
+            </style>
+            {features.length > 0 ? (
+              features.map((feature, index) => (
+                <Checkbox
+                  key={index}
+                  checked={selectedFeatures.includes(feature.featureId)}
+                  onChange={(e) =>
+                    handleFeatureChange(e.target.checked, feature.featureId)
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "5px 0",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  {feature.name}
+                </Checkbox>
+              ))
+            ) : (
+              <div>{t("no.features")}</div>
+            )}
+          </div>
         </Panel>
       </Collapse>
     </div>

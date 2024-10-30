@@ -13,9 +13,6 @@ import {
   Tooltip,
   MenuItem,
   Grid,
-  FormControl,
-  InputLabel,
-  Select,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -102,21 +99,6 @@ export const Header = () => {
     getAllCategory();
   }, []);
 
-  // const handleOpenNavMenu = (event) => {
-  //   setAnchorElNav(event.currentTarget);
-  // };
-  const handleOpenUserMenu = (event) => {
-    setAnchorElUser(event.currentTarget);
-  };
-
-  // const handleOpenColorsMenu = (event) => {
-  //   setAnchorElColors(event.currentTarget);
-  // };
-
-  // const handleOpenCategoriesMenu = (event) => {
-  //   setAnchorElCategories(event.currentTarget);
-  // };
-
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
   };
@@ -150,10 +132,6 @@ export const Header = () => {
 
   const handleCloseAboutMenu = () => {
     setAnchorElAbout(null);
-  };
-
-  const handleCategoryClick = (path) => {
-    handleCloseCategoriesMenu();
   };
 
   return (
@@ -542,7 +520,7 @@ export const Header = () => {
                   <IconButton
                     type="button"
                     component={Link}
-                    to="/carts"
+                    to="/cart"
                     aria-label="ShoppingCart"
                     sx={{
                       color: "#1c2759",
@@ -554,9 +532,9 @@ export const Header = () => {
                   >
                     <ShoppingCartIcon />
                   </IconButton>
-                  <Tooltip title="Name of User">
+                  <Tooltip title={`${user.firstName} ${user.lastName}`}>
+                  <Link to="/profile" style={{ textDecoration: "none" }}>
                     <IconButton
-                      onClick={handleOpenUserMenu}
                       sx={{
                         p: "10px",
                         "&:hover": {
@@ -565,10 +543,11 @@ export const Header = () => {
                       }}
                     >
                       <Avatar
-                        alt="Remy Sharp"
-                        src="https://play-lh.googleusercontent.com/4qAz40o6M5w6hJ62VsjwGbYueB0fRWPmiG1yOZpNHn3qo2uzlhZZ1mwE5jtBlPp3Lw=w600-h300-pc0xffffff-pd"
+                        alt={user.firstName}
+                        src={user.imageUrl}
                       />
                     </IconButton>
+                    </Link>
                   </Tooltip>
                 </Typography>
               ) : (

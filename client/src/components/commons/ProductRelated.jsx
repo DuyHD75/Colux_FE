@@ -16,11 +16,8 @@ import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
 import { useParams } from "react-router-dom";
 
-
 const ProductsRelated = ({ products }) => {
-
   const { productCategory, productCategoryId } = useParams();
-
 
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = Math.ceil(products.length / 3);
@@ -31,6 +28,9 @@ const ProductsRelated = ({ products }) => {
 
   const handlePrev = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+  const handleClick = (product) => {
+    localStorage.setItem("selectedProduct", JSON.stringify(product));
   };
 
   return (
@@ -133,7 +133,10 @@ const ProductsRelated = ({ products }) => {
                           }}
                         >
                           <img
-                            src={relatedProduct.images.length > 0 && relatedProduct.images[0].url}
+                            src={
+                              relatedProduct.images.length > 0 &&
+                              relatedProduct.images[0].url
+                            }
                             alt={relatedProduct.name}
                             style={{
                               width: "100%",
@@ -162,16 +165,19 @@ const ProductsRelated = ({ products }) => {
                           gutterBottom
                           sx={{
                             marginTop: "20px",
-                            ...textConfigs.style.headerText,
+                            fontSize: "0.75rem",
+                            display: "-webkit-box",
                             overflow: "hidden",
-                            whiteSpace: "nowrap",
                             textOverflow: "ellipsis",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
                             width: "100%",
                             textAlign: "center",
                             fontWeight: "bold",
+                            ...textConfigs.style.basicFont,
                           }}
                         >
-                          {relatedProduct.name}
+                          {relatedProduct.productName}
                         </Typography>
                         <Typography
                           variant="body2"
@@ -200,6 +206,7 @@ const ProductsRelated = ({ products }) => {
                               ...textConfigs.style.basicFont,
                             },
                           }}
+                          onClick={handleClick(relatedProduct)}
                         >
                           View Detail
                         </Button>

@@ -7,9 +7,6 @@ import {
   Button,
   IconButton,
   Input,
-  FormControl,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -17,7 +14,6 @@ import CalculatorIcon from "@mui/icons-material/Calculate";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import data from "../../data/data";
 import ProductCollapse from "./ProductCollapse";
 import ProductsRelated from "./ProductRelated";
 import { Link } from "react-router-dom";
@@ -32,22 +28,29 @@ import { toast } from "react-toastify";
 import { useCallback } from "react";
 import cartApi from "../../api/modules/cart.api";
 
-const colors = data.colors;
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
 
 const ProductDetailInfo = ({ product }) => {
   const { t } = useTranslation();
+
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [products, setProducts] = useState([]);
   const productsPerPage = 20;
-  const [pageIndex, setPageIndex] = useState(0);
   const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState(null);
 
-  console.log("Productselected", selectedProduct);
-  console.log("Variantselected", selectedVariant);
   
+  
+  const pageIndex= 0;
 
   const rating = 0;
   const reviewsCount = 0;
@@ -57,10 +60,10 @@ const ProductDetailInfo = ({ product }) => {
 
   const increaseQuantity = () => {
     const inStock = selectedVariant.quantity;
-    quantity < inStock && setQuantity(quantity + 1);
+    Number(quantity) < inStock && setQuantity(Number(quantity) + 1);
   };
   const decreaseQuantity = () => {
-    quantity > 1 && setQuantity(quantity - 1);
+    Number(quantity) > 1 && setQuantity(Number(quantity) - 1);
   };
 
   const getProductOptions = () => {
@@ -92,7 +95,6 @@ const ProductDetailInfo = ({ product }) => {
           page,
           size
         );
-        console.log(response);
 
         if (response) {
           setProducts([...response.data.products.content]);
@@ -224,27 +226,67 @@ toast.success('Added to cart successfully');
         </Grid>
 
         <Grid container spacing={2} my={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                "& img": {
-                  width: { xs: "100%", md: "100%" },
-                  height: { xs: "auto", md: "auto" },
-                  objectFit: "cover",
-                },
+                width: "100%",
               }}
             >
-              <img
-                src={product.images.length > 0 ? product.images[0].url : ""}
-                alt="Product Detail"
-              />
+              <Swiper
+                style={{
+                  "--swiper-navigation-color": "#fff",
+                  "--swiper-pagination-color": "#fff",
+                }}
+                spaceBetween={10}
+                navigation={true}
+                thumbs={{ swiper: thumbsSwiper }}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper2"
+              >
+                {product.images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={image.url}
+                      alt={`Product ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Swiper cho ảnh thumbnail */}
+              <Swiper
+                onSwiper={setThumbsSwiper}
+                spaceBetween={10}
+                slidesPerView={4}
+                freeMode={true}
+                watchSlidesProgress={true}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper"
+                style={{ marginTop: "10px" }}
+              >
+                {product.images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={image.url}
+                      alt={`Product Thumbnail ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             {selectedVariant && (
               <Typography
                 variant="h6"
@@ -268,17 +310,32 @@ toast.success('Added to cart successfully');
             {product && (
               <Box>
                 {product.paints && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("colors")}:
                   </Typography>
                 )}
                 {product.wallpapers && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("type")}:
                   </Typography>
                 )}
                 {product.floors && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("type")}:
                   </Typography>
                 )}
@@ -560,8 +617,9 @@ toast.success('Added to cart successfully');
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${selectedVariant.quantity
-                      } ${t("products")})`
+                      ? `${t("still.in.stock")} (${
+                          selectedVariant.quantity
+                        } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
