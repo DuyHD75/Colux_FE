@@ -134,10 +134,11 @@ const PaymentBilling = () => {
           }}>REVIEW ORDER</Button>
 
         </Stack>
-        <Container >
+        <Container>
+        <form onSubmit={billingForm.handleSubmit}>
 
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={4} alignItems='center' sx={{ padding: { xs: '50px 16px 0 16px', lg: '50px 16px 0 0' } }}>
-            <Box component='form' flex={8} width='100%'>
+            <Box flex={8} width='100%'>
               <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>Billing & contact information
               </Typography>
               <label>
@@ -273,9 +274,11 @@ const PaymentBilling = () => {
                   By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
                 </Typography>
               </Box>
-              <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={handleCheckout} >Continue</button>
+              <button type='submit' style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' >Continue</button>
             </Box>
           </Stack>
+          </form>
+
         </Container>
       </Box>
     </>
