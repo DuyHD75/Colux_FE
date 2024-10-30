@@ -48,9 +48,9 @@ const ProductDetailInfo = ({ product }) => {
   const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState(null);
 
-  
-  
-  const pageIndex= 0;
+
+
+  const pageIndex = 0;
 
   const rating = 0;
   const reviewsCount = 0;
@@ -136,7 +136,7 @@ const ProductDetailInfo = ({ product }) => {
     };
     getCart();
   }, [user]);
-console.log('paintID',selectedProduct?.id);
+  console.log('paintID', selectedProduct?.id);
 
   const handleAddToCart = (quantity) => {
     const status = 1;
@@ -145,12 +145,12 @@ console.log('paintID',selectedProduct?.id);
 
     const cartItems = [{
       ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId  }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
       ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
       productId: product.productId,
       quantity: quantity,
       ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id}),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
       ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
     }];
 
@@ -168,11 +168,10 @@ console.log('paintID',selectedProduct?.id);
   const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
     if (!response) {
-      return toast.error(err);
-
+      toast.error('Quantity not enough to add');
     }
     else {
-toast.success('Added to cart successfully');
+      toast.success('Added to cart successfully');
     }
   }, []);
 
@@ -617,9 +616,8 @@ toast.success('Added to cart successfully');
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${
-                          selectedVariant.quantity
-                        } ${t("products")})`
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -693,7 +691,7 @@ toast.success('Added to cart successfully');
                     ...textConfigs.style.basicFont,
                   }}
                   fullWidth
-                onClick={()=>{handleAddToCart(quantity)}}
+                  onClick={() => { handleAddToCart(quantity) }}
                 >
                   {t("add.to.cart")}
                 </Button>
