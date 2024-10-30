@@ -40,7 +40,6 @@ const ProductCard = ({ product }) => {
   
 
   const handleClick = () => {
-    // Lưu sản phẩm vào localStorage
     localStorage.setItem("selectedProduct", JSON.stringify(product));
   };
 
@@ -116,7 +115,7 @@ const ProductCard = ({ product }) => {
               overflow: "hidden",
               textOverflow: "ellipsis",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 2, // Giới hạn số dòng
+              WebkitLineClamp: 2,
               alignItems: "center",
               justifyContent: "center",
               fontWeight: "bold",

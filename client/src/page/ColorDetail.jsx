@@ -7,11 +7,13 @@ import { useDispatch } from "react-redux";
 import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
 import colorsApi from "../api/modules/colors.api";
 import { toast } from "react-toastify";
+import AdvisoryBanner from "../components/commons/AdvisoryBanner";
+import ContactForm from "../components/commons/ContactForm";
 
 const ColorDetail = () => {
   const dispatch = useDispatch();
   const { colorId } = useParams();
-  const [color, setColor] = useState(null); // Initialize to null
+  const [color, setColor] = useState(null);
 
   useEffect(() => {
     const getColorDetail = async () => {
@@ -33,13 +35,15 @@ const ColorDetail = () => {
     };
 
     getColorDetail();
-  }, [dispatch, colorId]); // Add colorId to dependencies to refetch if it changes
+  }, [dispatch, colorId]); 
 
   return (
     <Fragment>
       <Box sx={{ marginTop: { xs: "56px", md: "96px" } }}>
         <Navigate />
         {color && <ColorDetailIfno color={color} />}
+        <AdvisoryBanner></AdvisoryBanner>
+        <ContactForm></ContactForm>
       </Box>
     </Fragment>
   );

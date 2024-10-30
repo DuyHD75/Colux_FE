@@ -64,7 +64,7 @@ const Auth = () => {
     } else if (action === actionState.resetPassword) {
         navigate('/resetPassword');
     }
-}, [action, navigate]);
+}, [action]);
 
   useEffect(() => {
     if (appState) setAction(appState);
