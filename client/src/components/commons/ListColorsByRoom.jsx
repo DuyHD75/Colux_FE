@@ -9,31 +9,20 @@ import {
   InputLabel,
   Pagination,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
-import data from "../../data/data";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
 
-const isColorSimilarToWhite = (hex) => {
-  hex = hex.replace("#", "");
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-  const brightness = (r + g + b) / 3;
-  return brightness > 200;
-};
-
 const ListColorsByRoom = () => {
-  // const rooms = data.rooms;
   const { section, collection, collectionId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
-  const colorsPerPage = 5;
+  const colorsPerPage = 20;
   const [totalPages, setTotalPages] = useState(0);
 
   const [rooms, setRooms] = useState([]);
@@ -41,7 +30,7 @@ const ListColorsByRoom = () => {
 
   const dispatch = useDispatch();
 
-  const matchedRoom = rooms.find((room) => room.id === collection);
+  const matchedRoom = rooms.find((room) => room.id === collectionId);
 
   const initialRoomCollection = matchedRoom
     ? matchedRoom.collections[0].id
@@ -200,7 +189,7 @@ const ListColorsByRoom = () => {
               label="Collections"
             >
               {rooms
-                .filter((room) => room.name === collection)
+                .filter((room) => room.id === collectionId)
                 .flatMap((room) =>
                   room.collections.map((collection, index) => (
                     <MenuItem key={index} value={collection.id}>
@@ -208,9 +197,9 @@ const ListColorsByRoom = () => {
                     </MenuItem>
                   ))
                 )}
-              <MenuItem value={`All Colors ${collection}`}>
+              {/* <MenuItem value={`All Colors ${collection}`}>
                 All Colors {collection}
-              </MenuItem>
+              </MenuItem> */}
             </Select>
           </FormControl>
         </Grid>
@@ -221,7 +210,7 @@ const ListColorsByRoom = () => {
             <Grid item xs={6} md={2.4} key={index}>
             <Link
               key={index}
-              to={`/colors/${section}/${collection}/${color.name}/${color.id}`}
+              to={`/colors/${section}/${collection}/${collectionId}/${color.name}/${color.id}`}
               className={`mx-4 my-2 relative flex flex-col items-center justify-center transition-opacity duration-300 ${
                 hoveredColor && hoveredColor !== color.hex
                   ? "opacity-50"
@@ -250,6 +239,12 @@ const ListColorsByRoom = () => {
               >
                 {color.name}
               </span>
+              <span
+                  className="text-xs md:text-lg text-center mt-1"
+                  style={{ color: "#3b3730" }}
+                >
+                  {color.code}
+                </span>
             </Link>
           </Grid>
           )

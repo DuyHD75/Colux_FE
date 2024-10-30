@@ -48,7 +48,7 @@ export const SubHeader = () => {
         </Typography>
 
         <Typography variant="body1" className="flex">
-          {menuConfigs.termItems.slice(0, -1).map((item, index) => (
+          {menuConfigs.termItems.map((item, index) => (
             <MenuItem key={index}>
               <Link
                 to={item.path}
@@ -58,17 +58,6 @@ export const SubHeader = () => {
               </Link>
             </MenuItem>
           ))}
-          <MenuItem
-            sx={{ paddingRight: 0 }}
-            key={menuConfigs.termItems.length - 1}
-          >
-            <Link
-              to={menuConfigs.termItems[menuConfigs.termItems.length - 1].path}
-              className="text-white capitalize text-xs hover:text-[#6dacd5]"
-            >
-              {menuConfigs.termItems[menuConfigs.termItems.length - 1].display}
-            </Link>
-          </MenuItem>
         </Typography>
       </Container>
     </Box>

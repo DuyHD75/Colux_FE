@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Grid, Typography, Pagination } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useParams } from "react-router-dom";
 import SidebarFilters from "../commons/SidebarFilters";
 import ProductCard from "./ProductCard";
@@ -16,13 +16,12 @@ const ListProducts = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
-  const [pageIndex, setPageIndex] = useState(0);
+  const [totalPages, setTotalPages] = useState(0);
 
   const [selectedRating, setSelectedRating] = useState([]);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
-  const [selectCategory, setSelectedCategory] = useState([]);
 
   const dispatch = useDispatch();
   useEffect(() => {
@@ -33,19 +32,19 @@ const ListProducts = () => {
         if (productCategoryId) {
           ({ response, err } = await productsApi.getProductByCategory(
             productCategoryId,
-            page,
+            page - 1,
             size
           ));
         } else {
           ({ response, err } = await productsApi.getAllProductPageAble(
-            page,
+            page - 1,
             size
           ));
         }
-        console.log(response);
 
         if (response) {
           setProducts([...response.data.products.content]);
+          setTotalPages(response.data.products.totalPages)
         } else if (err) {
           toast.error(err);
         }
@@ -56,8 +55,8 @@ const ListProducts = () => {
         dispatch(setGlobalLoading(false));
       }
     };
-    getAllProductPageAble(pageIndex, productsPerPage);
-  }, [dispatch, pageIndex, productsPerPage, productCategoryId]);
+    getAllProductPageAble(currentPage, productsPerPage);
+  }, [dispatch, currentPage, productsPerPage, productCategoryId]);
 
   useEffect(() => {
     const getAllcategory = async () => {
@@ -71,7 +70,7 @@ const ListProducts = () => {
         }
       } catch (error) {
         console.log("Error", error);
-        toast.error("An error occurred while fetching products.");
+        toast.error("An error occurred while fetching categories.");
       } finally {
         dispatch(setGlobalLoading(false));
       }
@@ -79,9 +78,6 @@ const ListProducts = () => {
     getAllcategory();
   }, [dispatch]);
 
-  useEffect(() => {
-    setSelectedCategory(productCategoryId || "");
-  }, [productCategoryId]);
 
   useEffect(() => {
     const newFilteredProducts = products.filter((product) => {
@@ -117,7 +113,6 @@ const ListProducts = () => {
     });
 
     setFilteredProducts(newFilteredProducts);
-    setCurrentPage(1);
   }, [
     selectedRating,
     selectedProperty,
@@ -137,13 +132,10 @@ const ListProducts = () => {
       setSelectedProperty(values);
     } else if (filterType === "features") {
       setSelectedFeatures(values);
-    } else if (filterType === "category") {
-      setSelectedCategory(values[0] || "");
     }
   };
 
   const hasProducts = filteredProducts.length > 0;
-  const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
 
   return (
     <Container maxWidth="lg" className="my-10" sx={{ paddingBottom: "2rem" }}>
@@ -161,8 +153,8 @@ const ListProducts = () => {
             {hasProducts ? (
               filteredProducts
                 .slice(
-                  (currentPage - 1) * productsPerPage,
-                  currentPage * productsPerPage
+                  0 * productsPerPage,
+                  1 * productsPerPage
                 )
                 .map((product, index) => (
                   <Grid item xs={6} sm={4} md={3} key={index}>
