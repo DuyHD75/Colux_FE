@@ -7,9 +7,6 @@ import {
   Button,
   IconButton,
   Input,
-  FormControl,
-  Select,
-  MenuItem,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -17,7 +14,6 @@ import CalculatorIcon from "@mui/icons-material/Calculate";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
-import data from "../../data/data";
 import ProductCollapse from "./ProductCollapse";
 import ProductsRelated from "./ProductRelated";
 import { Link } from "react-router-dom";
@@ -25,21 +21,36 @@ import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
 import textConfigs from "../../config/text.config";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
+import { useCallback } from "react";
+import cartApi from "../../api/modules/cart.api";
 
-const colors = data.colors;
+import { Swiper, SwiperSlide } from "swiper/react";
+import { FreeMode, Navigation, Thumbs } from "swiper/modules";
+import "swiper/css";
+import "swiper/css/free-mode";
+import "swiper/css/navigation";
+import "swiper/css/thumbs";
 
 const ProductDetailInfo = ({ product }) => {
   const { t } = useTranslation();
+
+  const [thumbsSwiper, setThumbsSwiper] = useState(null);
+
   const [quantity, setQuantity] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [products, setProducts] = useState([]);
   const productsPerPage = 20;
-  const [pageIndex, setPageIndex] = useState(0);
+  const { user } = useSelector((state) => state.user);
+  const [cart, setCart] = useState(null);
+
+
+
+  const pageIndex = 0;
 
   const rating = 0;
   const reviewsCount = 0;
@@ -49,10 +60,10 @@ const ProductDetailInfo = ({ product }) => {
 
   const increaseQuantity = () => {
     const inStock = selectedVariant.quantity;
-    quantity < inStock && setQuantity(quantity + 1);
+    Number(quantity) < inStock && setQuantity(Number(quantity) + 1);
   };
   const decreaseQuantity = () => {
-    quantity > 1 && setQuantity(quantity - 1);
+    Number(quantity) > 1 && setQuantity(Number(quantity) - 1);
   };
 
   const getProductOptions = () => {
@@ -80,12 +91,10 @@ const ProductDetailInfo = ({ product }) => {
       dispatch(setGlobalLoading(true));
       try {
         const { response, err } = await productsApi.getProductByCategory(
-            product.category.categoryId,
-            page,
-            size
-          );
-        
-        console.log(response);
+          product.category.categoryId,
+          page,
+          size
+        );
 
         if (response) {
           setProducts([...response.data.products.content]);
@@ -106,6 +115,65 @@ const ProductDetailInfo = ({ product }) => {
     setSelectedProduct(productType);
     setSelectedVariant(productType.variants[0]);
   };
+
+  useEffect(() => {
+    const getCart = async () => {
+      if (user) {
+        try {
+          dispatch(setGlobalLoading(true));
+          const { response, err } = await cartApi.getCart(user.userId);
+          if (response) {
+            dispatch(setGlobalLoading(false));
+            setCart(response.data.carts);
+          }
+          if (err) {
+            toast.error('Failed to fetch cart data');
+          }
+        } catch (error) {
+          toast.error('An error occurred while fetching cart data');
+        }
+      }
+    };
+    getCart();
+  }, [user]);
+  console.log('paintID', selectedProduct?.id);
+
+  const handleAddToCart = (quantity) => {
+    const status = 1;
+    const updateQuantityType = 'INCREMENTAL';
+    const customerId = user.userId;
+
+    const cartItems = [{
+      ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
+      productId: product.productId,
+      quantity: quantity,
+      ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
+    }];
+
+    updateCart(
+
+      cart.cartId,
+      customerId,
+      status,
+      updateQuantityType,
+      cartItems
+
+    );
+  };
+
+  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
+    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
+    if (!response) {
+      toast.error('Quantity not enough to add');
+    }
+    else {
+      toast.success('Added to cart successfully');
+    }
+  }, []);
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
@@ -157,27 +225,67 @@ const ProductDetailInfo = ({ product }) => {
         </Grid>
 
         <Grid container spacing={2} my={2}>
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={4}>
             <Box
               sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-                "& img": {
-                  width: { xs: "100%", md: "100%" },
-                  height: { xs: "auto", md: "auto" },
-                  objectFit: "cover",
-                },
+                width: "100%",
               }}
             >
-              <img
-                src={product.images.length > 0 ? product.images[0].url : ""}
-                alt="Product Detail"
-              />
+              <Swiper
+                style={{
+                  "--swiper-navigation-color": "#fff",
+                  "--swiper-pagination-color": "#fff",
+                }}
+                spaceBetween={10}
+                navigation={true}
+                thumbs={{ swiper: thumbsSwiper }}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper2"
+              >
+                {product.images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={image.url}
+                      alt={`Product ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
+
+              {/* Swiper cho ảnh thumbnail */}
+              <Swiper
+                onSwiper={setThumbsSwiper}
+                spaceBetween={10}
+                slidesPerView={4}
+                freeMode={true}
+                watchSlidesProgress={true}
+                modules={[FreeMode, Navigation, Thumbs]}
+                className="mySwiper"
+                style={{ marginTop: "10px" }}
+              >
+                {product.images.map((image, index) => (
+                  <SwiperSlide key={index}>
+                    <img
+                      src={image.url}
+                      alt={`Product Thumbnail ${index + 1}`}
+                      style={{
+                        width: "100%",
+                        height: "auto",
+                        objectFit: "cover",
+                      }}
+                    />
+                  </SwiperSlide>
+                ))}
+              </Swiper>
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
+          <Grid item xs={12} md={8}>
             {selectedVariant && (
               <Typography
                 variant="h6"
@@ -201,17 +309,32 @@ const ProductDetailInfo = ({ product }) => {
             {product && (
               <Box>
                 {product.paints && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("colors")}:
                   </Typography>
                 )}
                 {product.wallpapers && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("type")}:
                   </Typography>
                 )}
                 {product.floors && (
-                  <Typography variant="body2" color="#000" fontWeight="bold" sx={{ ...textConfigs.style.basicFont }}>
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
                     {t("type")}:
                   </Typography>
                 )}
@@ -463,72 +586,71 @@ const ProductDetailInfo = ({ product }) => {
               </Box>
             </Box>
             {selectedVariant && (
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: { xs: "column", sm: "row" },
+
+                }}
+              >
                 <Box
                   sx={{
                     display: "flex",
-                    flexDirection: { xs: "column", sm: "row" },
-
+                    alignItems: "center",
+                    mb: 1,
+                    flex: 1,
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      mb: 1,
-                      flex: 1,
-                    }}
+                  <Typography
+                    variant="body2"
+                    color="#000"
+                    fontWeight="bold"
+                    sx={{ ...textConfigs.style.basicFont }}
                   >
-                    <Typography
-                      variant="body2"
-                      color="#000"
-                      fontWeight="bold"
-                      sx={{ ...textConfigs.style.basicFont }}
-                    >
-                      {t("in.stock")}:
-                    </Typography>
-                    <Typography
-                      variant="body2"
-                      ml={1}
-                      color="#000"
-                      sx={{ ...textConfigs.style.basicFont }}
-                    >
-                      {selectedVariant.quantity > 0
-                        ? `${t("still.in.stock")} (${
-                            selectedVariant.quantity
-                          } ${t("products")})`
-                        : `${t("out.of.stock")}`}
-                    </Typography>
-                  </Box>
+                    {t("in.stock")}:
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    ml={1}
+                    color="#000"
+                    sx={{ ...textConfigs.style.basicFont }}
+                  >
+                    {selectedVariant.quantity > 0
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
+                      : `${t("out.of.stock")}`}
+                  </Typography>
+                </Box>
 
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    mb={1}
-                    flexDirection="row"
-                    sx={{ flex: 1 }}
-                  >
-                    <Box>
-                      <IconButton onClick={decreaseQuantity}>
-                        <RemoveIcon />
-                      </IconButton>
-                      <Input
-                        value={quantity}
-                        onChange={(e) => setQuantity(e.target.value)}
-                        sx={{
-                          width: 50,
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  justifyContent="space-between"
+                  mb={1}
+                  flexDirection="row"
+                  sx={{ flex: 1 }}
+                >
+                  <Box>
+                    <IconButton onClick={decreaseQuantity}>
+                      <RemoveIcon />
+                    </IconButton>
+                    <Input
+                      value={quantity}
+                      onChange={(e) => setQuantity(e.target.value)}
+                      sx={{
+                        width: 50,
+                        textAlign: "center",
+                        "& input": {
                           textAlign: "center",
-                          "& input": {
-                            textAlign: "center",
-                          },
-                        }}
-                      />
-                      <IconButton onClick={increaseQuantity}>
-                        <AddIcon />
-                      </IconButton>
-                    </Box>
+                        },
+                      }}
+                    />
+                    <IconButton onClick={increaseQuantity}>
+                      <AddIcon />
+                    </IconButton>
                   </Box>
                 </Box>
+              </Box>
             )}
 
             <Typography
@@ -569,6 +691,7 @@ const ProductDetailInfo = ({ product }) => {
                     ...textConfigs.style.basicFont,
                   }}
                   fullWidth
+                  onClick={() => { handleAddToCart(quantity) }}
                 >
                   {t("add.to.cart")}
                 </Button>

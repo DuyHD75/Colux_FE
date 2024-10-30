@@ -5,30 +5,50 @@ import {
   TextField,
   Typography,
   Button,
-  Modal,
   Grid,
   Card,
   CardContent,
   CardMedia,
   IconButton,
 } from "@mui/material";
-import { useSelector } from "react-redux";
-import CloseIcon from "@mui/icons-material/Close";
+import { useDispatch } from "react-redux";
 import ProductModal from "../components/commons/ProductModel";
-import { FaEdit, FaTrash } from "react-icons/fa";
+import { FaCheck, FaEdit, FaTrash } from "react-icons/fa";
 import Navigate from "../components/commons/Navigate";
+import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
+import productsApi from "../api/modules/products.api";
+import { toast } from "react-toastify";
+import { BsFillHexagonFill } from "react-icons/bs";
+import textConfigs from "../config/text.config";
+import { useTranslation } from "react-i18next";
 
 const CalculatePrice = () => {
-  const products = useSelector((state) => state.products.products);
+  const { t, i18n } = useTranslation();
+
+  const [paints, setPaints] = useState([]);
+  const [wallpapers, setWallpapers] = useState([]);
+  const [floors, setFloors] = useState([]);
+  const productsPerPage = 10;
+
+  const [paintsTotalPages, setPaintsTotalPages] = useState(0);
+  const [wallpapersTotalPages, setWallpapersTotalPages] = useState(0);
+  const [floorsTotalPages, setFloorsTotalPages] = useState(0);
+  const [currentPaintPage, setCurrentPaintPage] = useState(1);
+  const [currentWallpaperPage, setCurrentWallpaperPage] = useState(1);
+  const [currentFloorPage, setCurrentFloorPage] = useState(1);
+  const [totalPaints, setTotalPaints] = useState(0);
+  const [totalWallpaper, settotalWallpaper] = useState(0);
+  const [totalFloor, setTotalFloor] = useState(0);
+
+  const [selectedVariants, setSelectedVariants] = useState({});
+  const [selectedWallpaperVariant, setSelectedWallpaperVariant] =
+    useState(null);
+  const [selectedFloorVariant, setSelectedFloorVariant] = useState(null);
+  const [selectedFloorValue, setSelectedFloorValue] = useState(null);
+
   const [length, setLength] = useState("");
   const [width, setWidth] = useState("");
-  const [walls, setWalls] = useState([
-    { length: "", width: "" },
-    { length: "", width: "" },
-    { length: "", width: "" },
-    { length: "", width: "" },
-  ]);
-  const [selectedPaint, setSelectedPaint] = useState(null);
+  const [walls, setWalls] = useState([{ length: "", width: "" }]);
   const [selectedPaints, setSelectedPaints] = useState([]);
   const [selectedWallpaper, setSelectedWallpaper] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
@@ -36,9 +56,89 @@ const CalculatePrice = () => {
   const [openWallpaperModal, setOpenWallpaperModal] = useState(false);
   const [openFloorModal, setOpenFloorModal] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null);
+  const [editableAreas, setEditableAreas] = useState({});
+
+  const [userInputValue, setUserInputValue] = useState({});
+  const [userIsEditing, setUserIsEditing] = useState(false);
 
   const [isSticky, setIsSticky] = useState(false);
   const boxRef = useRef(null);
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getAllCategory = async () => {
+      dispatch(setGlobalLoading(true));
+      try {
+        const { response, err } = await productsApi.getAllCategory();
+
+        if (response) {
+          const categories = response.data.categories;
+          const fetchProducts = async (
+            categoryId,
+            categoryName,
+            page,
+            size
+          ) => {
+            try {
+              const { response: productResponse, err: productError } =
+                await productsApi.getProductByCategory(categoryId, page, size);
+
+              if (productResponse) {
+                const products = productResponse.data.products.content;
+                if (categoryName === "Paint") {
+                  setPaints(products);
+                  setPaintsTotalPages(productResponse.data.products.totalPages);
+                  setTotalPaints(productResponse.data.products.totalElements);
+                } else if (categoryName === "Wallpaper") {
+                  setWallpapers(products);
+                  setWallpapersTotalPages(
+                    productResponse.data.products.totalPages
+                  );
+                  settotalWallpaper(
+                    productResponse.data.products.totalElements
+                  );
+                } else if (categoryName === "Floor") {
+                  setFloors(products);
+                  setFloorsTotalPages(productResponse.data.products.totalPages);
+                  setTotalFloor(productResponse.data.products.totalElements);
+                }
+              } else if (productError) {
+                toast.error(
+                  `Lỗi khi lấy sản phẩm cho danh mục ${categoryName}: ${productError}`
+                );
+              }
+            } catch (error) {
+              console.error(
+                `Lỗi khi lấy sản phẩm cho danh mục ${categoryName}`,
+                error
+              );
+            }
+          };
+          categories.forEach((category) => {
+            fetchProducts(
+              category.categoryId,
+              category.name,
+              category.name === "Paint"
+                ? currentPaintPage - 1
+                : category.name === "Wallpaper"
+                ? currentWallpaperPage - 1
+                : currentFloorPage - 1,
+              productsPerPage
+            );
+          });
+        } else if (err) {
+          toast.error(err);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("Có lỗi xảy ra khi lấy danh mục.");
+      } finally {
+        dispatch(setGlobalLoading(false));
+      }
+    };
+
+    getAllCategory();
+  }, [dispatch, currentPaintPage, currentWallpaperPage, currentFloorPage]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -59,17 +159,78 @@ const CalculatePrice = () => {
     };
   }, []);
 
+  const handlePageChange = (type, newPage) => {
+    if (type === "paint") {
+      setCurrentPaintPage(newPage);
+    } else if (type === "wallpaper") {
+      setCurrentWallpaperPage(newPage);
+    } else if (type === "floor") {
+      setCurrentFloorPage(newPage);
+    }
+  };
+
   const handleWallChange = (index, field, value) => {
     const newWalls = [...walls];
     newWalls[index][field] = value;
     setWalls(newWalls);
   };
 
-  const floorArea = length && width ? length * width : 0;
+  const addWall = () => {
+    setWalls([...walls, { length: "", width: "" }]);
+  };
+
+  const deleteWall = (index) => {
+    const newWalls = walls.filter((_, wallIndex) => wallIndex !== index);
+    setWalls(newWalls);
+  };
+
   const wallArea = walls.reduce(
-    (total, wall) => total + Number(wall.length) * Number(wall.width),
+    (total, wall) =>
+      total + (Number(wall.length) || 0) * (Number(wall.width) || 0),
     0
   );
+
+  const handleEditableAreaChange = (uniqueKey, value) => {
+    setUserIsEditing(true);
+    setUserInputValue((prev) => ({
+      ...prev,
+      [uniqueKey]: value,
+    }));
+  };
+
+  const handleInputBlur = (uniqueKey) => {
+    setEditableAreas((prevAreas) => ({
+      ...prevAreas,
+      [uniqueKey]: userInputValue[uniqueKey] || wallArea,
+    }));
+    setUserIsEditing(false);
+  };
+
+  useEffect(() => {
+    // Chỉ thiết lập editableAreas nếu userIsEditing là false
+    if (!userIsEditing) {
+      const initialAreas = {};
+      let shouldSetAreas = false;
+
+      selectedPaints.forEach((paint, index) => {
+        const uniqueKey = `${paint.productId}-${index}`;
+
+        if (!(uniqueKey in editableAreas)) {
+          initialAreas[uniqueKey] = wallArea;
+          shouldSetAreas = true;
+        }
+      });
+
+      if (shouldSetAreas) {
+        setEditableAreas((prevAreas) => ({
+          ...prevAreas,
+          ...initialAreas,
+        }));
+      }
+    }
+  }, [selectedPaints, wallArea, editableAreas, userIsEditing]);
+
+  const floorArea = length && width ? length * width : 0;
 
   const handleProductSelect = (product, type) => {
     if (editingIndex !== null && type === "paint") {
@@ -92,6 +253,27 @@ const CalculatePrice = () => {
           break;
       }
     }
+  };
+
+  const handleVariantSelect = (index, variant) => {
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        selectedVariant: variant,
+        selectedVariantValue: null,
+      },
+    }));
+  };
+
+  const handleVariantValueSelect = (index, variantValue) => {
+    setSelectedVariants((prev) => ({
+      ...prev,
+      [index]: {
+        ...prev[index],
+        selectedVariantValue: variantValue,
+      },
+    }));
   };
 
   const handleEditProduct = (type, index) => {
@@ -127,22 +309,38 @@ const CalculatePrice = () => {
     }
   };
 
-  const calculatePrice = (product, type) => {
+  const calculatePrice = (product, sizeName, price, type, uniqueKey) => {
     if (!product) return 0;
 
     let estimatedPrice = 0;
 
     switch (type) {
-      case "floor":
-        estimatedPrice = Math.ceil(floorArea / product.size) * product.price;
-        break;
-      case "wallpaper":
-        estimatedPrice = Math.ceil(wallArea / product.size) * product.price;
-        break;
-      case "paint":
+      case "floor": {
+        const numbers = sizeName.split(" x ").map(Number);
         estimatedPrice =
-          (wallArea * product.coverage * product.layers) / product.volume;
+          Math.ceil(floorArea / (numbers[0] * numbers[1])) * price;
         break;
+      }
+      case "wallpaper": {
+        const numbers = sizeName.split(" x ").map(Number);
+        estimatedPrice =
+          Math.ceil(wallArea / (numbers[0] * numbers[1])) * price;
+        break;
+      }
+      case "paint": {
+        const areaToUse = editableAreas[uniqueKey] || wallArea;
+        const coverage = product.properties.find(
+          (prop) => prop.property.name === "Coverage"
+        )?.value;
+        const layers = product.properties.find(
+          (prop) => prop.property.name === "Layer"
+        )?.value;
+
+        if (coverage && layers) {
+          estimatedPrice = Math.ceil(areaToUse / (coverage * layers)) * price;
+        }
+        break;
+      }
       default:
         break;
     }
@@ -151,20 +349,42 @@ const CalculatePrice = () => {
   };
 
   const totalEstimatedPrice = () => {
-    console.log(selectedPaints);
+    const paintPrice =
+      selectedVariants && Object.keys(selectedVariants).length > 0
+        ? Object.values(selectedVariants).reduce((total, variant, index) => {
+            const selectedVariant = variant.selectedVariantValue;
+            if (selectedVariant) {
+              const sizeName = selectedVariant.sizeName;
+              const price = selectedVariant.price;
+              const paint = selectedPaints[index];
+              const uniqueKey = `${paint.productId}-${index}`;
+              return (
+                total +
+                calculatePrice(paint, sizeName, price, "paint", uniqueKey)
+              );
+            }
+            return total;
+          }, 0)
+        : 0;
 
-    const paintPrice = selectedPaints.reduce((total, paint) => {
-      return total + calculatePrice(paint, "paint");
-    }, 0);
-    const wallpaperPrice = calculatePrice(selectedWallpaper, "wallpaper");
-    const floorPrice = calculatePrice(selectedFloor, "floor");
+    const wallpaperPrice = selectedWallpaperVariant
+      ? calculatePrice(
+          selectedWallpaper,
+          selectedWallpaperVariant.sizeName,
+          selectedWallpaperVariant.price,
+          "wallpaper"
+        )
+      : 0;
+    const floorPrice = selectedFloorValue
+      ? calculatePrice(
+          selectedFloor,
+          selectedFloorValue.sizeName,
+          selectedFloorValue.price,
+          "floor"
+        )
+      : 0;
+
     return paintPrice + wallpaperPrice + floorPrice;
-  };
-
-  const handleOpenModal = (type) => {
-    if (type === "paint") setOpenPaintModal(true);
-    if (type === "wallpaper") setOpenWallpaperModal(true);
-    if (type === "floor") setOpenFloorModal(true);
   };
 
   const handleCloseModal = (type) => {
@@ -179,18 +399,27 @@ const CalculatePrice = () => {
       <Navigate></Navigate>
       <Container maxWidth="lg" className="py-2">
         <Box my={4}>
-          <Typography variant="h4" gutterBottom>
-            Project Estimation
+          <Typography
+            variant="h4"
+            gutterBottom
+            sx={{ ...textConfigs.style.basicFont }}
+          >
+            {t("project.estimation")}
           </Typography>
           <Grid container spacing={2}>
             <Grid item xs={12} md={9}>
-              {/* Home Dimensions */}
-              <Box mb={4}>
-                <Typography variant="h6">Home Dimensions</Typography>
-                <Grid container spacing={2}>
-                  <Grid item xs={6} sm={3}>
+              {/* Floor Dimensions */}
+              <Box mb={2}>
+                <Typography
+                  variant="h6"
+                  sx={{ ...textConfigs.style.basicFont }}
+                >
+                  {t("floor.dimensions")}
+                </Typography>
+                <Grid container spacing={1}>
+                  <Grid item xs={6} sm={6}>
                     <TextField
-                      label="Length (m)"
+                      label={`${t("length")} (m)`}
                       variant="outlined"
                       type="number"
                       value={length}
@@ -198,11 +427,16 @@ const CalculatePrice = () => {
                       fullWidth
                       margin="normal"
                       size="small"
+                      sx={{
+                        "& .MuiInputLabel-root": {
+                          ...textConfigs.style.basicFont,
+                        },
+                      }}
                     />
                   </Grid>
-                  <Grid item xs={6} sm={3}>
+                  <Grid item xs={6} sm={6}>
                     <TextField
-                      label="Width (m)"
+                      label={`${t("width")} (m)`}
                       variant="outlined"
                       type="number"
                       value={width}
@@ -210,34 +444,61 @@ const CalculatePrice = () => {
                       fullWidth
                       margin="normal"
                       size="small"
+                      sx={{
+                        "& .MuiInputLabel-root": {
+                          ...textConfigs.style.basicFont,
+                        },
+                      }}
                     />
                   </Grid>
                   <Grid item xs={6} sm={3}>
+                    <Typography
+                      variant="body2"
+                      sx={{ ...textConfigs.style.basicFont }}
+                    >
+                      {t("floor.area")} (m²)
+                    </Typography>
                     <TextField
-                      label="Floor Area (m²)"
                       variant="outlined"
                       value={floorArea}
-                      InputProps={{ readOnly: true }}
                       fullWidth
                       margin="normal"
                       size="small"
+                      disabled
+                      sx={{
+                        "& .Mui-disabled": {
+                          color: "inherit",
+                          WebkitTextFillColor: "unset",
+                          cursor: "default",
+                        },
+                        "& .MuiInputLabel-root": {
+                          ...textConfigs.style.basicFont,
+                        },
+                      }}
                     />
                   </Grid>
                 </Grid>
               </Box>
 
               {/* Wall Dimensions */}
-              <Box mb={4}>
-                <Typography variant="h6">Wall Dimensions</Typography>
-                <Grid container spacing={2}>
+              <Box mb={2}>
+                <Typography
+                  variant="h6"
+                  sx={{ mb: 3, ...textConfigs.style.basicFont }}
+                >
+                  {t("wall.dimensions")}
+                </Typography>
+                <Grid container spacing={2} alignItems="center">
                   <Grid item xs={12} sx={{ paddingTop: "0px !important" }}>
                     <Box mb={2}>
-                      <Grid container spacing={2}>
+                      <Grid container spacing={1} alignItems="center">
                         {walls.map((wall, index) => (
                           <Fragment key={index}>
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm={5}>
                               <TextField
-                                label={`Length of Wall ${index + 1} (m)`}
+                                label={`${t("length.of.wall")} ${
+                                  index + 1
+                                } (m)`}
                                 variant="outlined"
                                 type="number"
                                 value={wall.length}
@@ -251,11 +512,16 @@ const CalculatePrice = () => {
                                 fullWidth
                                 margin="normal"
                                 size="small"
+                                sx={{
+                                  "& .MuiInputLabel-root": {
+                                    ...textConfigs.style.basicFont,
+                                  },
+                                }}
                               />
                             </Grid>
-                            <Grid item xs={6} sm={3}>
+                            <Grid item xs={6} sm={5}>
                               <TextField
-                                label={`Width of Wall ${index + 1} (m)`}
+                                label={`${t("width.of.wall")} ${index + 1} (m)`}
                                 variant="outlined"
                                 type="number"
                                 value={wall.width}
@@ -269,7 +535,27 @@ const CalculatePrice = () => {
                                 fullWidth
                                 margin="normal"
                                 size="small"
+                                sx={{
+                                  "& .MuiInputLabel-root": {
+                                    ...textConfigs.style.basicFont,
+                                  },
+                                }}
                               />
+                            </Grid>
+                            <Grid item xs={12} sm={2}>
+                              <Button
+                                variant="outlined"
+                                color="error"
+                                onClick={() => deleteWall(index)}
+                                fullWidth
+                                size="small"
+                                sx={{
+                                  marginTop: "8px",
+                                  ...textConfigs.style.basicFont,
+                                }}
+                              >
+                                {t("delete.wall")}
+                              </Button>
                             </Grid>
                           </Fragment>
                         ))}
@@ -279,18 +565,40 @@ const CalculatePrice = () => {
                   <Grid
                     item
                     xs={6}
-                    sm={3}
+                    sm={5}
                     sx={{ paddingTop: "0px !important" }}
                   >
+                    <Typography variant="body2" sx={{}}>
+                      {t("wall.area")} (m²)
+                    </Typography>
                     <TextField
-                      label="Wall Area (m²)"
                       variant="outlined"
                       value={wallArea}
-                      InputProps={{ readOnly: true }}
                       fullWidth
                       margin="normal"
                       size="small"
+                      disabled
+                      sx={{
+                        "& .Mui-disabled": {
+                          color: "inherit",
+                          WebkitTextFillColor: "unset",
+                          cursor: "default",
+                        },
+                      }}
                     />
+                  </Grid>
+
+                  <Grid item xs={6} sm={2}>
+                    <Button
+                      variant="contained"
+                      color="primary"
+                      onClick={addWall}
+                      fullWidth
+                      size="small"
+                      sx={{ marginTop: "8px", ...textConfigs.style.basicFont }}
+                    >
+                      {t("add.wall")}
+                    </Button>
                   </Grid>
                 </Grid>
               </Box>
@@ -307,9 +615,10 @@ const CalculatePrice = () => {
                     backgroundColor: "#f8f9fb",
                     p: 1,
                     border: "1px solid #ccc",
+                    ...textConfigs.style.basicFont,
                   }}
                 >
-                  Material Selection
+                  {t("material.selection")}
                 </Typography>
 
                 {/* Paint Selection */}
@@ -319,75 +628,303 @@ const CalculatePrice = () => {
                   flexDirection={{ xs: "column", md: "row" }}
                   alignItems="center"
                 >
-                  <Box sx={{ flex: 2 }}>
-                    <Typography variant="body1">Paints</Typography>
+                  <Box sx={{ flex: 2, marginBottom: 1 }}>
+                    <Typography
+                      variant="body1"
+                      sx={{ ...textConfigs.style.basicFont }}
+                    >
+                      {t("paints")}
+                    </Typography>
                   </Box>
                   <Box sx={{ flex: 10 }}>
                     {selectedPaints.length > 0 ? (
-                      selectedPaints.map((paint, index) => (
-                        <Card
-                          key={index}
-                          sx={{
-                            display: "flex",
-                            flexDirection: {md: "row" }, // Column cho mobile, row cho desktop
-                            alignItems: "center",
-                            width: "100%",
-                            p: 1,
-                            mb: 1,
-                          }}
-                        >
-                          <CardMedia
-                            component="img"
-                            sx={{
-                              height: { xs: 80, md: 100 }, // Kích thước ảnh nhỏ hơn trên mobile
-                              width: { xs: 80, md: 100 }, // Chiếm toàn bộ chiều rộng trên mobile
-                              objectFit: "cover", // Giữ tỷ lệ ảnh
-                            }}
-                            image={paint.image}
-                            alt={paint.name}
-                          />
-                          <CardContent sx={{ flex: 1 }}>
-                            <Typography variant="h6" gutterBottom>
-                              {paint.name}
-                            </Typography>
-                            <Typography>Price: ${paint.price}</Typography>
-                            <Typography>Area: {wallArea} m²</Typography>
-                            <Typography>
-                              Total: ${" "}
-                              {calculatePrice(paint, "paint").toFixed(2)}
-                            </Typography>
-                            <Box
+                      selectedPaints.map((paint, index) => {
+                        const uniqueKey = `${paint.productId}-${index}`;
+                        return (
+                          <Card
+                            key={index}
                             sx={{
                               display: "flex",
-                              flexDirection: { xs: "row", md: "row" },
-                              alignItems: "center"
+                              flexDirection: { md: "row" },
+                              alignItems: "center",
+                              width: "100%",
+                              mb: 1,
+                              px: 2,
                             }}
                           >
-                            <IconButton
-                              onClick={() => handleEditProduct("paint", index)}
-                              sx={{ mb: { xs: 0, md: 1 } }} // Thêm margin cho mobile
-                            >
-                              <FaEdit />
-                            </IconButton>
-                            <IconButton
-                              onClick={() =>
-                                handleRemoveProduct("paint", index)
+                            <CardMedia
+                              component="img"
+                              sx={{
+                                height: { xs: 80, md: 100 },
+                                width: { xs: 80, md: 100 },
+                                objectFit: "cover",
+                              }}
+                              image={
+                                paint.images.length > 0 && paint.images[0].url
                               }
+                              alt={paint.productName}
+                            />
+                            <CardContent
+                              sx={{
+                                flex: 1,
+                                paddingLeft: 2,
+                                paddingTop: 1,
+                                ":last-child": { paddingBottom: 0 },
+                              }}
                             >
-                              <FaTrash />
-                            </IconButton>
-                          </Box>
-                          </CardContent>
-                          
-                        </Card>
-                      ))
+                              <Box>
+                                <Typography
+                                  variant="h6"
+                                  gutterBottom
+                                  fontWeight="bold"
+                                  sx={{
+                                    fontSize: "10px",
+                                    ...textConfigs.style.basicFont,
+                                  }}
+                                >
+                                  {paint.productName}
+                                </Typography>
+                              </Box>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: 2,
+                                  flexWrap: "wrap",
+                                  marginTop: 1,
+                                }}
+                              >
+                                {paint.paints.map((variant, variantIndex) => (
+                                  <Box
+                                    key={variantIndex}
+                                    sx={{
+                                      position: "relative",
+                                      display: "inline-block",
+                                      cursor: "pointer",
+                                    }}
+                                    onClick={() =>
+                                      handleVariantSelect(index, variant)
+                                    }
+                                    onMouseEnter={(e) =>
+                                      (e.currentTarget.style.transform =
+                                        "scale(1.1)")
+                                    }
+                                    onMouseLeave={(e) =>
+                                      (e.currentTarget.style.transform =
+                                        "scale(1)")
+                                    }
+                                  >
+                                    <BsFillHexagonFill
+                                      size={window.innerWidth < 600 ? 40 : 40}
+                                      style={{
+                                        color: variant.color.hex,
+                                        filter: "drop-shadow(0px 0px 4px #ccc)",
+                                        transition:
+                                          "transform 0.2s ease-in-out",
+                                      }}
+                                    />
+                                    {selectedVariants[index]?.selectedVariant
+                                      ?.id === variant.id && (
+                                      <FaCheck
+                                        style={{
+                                          position: "absolute",
+                                          top: "50%",
+                                          left: "50%",
+                                          transform: "translate(-50%, -50%)",
+                                          color: "#fff",
+                                          fontSize:
+                                            window.innerWidth < 600 ? 20 : 20,
+                                        }}
+                                      />
+                                    )}
+                                  </Box>
+                                ))}
+                              </Box>
+                              {selectedVariants[index]?.selectedVariant && (
+                                <>
+                                  <Typography
+                                    variant="body2"
+                                    color="#000"
+                                    sx={{
+                                      marginTop: 2,
+                                      ...textConfigs.style.basicFont,
+                                    }}
+                                  >
+                                    {t("size")}:
+                                  </Typography>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      flexWrap: "wrap",
+                                    }}
+                                  >
+                                    {selectedVariants[
+                                      index
+                                    ].selectedVariant.variants.map(
+                                      (variantValue, variantValueIndex) => (
+                                        <Box
+                                          key={variantValueIndex}
+                                          sx={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            padding: 1,
+                                            border: "1px solid #ddd",
+                                            borderRadius: "4px",
+                                            marginBottom: 1,
+                                            cursor: "pointer",
+                                            backgroundColor:
+                                              selectedVariants[index]
+                                                ?.selectedVariantValue
+                                                ?.variantId ===
+                                              variantValue.variantId
+                                                ? "#f0f0f0"
+                                                : "#fff",
+                                            width: "60px",
+                                          }}
+                                          onClick={() =>
+                                            handleVariantValueSelect(
+                                              index,
+                                              variantValue
+                                            )
+                                          }
+                                        >
+                                          <Typography
+                                            variant="body2"
+                                            sx={{
+                                              ...textConfigs.style.basicFont,
+                                            }}
+                                          >
+                                            {variantValue.sizeName} L
+                                          </Typography>
+                                        </Box>
+                                      )
+                                    )}
+                                  </Box>
+                                </>
+                              )}
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  flexDirection: { xs: "column", sm: "row" },
+                                  alignItems: {
+                                    xs: "flex-start",
+                                    sm: "center",
+                                  },
+                                  gap: { xs: 1.5, sm: 3 },
+                                  marginY: 1,
+                                }}
+                              >
+                                <TextField
+                                  key={uniqueKey}
+                                  label={`${t("area")} (m²)`}
+                                  variant="outlined"
+                                  type="number"
+                                  value={userInputValue[uniqueKey] || ""}
+                                  placeholder={String(
+                                    editableAreas[uniqueKey] || wallArea
+                                  )}
+                                  onChange={(e) =>
+                                    handleEditableAreaChange(
+                                      uniqueKey,
+                                      e.target.value
+                                    )
+                                  }
+                                  onBlur={() => handleInputBlur(uniqueKey)}
+                                  size="small"
+                                  sx={{
+                                    width: { xs: "100%", sm: "20%" },
+                                    "& .MuiInputLabel-root": {
+                                      ...textConfigs.style.basicFont,
+                                    },
+                                  }}
+                                  InputLabelProps={{ shrink: true }}
+                                />
+
+                                {selectedVariants[index]
+                                  ?.selectedVariantValue && (
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      flexDirection: "column",
+                                      gap: 0.5,
+                                    }}
+                                  >
+                                    <Typography
+                                      sx={{
+                                        fontSize: { xs: "9px", sm: "10px" },
+                                        ...textConfigs.style.basicFont,
+                                      }}
+                                    >
+                                      {t("price")}: $
+                                      {
+                                        selectedVariants[index]
+                                          .selectedVariantValue.price
+                                      }
+                                    </Typography>
+                                    <Typography
+                                      sx={{
+                                        fontSize: { xs: "9px", sm: "10px" },
+                                        ...textConfigs.style.basicFont,
+                                      }}
+                                    >
+                                      {t("total")}: $
+                                      {calculatePrice(
+                                        paint,
+                                        selectedVariants[index]
+                                          .selectedVariantValue.sizeName,
+                                        selectedVariants[index]
+                                          .selectedVariantValue.price,
+                                        "paint",
+                                        uniqueKey
+                                      ).toFixed(2)}
+                                    </Typography>
+                                  </Box>
+                                )}
+
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <IconButton
+                                    onClick={() =>
+                                      handleEditProduct("paint", index)
+                                    }
+                                  >
+                                    <FaEdit
+                                      style={{
+                                        fontSize: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={() =>
+                                      handleRemoveProduct("paint", index)
+                                    }
+                                  >
+                                    <FaTrash
+                                      style={{
+                                        fontSize: "14px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </Box>
+                              </Box>
+                            </CardContent>
+                          </Card>
+                        );
+                      })
                     ) : (
                       <Button
                         variant="contained"
                         onClick={() => setOpenPaintModal(true)}
-                        sx={{ width: "200px !important" }}
+                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
                       >
-                        Select Paint
+                        {t("select.paint")}
                       </Button>
                     )}
 
@@ -395,9 +932,9 @@ const CalculatePrice = () => {
                       <Button
                         variant="outlined"
                         onClick={() => setOpenPaintModal(true)}
-                        sx={{ mt: 2 }}
+                        sx={{ mt: 1, ...textConfigs.style.basicFont, }}
                       >
-                        Add Another Paint
+                        {t("add.another.paint")}
                       </Button>
                     )}
                   </Box>
@@ -411,8 +948,8 @@ const CalculatePrice = () => {
                   flexDirection={{ xs: "column", md: "row" }}
                   alignItems="center"
                 >
-                  <Box sx={{ flex: 2 }}>
-                    <Typography variant="body1">Wallpaper</Typography>
+                  <Box sx={{ flex: 2, marginBottom: 1 }}>
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>{t("wallpaper")}</Typography>
                   </Box>
                   <Box sx={{ flex: 10 }}>
                     {selectedWallpaper ? (
@@ -421,54 +958,125 @@ const CalculatePrice = () => {
                           display: "flex",
                           alignItems: "center",
                           width: "100%",
-                          p: 1,
+                          px: 2,
                         }}
                       >
                         <CardMedia
                           component="img"
                           sx={{
-                            height: 100,
-                            width: 100,
+                            height: { xs: 80, md: 100 },
+                            width: { xs: 80, md: 100 },
                           }}
-                          image={selectedWallpaper.image}
-                          alt={selectedWallpaper.name}
+                          image={
+                            selectedWallpaper.images.length > 0 &&
+                            selectedWallpaper.images[0].url
+                          }
+                          alt={selectedWallpaper.productName}
                         />
-                        <CardContent sx={{ flex: 1 }}>
-                          <Typography variant="h6" gutterBottom>
-                            {selectedWallpaper.name}
+                        <CardContent
+                          sx={{
+                            flex: 1,
+                            paddingLeft: 2,
+                            paddingTop: 1,
+                            ":last-child": { paddingBottom: 0 },
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            gutterBottom
+                            fontWeight="bold"
+                            sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}
+                          >
+                            {selectedWallpaper.productName}
                           </Typography>
-                          <Typography>
-                            Price: ${selectedWallpaper.price}
+
+                          <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                            {t("area")}: {wallArea} m²
                           </Typography>
-                          <Typography>Area: {wallArea} m²</Typography>
-                          <Typography>
-                            Total: ${" "}
-                            {calculatePrice(
-                              selectedWallpaper,
-                              "wallpaper"
-                            ).toFixed(2)}
-                          </Typography>
+
+                          <Box sx={{ display: "flex", gap: 2 }}>
+                            {selectedWallpaper.wallpapers[0].variants.map(
+                              (variant, variantIndex) => (
+                                <Box
+                                  key={variantIndex}
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    padding: 1,
+                                    border: "1px solid #ddd",
+                                    borderRadius: "4px",
+                                    marginY: 1,
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      selectedWallpaperVariant?.variantId ===
+                                      variant.variantId
+                                        ? "#f0f0f0"
+                                        : "#fff",
+                                    width: "80px",
+                                  }}
+                                  onClick={() =>
+                                    setSelectedWallpaperVariant(variant)
+                                  }
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ ...textConfigs.style.basicFont }}
+                                  >
+                                    {variant.sizeName} m
+                                  </Typography>
+                                </Box>
+                              )
+                            )}
+                          </Box>
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 3,
+                              marginY: 1,
+                            }}
+                          >
+                            {selectedWallpaperVariant?.price && (
+                              <Box>
+                                <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                                  {t("price")}: $
+                                  {selectedWallpaperVariant.price}
+                                </Typography>
+                                <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                                  {t("total")}: ${" "}
+                                  {calculatePrice(
+                                    selectedWallpaperVariant,
+                                    selectedWallpaperVariant.sizeName,
+                                    selectedWallpaperVariant.price,
+                                    "wallpaper"
+                                  ).toFixed(2)}
+                                </Typography>
+                              </Box>
+                            )}
+                            <Box>
+                              <IconButton
+                                onClick={() => handleEditProduct("wallpaper")}
+                              >
+                                <FaEdit style={{ fontSize: "14px" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => handleRemoveProduct("wallpaper")}
+                              >
+                                <FaTrash style={{ fontSize: "14px" }} />
+                              </IconButton>
+                            </Box>
+                          </Box>
                         </CardContent>
-                        <Box>
-                          <IconButton
-                            onClick={() => handleEditProduct("wallpaper")}
-                          >
-                            <FaEdit />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleRemoveProduct("wallpaper")}
-                          >
-                            <FaTrash />
-                          </IconButton>
-                        </Box>
                       </Card>
                     ) : (
                       <Button
                         variant="contained"
                         onClick={() => setOpenWallpaperModal(true)}
-                        sx={{ width: "200px !important" }}
+                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
                       >
-                        Select Wallpaper
+                        {t("select.wallpaper")}
                       </Button>
                     )}
                   </Box>
@@ -482,8 +1090,8 @@ const CalculatePrice = () => {
                   flexDirection={{ xs: "column", md: "row" }}
                   alignItems="center"
                 >
-                  <Box sx={{ flex: 2 }}>
-                    <Typography variant="body1">Floor</Typography>
+                  <Box sx={{ flex: 2, marginBottom: 1 }}>
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>{t("floor")}</Typography>
                   </Box>
                   <Box sx={{ flex: 10 }}>
                     {selectedFloor ? (
@@ -492,49 +1100,172 @@ const CalculatePrice = () => {
                           display: "flex",
                           alignItems: "center",
                           width: "100%",
-                          p: 1,
+                          px: 2,
                         }}
                       >
                         <CardMedia
                           component="img"
                           sx={{
-                            height: 100,
-                            width: 100,
+                            height: { xs: 80, md: 100 },
+                            width: { xs: 80, md: 100 },
                           }}
-                          image={selectedFloor.image}
-                          alt={selectedFloor.name}
+                          image={
+                            selectedFloor.images.length > 0 &&
+                            selectedFloor.images[0].url
+                          }
+                          alt={selectedFloor.productName}
                         />
-                        <CardContent sx={{ flex: 1 }}>
-                          <Typography variant="h6" gutterBottom>
-                            {selectedFloor.name} - ${selectedFloor.price}
+                        <CardContent
+                          sx={{
+                            flex: 1,
+                            paddingLeft: 2,
+                            paddingTop: 1,
+                            ":last-child": { paddingBottom: 0 },
+                          }}
+                        >
+                          <Typography
+                            variant="h6"
+                            gutterBottom
+                            fontWeight="bold"
+                            style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}
+                          >
+                            {selectedFloor.productName}
                           </Typography>
-                          <Typography>Price: ${selectedFloor.price}</Typography>
-                          <Typography>Area: {floorArea} m²</Typography>
-                          <Typography>
-                            Total: ${" "}
-                            {calculatePrice(selectedFloor, "floor").toFixed(2)}
+                          <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                            {t("area")}: {floorArea} m²
                           </Typography>
+
+                          <Box
+                            sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}
+                          >
+                            {selectedFloor.floors.map(
+                              (variant, variantIndex) => (
+                                <Box
+                                  key={variantIndex}
+                                  sx={{
+                                    display: "flex",
+                                    flexDirection: "column",
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    padding: 1,
+                                    border: "1px solid #ddd",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                    backgroundColor:
+                                      selectedFloorVariant?.id === variant.id
+                                        ? "#f0f0f0"
+                                        : "#fff",
+                                    width: "100px",
+                                  }}
+                                  onClick={() => {
+                                    setSelectedFloorVariant(variant);
+                                    setSelectedFloorValue(variant[0]);
+                                  }}
+                                >
+                                  <Typography
+                                    variant="body2"
+                                    sx={{ ...textConfigs.style.basicFont }}
+                                  >
+                                    {variant.numberOfPiecesPerBox} {t("pieces")}
+                                  </Typography>
+                                </Box>
+                              )
+                            )}
+                          </Box>
+                          {selectedFloorVariant && (
+                            <>
+                              <Typography mt={1} style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                                {t("size")}:
+                              </Typography>
+                              <Box
+                                sx={{
+                                  display: "flex",
+                                  gap: 1,
+                                  flexWrap: "wrap",
+                                }}
+                              >
+                                {selectedFloorVariant.variants.map(
+                                  (variant, index) => (
+                                    <Box
+                                      key={index}
+                                      sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        padding: 1,
+                                        border: "1px solid #ddd",
+                                        borderRadius: "4px",
+                                        cursor: "pointer",
+                                        backgroundColor:
+                                          selectedFloorValue?.variantId ===
+                                          variant.variantId
+                                            ? "#f0f0f0"
+                                            : "#fff",
+                                        width: "80px",
+                                      }}
+                                      onClick={() =>
+                                        setSelectedFloorValue(variant)
+                                      }
+                                    >
+                                      <Typography
+                                        variant="body2"
+                                        sx={{ ...textConfigs.style.basicFont }}
+                                      >
+                                        {variant.sizeName} m
+                                      </Typography>
+                                    </Box>
+                                  )
+                                )}
+                              </Box>
+                            </>
+                          )}
+                          <Box
+                            sx={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 3,
+                              marginY: 1,
+                            }}
+                          >
+                            {selectedFloorValue && (
+                              <Box>
+                                <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                                  {t("price")}: ${selectedFloorValue.price}
+                                </Typography>
+                                <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                                  {t("total")}: ${" "}
+                                  {calculatePrice(
+                                    selectedFloorValue,
+                                    selectedFloorValue.sizeName,
+                                    selectedFloorValue.price,
+                                    "floor"
+                                  ).toFixed(2)}
+                                </Typography>
+                              </Box>
+                            )}
+                            <Box>
+                              <IconButton
+                                onClick={() => handleEditProduct("floor")}
+                              >
+                                <FaEdit style={{ fontSize: "14px" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => handleRemoveProduct("floor")}
+                              >
+                                <FaTrash style={{ fontSize: "14px" }} />
+                              </IconButton>
+                            </Box>
+                          </Box>
                         </CardContent>
-                        <Box>
-                          <IconButton
-                            onClick={() => handleEditProduct("floor")}
-                          >
-                            <FaEdit />
-                          </IconButton>
-                          <IconButton
-                            onClick={() => handleRemoveProduct("floor")}
-                          >
-                            <FaTrash />
-                          </IconButton>
-                        </Box>
                       </Card>
                     ) : (
                       <Button
                         variant="contained"
                         onClick={() => setOpenFloorModal(true)}
-                        sx={{ width: "200px !important" }}
+                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
                       >
-                        Select Floor
+                        {t("select.floor")}
                       </Button>
                     )}
                   </Box>
@@ -548,9 +1279,9 @@ const CalculatePrice = () => {
                   position: {
                     xs: "relative",
                     md: isSticky ? "fixed" : "relative",
-                  }, // Relative trên mobile, fixed trên desktop nếu isSticky
-                  top: { xs: "0px", md: isSticky ? "50px" : "0px" }, // Top điều chỉnh theo trạng thái isSticky
-                  width: { xs: "auto", md: isSticky ? "20%" : "auto" }, // Đảm bảo kích thước phù hợp
+                  },
+                  top: { xs: "0px", md: isSticky ? "50px" : "0px" },
+                  width: { xs: "auto", md: isSticky ? "20%" : "auto" },
                   padding: 2,
                   border: "1px solid #ccc",
                   boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
@@ -558,38 +1289,83 @@ const CalculatePrice = () => {
                   zIndex: 1000,
                 }}
               >
-                <Typography variant="h6">Estimated Price</Typography>
+                <Typography variant="h6" sx={{...textConfigs.style.basicFont,}}>{t("estimated.price")}</Typography>
 
                 {selectedPaints.length > 0 ||
                 selectedWallpaper ||
                 selectedFloor ? (
                   <>
-                    <Typography variant="body1">
-                      Paint Price: $
-                      {selectedPaints
-                        .reduce((total, paint) => {
-                          return total + calculatePrice(paint, "paint");
-                        }, 0)
-                        .toFixed(2)}
+                    {" "}
+                    <Typography variant="body2" sx={{...textConfigs.style.basicFont,}}>
+                      {t("product.detail.note.price")}
                     </Typography>
-                    <Typography variant="body1">
-                      Wallpaper Price: $
-                      {calculatePrice(selectedWallpaper, "wallpaper").toFixed(
-                        2
-                      )}
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
+                      {i18n.language === "en"
+                        ? `${t("paints")} ${t("price")}`
+                        : `${t("price")} ${t("floor")}`}
+                      : ${" "}
+                      {selectedVariants &&
+                      Object.keys(selectedVariants).length > 0
+                        ? Object.values(selectedVariants)
+                            .reduce((total, variant, index) => {
+                              const selectedVariant =
+                                variant.selectedVariantValue;
+                              if (selectedVariant) {
+                                const sizeName = selectedVariant.sizeName;
+                                const price = selectedVariant.price;
+                                const paint = selectedPaints[index];
+                                const uniqueKey = `${paint.productId}-${index}`;
+                                return (
+                                  total +
+                                  calculatePrice(
+                                    paint,
+                                    sizeName,
+                                    price,
+                                    "paint",
+                                    uniqueKey
+                                  )
+                                );
+                              }
+                              return total;
+                            }, 0)
+                            .toFixed(2)
+                        : (0).toFixed(2)}
                     </Typography>
-                    <Typography variant="body1">
-                      Floor Price: $
-                      {calculatePrice(selectedFloor, "floor").toFixed(2)}
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
+                      {i18n.language === "en"
+                        ? `${t("wallpaper")} ${t("price")}`
+                        : `${t("price")} ${t("floor")}`}
+                      : $
+                      {selectedWallpaperVariant
+                        ? calculatePrice(
+                            selectedWallpaper,
+                            selectedWallpaperVariant.sizeName,
+                            selectedWallpaperVariant.price,
+                            "wallpaper"
+                          ).toFixed(2)
+                        : (0).toFixed(2)}
                     </Typography>
-                    <Typography variant="body1">
-                      Total Estimated Price: ${totalEstimatedPrice().toFixed(2)}
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
+                      {i18n.language === "en"
+                        ? `${t("floor")} ${t("price")}`
+                        : `${t("price")} ${t("floor")}`}
+                      : $
+                      {selectedFloorValue
+                        ? calculatePrice(
+                            selectedFloor,
+                            selectedFloorValue.sizeName,
+                            selectedFloorValue.price,
+                            "floor"
+                          ).toFixed(2)
+                        : (0).toFixed(2)}
+                    </Typography>
+                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
+                      {t("total")} {t("estimated.price")}: $
+                      {totalEstimatedPrice().toFixed(2)}
                     </Typography>
                   </>
                 ) : (
-                  <Typography variant="body1">
-                    Please select a product to calculate price.
-                  </Typography>
+                  <Typography variant="body1">{t("caculate.noti")}</Typography>
                 )}
               </Box>
             </Grid>
@@ -599,28 +1375,43 @@ const CalculatePrice = () => {
       <ProductModal
         open={openPaintModal}
         handleClose={() => handleCloseModal("paint")}
-        products={products}
+        products={paints}
         handleProductSelect={handleProductSelect}
-        title="Select Paint"
+        title={t("select.paint")}
         productType="paint"
+        totalElements={totalPaints}
+        totalPages={paintsTotalPages}
+        size={productsPerPage}
+        page={currentPaintPage}
+        onPageChange={(newPage) => handlePageChange("paint", newPage)}
       />
 
       <ProductModal
         open={openWallpaperModal}
         handleClose={() => handleCloseModal("wallpaper")}
-        products={products}
+        products={wallpapers}
         handleProductSelect={handleProductSelect}
-        title="Select Wallpaper"
+        title={t("select.wallpaper")}
         productType="wallpaper"
+        totalElements={totalWallpaper}
+        totalPages={wallpapersTotalPages}
+        size={productsPerPage}
+        page={currentWallpaperPage}
+        onPageChange={(newPage) => handlePageChange("wallpaper", newPage)}
       />
 
       <ProductModal
         open={openFloorModal}
         handleClose={() => handleCloseModal("floor")}
-        products={products}
+        products={floors}
         handleProductSelect={handleProductSelect}
-        title="Select Floor"
+        title={t("select.floor")}
         productType="floor"
+        totalElements={totalFloor}
+        totalPages={floorsTotalPages}
+        size={productsPerPage}
+        page={currentFloorPage}
+        onPageChange={(newPage) => handlePageChange("floor", newPage)}
       />
     </Fragment>
   );

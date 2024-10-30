@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { Box, Typography, Stack, Button, Container } from "@mui/material";
 import textConfigs from "../../config/text.config";
@@ -16,12 +16,14 @@ import data from "../../data/data";
 import { toast } from "react-toastify";
 import colorsApi from "../../api/modules/colors.api";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import { useTranslation } from "react-i18next";
 
 const sections = ["Color Family", "Room", "Collection", "Exterior & Interior"];
 const exteriors = data.exteriors;
 
 const ColorSwitcher = () => {
   
+  const { t } = useTranslation(); 
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -316,7 +318,7 @@ const ColorSwitcher = () => {
             sx={{ flexWrap: { xs: "wrap", md: "nowrap" }, overflowX: "auto" }}
           >
             <Typography variant="h5" sx={{ ...textConfigs.style.basicFont }}>
-              Browse By
+              {t("browse.by")}
             </Typography>
             <Stack
               direction="row"
