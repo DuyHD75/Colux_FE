@@ -38,6 +38,7 @@ const ContactForm = () => {
             fontFamily: "Nunito",
             ...textConfigs.style.headerText,
             marginBottom: 5,
+            fontSize: "30px", fontWeight: "bold"
           }}
         >
           {t('home.contact.title')}
@@ -53,7 +54,7 @@ const ContactForm = () => {
                 marginY: 2,
               }}
             >
-              123 Street Name, City, Country
+              17, Dao Duy Tu, Vinh Trung, Thanh Khe, Da Nang, Viet Nam
             </Typography>
             <Typography
               variant="body2"
@@ -64,7 +65,7 @@ const ContactForm = () => {
                 marginY: 2,
               }}
             >
-              Email: info@example.com
+              Email: coluxalpha@gmail.com
             </Typography>
             <Typography
               variant="body2"
@@ -75,11 +76,11 @@ const ContactForm = () => {
                 marginY: 2,
               }}
             >
-              {t('home.contact.phone')}: +1234567890
+              {t('home.contact.phone')}: 0327113934
             </Typography>
           </Grid>
-          <Grid container item xs={12} md={8}>
-            <Grid item xs={12} md={5}>
+          <Grid container item xs={12} md={8} spacing={2}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="name"
@@ -90,8 +91,7 @@ const ContactForm = () => {
                 sx={{ marginY: { sx: 0, md: 1 } }}
               />
             </Grid>
-            <Grid item xs={12} md={2}></Grid>
-            <Grid item xs={12} md={5}>
+            <Grid item xs={12} md={6}>
               <TextField
                 fullWidth
                 name="email"

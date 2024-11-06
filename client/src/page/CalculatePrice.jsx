@@ -10,6 +10,7 @@ import {
   CardContent,
   CardMedia,
   IconButton,
+  Stack,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import ProductModal from "../components/commons/ProductModel";
@@ -64,6 +65,14 @@ const CalculatePrice = () => {
   const [isSticky, setIsSticky] = useState(false);
   const boxRef = useRef(null);
 
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   const dispatch = useDispatch();
   useEffect(() => {
     const getAllCategory = async () => {
@@ -104,12 +113,12 @@ const CalculatePrice = () => {
                 }
               } else if (productError) {
                 toast.error(
-                  `Lỗi khi lấy sản phẩm cho danh mục ${categoryName}: ${productError}`
+                  `An error occurred while retrieving products for the ${categoryName}: ${productError}`
                 );
               }
             } catch (error) {
               console.error(
-                `Lỗi khi lấy sản phẩm cho danh mục ${categoryName}`,
+                `An error occurred while retrieving products for the ${categoryName}`,
                 error
               );
             }
@@ -131,7 +140,7 @@ const CalculatePrice = () => {
         }
       } catch (error) {
         console.log("Error", error);
-        toast.error("Có lỗi xảy ra khi lấy danh mục.");
+        toast.error("An error occurred while retrieving the category.");
       } finally {
         dispatch(setGlobalLoading(false));
       }
@@ -309,7 +318,14 @@ const CalculatePrice = () => {
     }
   };
 
-  const calculatePrice = (product, sizeName, price, type, uniqueKey) => {
+  const calculatePrice = (
+    product,
+    sizeName,
+    price,
+    type,
+    uniqueKey,
+    numberOfPiecesPerBox
+  ) => {
     if (!product) return 0;
 
     let estimatedPrice = 0;
@@ -318,7 +334,9 @@ const CalculatePrice = () => {
       case "floor": {
         const numbers = sizeName.split(" x ").map(Number);
         estimatedPrice =
-          Math.ceil(floorArea / (numbers[0] * numbers[1])) * price;
+          Math.ceil(
+            floorArea / (numbers[0] * numbers[1]) / numberOfPiecesPerBox
+          ) * price;
         break;
       }
       case "wallpaper": {
@@ -337,7 +355,11 @@ const CalculatePrice = () => {
         )?.value;
 
         if (coverage && layers) {
-          estimatedPrice = Math.ceil(areaToUse / (coverage * layers)) * price;
+          estimatedPrice =
+            Math.ceil(
+              (Number(areaToUse) * Number(layers) * Number(coverage)) /
+                Number(sizeName)
+            ) * price;
         }
         break;
       }
@@ -346,6 +368,54 @@ const CalculatePrice = () => {
     }
 
     return estimatedPrice;
+  };
+
+  const require = (
+    product,
+    sizeName,
+    price,
+    type,
+    uniqueKey,
+    numberOfPiecesPerBox
+  ) => {
+    if (!product) return 0;
+
+    let require = 0;
+
+    switch (type) {
+      case "floor": {
+        const numbers = sizeName.split(" x ").map(Number);
+        require = Math.ceil(
+          floorArea / (numbers[0] * numbers[1]) / numberOfPiecesPerBox
+        ); // bao nhiêu hộp
+        break;
+      }
+      case "wallpaper": {
+        const numbers = sizeName.split(" x ").map(Number);
+        require = Math.ceil(wallArea / (numbers[0] * numbers[1])); // bao nhiêu cuộn
+        break;
+      }
+      case "paint": {
+        const areaToUse = editableAreas[uniqueKey] || wallArea;
+        const coverage = product.properties.find(
+          (prop) => prop.property.name === "Coverage"
+        )?.value;
+        const layers = product.properties.find(
+          (prop) => prop.property.name === "Layer"
+        )?.value;
+
+        if (coverage && layers) {
+          require = Math.ceil(
+            Number(areaToUse) * Number(layers) * Number(coverage)
+          ); // bao nhiêu lít sơn
+        }
+        break;
+      }
+      default:
+        break;
+    }
+
+    return require;
   };
 
   const totalEstimatedPrice = () => {
@@ -380,7 +450,9 @@ const CalculatePrice = () => {
           selectedFloor,
           selectedFloorValue.sizeName,
           selectedFloorValue.price,
-          "floor"
+          "floor",
+          "",
+          selectedFloorVariant.numberOfPiecesPerBox
         )
       : 0;
 
@@ -672,138 +744,195 @@ const CalculatePrice = () => {
                                 ":last-child": { paddingBottom: 0 },
                               }}
                             >
-                              <Box>
-                                <Typography
-                                  variant="h6"
-                                  gutterBottom
-                                  fontWeight="bold"
-                                  sx={{
-                                    fontSize: "10px",
-                                    ...textConfigs.style.basicFont,
-                                  }}
-                                >
-                                  {paint.productName}
-                                </Typography>
-                              </Box>
                               <Box
                                 sx={{
                                   display: "flex",
-                                  gap: 2,
-                                  flexWrap: "wrap",
-                                  marginTop: 1,
+                                  flexDirection: { xs: "column", sm: "row" },
+                                  alignItems: {
+                                    xs: "flex-start",
+                                    sm: "center",
+                                  },
+                                  justifyContent: "space-between",
+                                  gap: { xs: 1.5, sm: 3 },
+                                  marginY: 1,
                                 }}
                               >
-                                {paint.paints.map((variant, variantIndex) => (
-                                  <Box
-                                    key={variantIndex}
-                                    sx={{
-                                      position: "relative",
-                                      display: "inline-block",
-                                      cursor: "pointer",
-                                    }}
-                                    onClick={() =>
-                                      handleVariantSelect(index, variant)
-                                    }
-                                    onMouseEnter={(e) =>
-                                      (e.currentTarget.style.transform =
-                                        "scale(1.1)")
-                                    }
-                                    onMouseLeave={(e) =>
-                                      (e.currentTarget.style.transform =
-                                        "scale(1)")
-                                    }
-                                  >
-                                    <BsFillHexagonFill
-                                      size={window.innerWidth < 600 ? 40 : 40}
-                                      style={{
-                                        color: variant.color.hex,
-                                        filter: "drop-shadow(0px 0px 4px #ccc)",
-                                        transition:
-                                          "transform 0.2s ease-in-out",
+                                <Box>
+                                  <Box>
+                                    <Typography
+                                      variant="h6"
+                                      gutterBottom
+                                      fontWeight="bold"
+                                      sx={{
+                                        fontSize: "14px",
+                                        ...textConfigs.style.basicFont,
+                                        textTransform: "capitalize",
                                       }}
-                                    />
-                                    {selectedVariants[index]?.selectedVariant
-                                      ?.id === variant.id && (
-                                      <FaCheck
-                                        style={{
-                                          position: "absolute",
-                                          top: "50%",
-                                          left: "50%",
-                                          transform: "translate(-50%, -50%)",
-                                          color: "#fff",
-                                          fontSize:
-                                            window.innerWidth < 600 ? 20 : 20,
-                                        }}
-                                      />
-                                    )}
+                                    >
+                                      {capitalizeWords(paint.productName)}
+                                    </Typography>
                                   </Box>
-                                ))}
-                              </Box>
-                              {selectedVariants[index]?.selectedVariant && (
-                                <>
-                                  <Typography
-                                    variant="body2"
-                                    color="#000"
-                                    sx={{
-                                      marginTop: 2,
-                                      ...textConfigs.style.basicFont,
-                                    }}
-                                  >
-                                    {t("size")}:
-                                  </Typography>
                                   <Box
                                     sx={{
                                       display: "flex",
-                                      gap: 1,
+                                      gap: 2,
                                       flexWrap: "wrap",
+                                      marginTop: 1,
                                     }}
                                   >
-                                    {selectedVariants[
-                                      index
-                                    ].selectedVariant.variants.map(
-                                      (variantValue, variantValueIndex) => (
+                                    {paint.paints.map(
+                                      (variant, variantIndex) => (
                                         <Box
-                                          key={variantValueIndex}
+                                          key={variantIndex}
                                           sx={{
-                                            display: "flex",
-                                            flexDirection: "column",
-                                            justifyContent: "center",
-                                            alignItems: "center",
-                                            padding: 1,
-                                            border: "1px solid #ddd",
-                                            borderRadius: "4px",
-                                            marginBottom: 1,
+                                            position: "relative",
+                                            display: "inline-block",
                                             cursor: "pointer",
-                                            backgroundColor:
-                                              selectedVariants[index]
-                                                ?.selectedVariantValue
-                                                ?.variantId ===
-                                              variantValue.variantId
-                                                ? "#f0f0f0"
-                                                : "#fff",
-                                            width: "60px",
                                           }}
                                           onClick={() =>
-                                            handleVariantValueSelect(
-                                              index,
-                                              variantValue
-                                            )
+                                            handleVariantSelect(index, variant)
+                                          }
+                                          onMouseEnter={(e) =>
+                                            (e.currentTarget.style.transform =
+                                              "scale(1.1)")
+                                          }
+                                          onMouseLeave={(e) =>
+                                            (e.currentTarget.style.transform =
+                                              "scale(1)")
                                           }
                                         >
-                                          <Typography
-                                            variant="body2"
-                                            sx={{
-                                              ...textConfigs.style.basicFont,
+                                          <BsFillHexagonFill
+                                            size={
+                                              window.innerWidth < 600 ? 40 : 40
+                                            }
+                                            style={{
+                                              color: variant.color.hex,
+                                              filter:
+                                                "drop-shadow(0px 0px 4px #ccc)",
+                                              transition:
+                                                "transform 0.2s ease-in-out",
                                             }}
-                                          >
-                                            {variantValue.sizeName} L
-                                          </Typography>
+                                          />
+                                          {selectedVariants[index]
+                                            ?.selectedVariant?.id ===
+                                            variant.id && (
+                                            <FaCheck
+                                              style={{
+                                                position: "absolute",
+                                                top: "50%",
+                                                left: "50%",
+                                                transform:
+                                                  "translate(-50%, -50%)",
+                                                color: "#fff",
+                                                fontSize:
+                                                  window.innerWidth < 600
+                                                    ? 20
+                                                    : 20,
+                                              }}
+                                            />
+                                          )}
                                         </Box>
                                       )
                                     )}
                                   </Box>
-                                </>
-                              )}
+                                  {selectedVariants[index]?.selectedVariant && (
+                                    <>
+                                      <Typography
+                                        variant="body2"
+                                        color="#000"
+                                        sx={{
+                                          marginTop: 2,
+                                          ...textConfigs.style.basicFont,
+                                        }}
+                                      >
+                                        {t("size")}:
+                                      </Typography>
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          gap: 1,
+                                          flexWrap: "wrap",
+                                        }}
+                                      >
+                                        {selectedVariants[
+                                          index
+                                        ].selectedVariant.variants.map(
+                                          (variantValue, variantValueIndex) => (
+                                            <Box
+                                              key={variantValueIndex}
+                                              sx={{
+                                                display: "flex",
+                                                flexDirection: "column",
+                                                justifyContent: "center",
+                                                alignItems: "center",
+                                                padding: 1,
+                                                border: "1px solid #ddd",
+                                                borderRadius: "4px",
+                                                marginBottom: 1,
+                                                cursor: "pointer",
+                                                backgroundColor:
+                                                  selectedVariants[index]
+                                                    ?.selectedVariantValue
+                                                    ?.variantId ===
+                                                  variantValue.variantId
+                                                    ? "#f0f0f0"
+                                                    : "#fff",
+                                                width: "60px",
+                                              }}
+                                              onClick={() =>
+                                                handleVariantValueSelect(
+                                                  index,
+                                                  variantValue
+                                                )
+                                              }
+                                            >
+                                              <Typography
+                                                variant="body2"
+                                                sx={{
+                                                  ...textConfigs.style
+                                                    .basicFont,
+                                                }}
+                                              >
+                                                {variantValue.sizeName} L
+                                              </Typography>
+                                            </Box>
+                                          )
+                                        )}
+                                      </Box>
+                                    </>
+                                  )}
+                                </Box>
+                                <Box
+                                  sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 1,
+                                  }}
+                                >
+                                  <IconButton
+                                    onClick={() =>
+                                      handleEditProduct("paint", index)
+                                    }
+                                  >
+                                    <FaEdit
+                                      style={{
+                                        fontSize: "18px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                  <IconButton
+                                    onClick={() =>
+                                      handleRemoveProduct("paint", index)
+                                    }
+                                  >
+                                    <FaTrash
+                                      style={{
+                                        fontSize: "18px",
+                                      }}
+                                    />
+                                  </IconButton>
+                                </Box>
+                              </Box>
                               <Box
                                 sx={{
                                   display: "flex",
@@ -818,7 +947,7 @@ const CalculatePrice = () => {
                               >
                                 <TextField
                                   key={uniqueKey}
-                                  label={`${t("area")} (m²)`}
+                                  label={`${t("wall.area")} (m²)`}
                                   variant="outlined"
                                   type="number"
                                   value={userInputValue[uniqueKey] || ""}
@@ -834,39 +963,68 @@ const CalculatePrice = () => {
                                   onBlur={() => handleInputBlur(uniqueKey)}
                                   size="small"
                                   sx={{
-                                    width: { xs: "100%", sm: "20%" },
+                                    width: { xs: "100%", sm: "50%" },
                                     "& .MuiInputLabel-root": {
                                       ...textConfigs.style.basicFont,
                                     },
                                   }}
                                   InputLabelProps={{ shrink: true }}
                                 />
+                              </Box>
+                              {selectedVariants[index]
+                                ?.selectedVariantValue && (
+                                <Stack
+                                  direction="row"
+                                  justifyContent="space-between"
+                                  alignItems="flex-start"
+                                  sx={{ width: "100%", mb: 1 }}
+                                >
+                                  <Typography
+                                    sx={{
+                                      fontSize: { xs: "14px", sm: "14px" },
+                                      ...textConfigs.style.basicFont,
+                                      fontWeight: "bold",
+                                      color: "primary.main",
+                                    }}
+                                  >
+                                    {t("your.need")}{" "}
+                                    {require(paint, selectedVariants[index]
+                                      .selectedVariantValue
+                                      .sizeName, selectedVariants[index]
+                                      .selectedVariantValue
+                                      .price, "paint", uniqueKey)}{" "}
+                                    L {t("of.paint.for")}{" "}
+                                    {String(
+                                      editableAreas[uniqueKey] || wallArea
+                                    )}
+                                    (m²)
+                                  </Typography>
 
-                                {selectedVariants[index]
-                                  ?.selectedVariantValue && (
                                   <Box
                                     sx={{
                                       display: "flex",
                                       flexDirection: "column",
                                       gap: 0.5,
+                                      textAlign: "right",
                                     }}
                                   >
                                     <Typography
                                       sx={{
-                                        fontSize: { xs: "9px", sm: "10px" },
+                                        fontSize: { xs: "14px", sm: "14px" },
                                         ...textConfigs.style.basicFont,
+                                        fontWeight: "bold",
                                       }}
                                     >
                                       {t("price")}: $
-                                      {
-                                        selectedVariants[index]
-                                          .selectedVariantValue.price
-                                      }
+                                      {selectedVariants[
+                                        index
+                                      ].selectedVariantValue.price.toFixed(2)}
                                     </Typography>
                                     <Typography
                                       sx={{
-                                        fontSize: { xs: "9px", sm: "10px" },
+                                        fontSize: { xs: "14px", sm: "14px" },
                                         ...textConfigs.style.basicFont,
+                                        fontWeight: "bold",
                                       }}
                                     >
                                       {t("total")}: $
@@ -881,39 +1039,8 @@ const CalculatePrice = () => {
                                       ).toFixed(2)}
                                     </Typography>
                                   </Box>
-                                )}
-
-                                <Box
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 1,
-                                  }}
-                                >
-                                  <IconButton
-                                    onClick={() =>
-                                      handleEditProduct("paint", index)
-                                    }
-                                  >
-                                    <FaEdit
-                                      style={{
-                                        fontSize: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                  <IconButton
-                                    onClick={() =>
-                                      handleRemoveProduct("paint", index)
-                                    }
-                                  >
-                                    <FaTrash
-                                      style={{
-                                        fontSize: "14px",
-                                      }}
-                                    />
-                                  </IconButton>
-                                </Box>
-                              </Box>
+                                </Stack>
+                              )}
                             </CardContent>
                           </Card>
                         );
@@ -922,7 +1049,10 @@ const CalculatePrice = () => {
                       <Button
                         variant="contained"
                         onClick={() => setOpenPaintModal(true)}
-                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
+                        sx={{
+                          width: "200px !important",
+                          ...textConfigs.style.basicFont,
+                        }}
                       >
                         {t("select.paint")}
                       </Button>
@@ -932,7 +1062,7 @@ const CalculatePrice = () => {
                       <Button
                         variant="outlined"
                         onClick={() => setOpenPaintModal(true)}
-                        sx={{ mt: 1, ...textConfigs.style.basicFont, }}
+                        sx={{ mt: 1, ...textConfigs.style.basicFont }}
                       >
                         {t("add.another.paint")}
                       </Button>
@@ -949,7 +1079,12 @@ const CalculatePrice = () => {
                   alignItems="center"
                 >
                   <Box sx={{ flex: 2, marginBottom: 1 }}>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>{t("wallpaper")}</Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ ...textConfigs.style.basicFont }}
+                    >
+                      {t("wallpaper")}
+                    </Typography>
                   </Box>
                   <Box sx={{ flex: 10 }}>
                     {selectedWallpaper ? (
@@ -981,71 +1116,134 @@ const CalculatePrice = () => {
                             ":last-child": { paddingBottom: 0 },
                           }}
                         >
-                          <Typography
-                            variant="h6"
-                            gutterBottom
-                            fontWeight="bold"
-                            sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}
-                          >
-                            {selectedWallpaper.productName}
-                          </Typography>
-
-                          <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                            {t("area")}: {wallArea} m²
-                          </Typography>
-
-                          <Box sx={{ display: "flex", gap: 2 }}>
-                            {selectedWallpaper.wallpapers[0].variants.map(
-                              (variant, variantIndex) => (
-                                <Box
-                                  key={variantIndex}
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    padding: 1,
-                                    border: "1px solid #ddd",
-                                    borderRadius: "4px",
-                                    marginY: 1,
-                                    cursor: "pointer",
-                                    backgroundColor:
-                                      selectedWallpaperVariant?.variantId ===
-                                      variant.variantId
-                                        ? "#f0f0f0"
-                                        : "#fff",
-                                    width: "80px",
-                                  }}
-                                  onClick={() =>
-                                    setSelectedWallpaperVariant(variant)
-                                  }
-                                >
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ ...textConfigs.style.basicFont }}
-                                  >
-                                    {variant.sizeName} m
-                                  </Typography>
-                                </Box>
-                              )
-                            )}
-                          </Box>
                           <Box
                             sx={{
                               display: "flex",
-                              alignItems: "center",
-                              gap: 3,
+                              flexDirection: { xs: "column", sm: "row" },
+                              alignItems: { xs: "flex-start", sm: "center" },
+                              justifyContent: "space-between",
+                              gap: { xs: 1.5, sm: 3 },
                               marginY: 1,
                             }}
                           >
-                            {selectedWallpaperVariant?.price && (
-                              <Box>
-                                <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
+                            <Box>
+                              <Typography
+                                variant="h6"
+                                gutterBottom
+                                fontWeight="bold"
+                                sx={{
+                                  fontSize: "14px",
+                                  ...textConfigs.style.basicFont,
+                                }}
+                              >
+                                {capitalizeWords(selectedWallpaper.productName)}
+                              </Typography>
+
+                              <Typography
+                                sx={{
+                                  fontSize: "14px",
+                                  ...textConfigs.style.basicFont,
+                                }}
+                              >
+                                {t("wall.area")}: {wallArea} m²
+                              </Typography>
+
+                              <Box sx={{ display: "flex", gap: 2 }}>
+                                {selectedWallpaper.wallpapers[0].variants.map(
+                                  (variant, variantIndex) => (
+                                    <Box
+                                      key={variantIndex}
+                                      sx={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        padding: 1,
+                                        border: "1px solid #ddd",
+                                        borderRadius: "4px",
+                                        marginY: 1,
+                                        cursor: "pointer",
+                                        backgroundColor:
+                                          selectedWallpaperVariant?.variantId ===
+                                          variant.variantId
+                                            ? "#f0f0f0"
+                                            : "#fff",
+                                        width: "80px",
+                                      }}
+                                      onClick={() =>
+                                        setSelectedWallpaperVariant(variant)
+                                      }
+                                    >
+                                      <Typography
+                                        variant="body2"
+                                        sx={{ ...textConfigs.style.basicFont }}
+                                      >
+                                        {variant.sizeName} m
+                                      </Typography>
+                                    </Box>
+                                  )
+                                )}
+                              </Box>
+                            </Box>
+                            <Box
+                              sx={{
+                                display: "flex",
+                                alignItems: "center",
+                                gap: 1,
+                              }}
+                            >
+                              <IconButton
+                                onClick={() => handleEditProduct("wallpaper")}
+                              >
+                                <FaEdit style={{ fontSize: "18px" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => handleRemoveProduct("wallpaper")}
+                              >
+                                <FaTrash style={{ fontSize: "18px" }} />
+                              </IconButton>
+                            </Box>
+                          </Box>
+                          {selectedWallpaperVariant?.price && (
+                            <Stack
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="flex-start"
+                              sx={{ width: "100%", mb: 1 }}
+                            >
+                              <Typography
+                                sx={{
+                                  fontSize: { xs: "14px", sm: "14px" },
+                                  ...textConfigs.style.basicFont,
+                                  fontWeight: "bold",
+                                  color: "primary.main",
+                                }}
+                              >
+                                {t("your.need")}{" "}
+                                {require(selectedWallpaperVariant, selectedWallpaperVariant.sizeName, selectedWallpaperVariant.price, "wallpaper")}{" "}
+                                {t("roll")} {t("of.wallpaper.for")}{" "}
+                                {String(wallArea)}
+                                (m²)
+                              </Typography>
+                              <Box sx={{ textAlign: "right" }}>
+                                <Typography
+                                  sx={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    ...textConfigs.style.basicFont,
+                                  }}
+                                >
                                   {t("price")}: $
-                                  {selectedWallpaperVariant.price}
+                                  {selectedWallpaperVariant.price.toFixed(2)}
                                 </Typography>
-                                <Typography sx={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                                  {t("total")}: ${" "}
+                                <Typography
+                                  sx={{
+                                    fontSize: "14px",
+                                    fontWeight: "bold",
+                                    ...textConfigs.style.basicFont,
+                                  }}
+                                >
+                                  {t("total")}: $
                                   {calculatePrice(
                                     selectedWallpaperVariant,
                                     selectedWallpaperVariant.sizeName,
@@ -1054,27 +1252,18 @@ const CalculatePrice = () => {
                                   ).toFixed(2)}
                                 </Typography>
                               </Box>
-                            )}
-                            <Box>
-                              <IconButton
-                                onClick={() => handleEditProduct("wallpaper")}
-                              >
-                                <FaEdit style={{ fontSize: "14px" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => handleRemoveProduct("wallpaper")}
-                              >
-                                <FaTrash style={{ fontSize: "14px" }} />
-                              </IconButton>
-                            </Box>
-                          </Box>
+                            </Stack>
+                          )}
                         </CardContent>
                       </Card>
                     ) : (
                       <Button
                         variant="contained"
                         onClick={() => setOpenWallpaperModal(true)}
-                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
+                        sx={{
+                          width: "200px !important",
+                          ...textConfigs.style.basicFont,
+                        }}
                       >
                         {t("select.wallpaper")}
                       </Button>
@@ -1091,7 +1280,12 @@ const CalculatePrice = () => {
                   alignItems="center"
                 >
                   <Box sx={{ flex: 2, marginBottom: 1 }}>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>{t("floor")}</Typography>
+                    <Typography
+                      variant="body1"
+                      sx={{ ...textConfigs.style.basicFont }}
+                    >
+                      {t("floor")}
+                    </Typography>
                   </Box>
                   <Box sx={{ flex: 10 }}>
                     {selectedFloor ? (
@@ -1127,56 +1321,33 @@ const CalculatePrice = () => {
                             variant="h6"
                             gutterBottom
                             fontWeight="bold"
-                            style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}
+                            style={{
+                              fontSize: "14px",
+                              ...textConfigs.style.basicFont,
+                            }}
                           >
-                            {selectedFloor.productName}
+                            {capitalizeWords(selectedFloor.productName)}
                           </Typography>
-                          <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                            {t("area")}: {floorArea} m²
-                          </Typography>
-
                           <Box
-                            sx={{ display: "flex", gap: 1, flexWrap: "wrap" }}
+                            sx={{
+                              display: "flex",
+                              flexDirection: { xs: "column", sm: "row" },
+                              alignItems: { xs: "flex-start", sm: "center" },
+                              justifyContent: "space-between",
+                              gap: { xs: 1.5, sm: 3 },
+                              marginY: 1,
+                            }}
                           >
-                            {selectedFloor.floors.map(
-                              (variant, variantIndex) => (
-                                <Box
-                                  key={variantIndex}
-                                  sx={{
-                                    display: "flex",
-                                    flexDirection: "column",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    padding: 1,
-                                    border: "1px solid #ddd",
-                                    borderRadius: "4px",
-                                    cursor: "pointer",
-                                    backgroundColor:
-                                      selectedFloorVariant?.id === variant.id
-                                        ? "#f0f0f0"
-                                        : "#fff",
-                                    width: "100px",
-                                  }}
-                                  onClick={() => {
-                                    setSelectedFloorVariant(variant);
-                                    setSelectedFloorValue(variant[0]);
-                                  }}
-                                >
-                                  <Typography
-                                    variant="body2"
-                                    sx={{ ...textConfigs.style.basicFont }}
-                                  >
-                                    {variant.numberOfPiecesPerBox} {t("pieces")}
-                                  </Typography>
-                                </Box>
-                              )
-                            )}
-                          </Box>
-                          {selectedFloorVariant && (
-                            <>
-                              <Typography mt={1} style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                                {t("size")}:
+                            <Box>
+                              <Typography
+                                style={{
+                                  fontSize: "14px",
+                                  ...textConfigs.style.basicFont,
+                                }}
+                              >
+                                {t("floor.area")}: {floorArea} m²
                               </Typography>
+
                               <Box
                                 sx={{
                                   display: "flex",
@@ -1184,10 +1355,10 @@ const CalculatePrice = () => {
                                   flexWrap: "wrap",
                                 }}
                               >
-                                {selectedFloorVariant.variants.map(
-                                  (variant, index) => (
+                                {selectedFloor.floors.map(
+                                  (variant, variantIndex) => (
                                     <Box
-                                      key={index}
+                                      key={variantIndex}
                                       sx={{
                                         display: "flex",
                                         flexDirection: "column",
@@ -1198,28 +1369,98 @@ const CalculatePrice = () => {
                                         borderRadius: "4px",
                                         cursor: "pointer",
                                         backgroundColor:
-                                          selectedFloorValue?.variantId ===
-                                          variant.variantId
+                                          selectedFloorVariant?.id ===
+                                          variant.id
                                             ? "#f0f0f0"
                                             : "#fff",
-                                        width: "80px",
+                                        width: "100px",
                                       }}
-                                      onClick={() =>
-                                        setSelectedFloorValue(variant)
-                                      }
+                                      onClick={() => {
+                                        setSelectedFloorVariant(variant);
+                                        setSelectedFloorValue(variant[0]);
+                                      }}
                                     >
                                       <Typography
                                         variant="body2"
                                         sx={{ ...textConfigs.style.basicFont }}
                                       >
-                                        {variant.sizeName} m
+                                        {variant.numberOfPiecesPerBox}{" "}
+                                        {t("pieces")}
                                       </Typography>
                                     </Box>
                                   )
                                 )}
                               </Box>
-                            </>
-                          )}
+                              {selectedFloorVariant && (
+                                <>
+                                  <Typography
+                                    mt={1}
+                                    style={{
+                                      fontSize: "14px",
+                                      ...textConfigs.style.basicFont,
+                                    }}
+                                  >
+                                    {t("size")}:
+                                  </Typography>
+                                  <Box
+                                    sx={{
+                                      display: "flex",
+                                      gap: 1,
+                                      flexWrap: "wrap",
+                                    }}
+                                  >
+                                    {selectedFloorVariant.variants.map(
+                                      (variant, index) => (
+                                        <Box
+                                          key={index}
+                                          sx={{
+                                            display: "flex",
+                                            flexDirection: "column",
+                                            justifyContent: "center",
+                                            alignItems: "center",
+                                            padding: 1,
+                                            border: "1px solid #ddd",
+                                            borderRadius: "4px",
+                                            cursor: "pointer",
+                                            backgroundColor:
+                                              selectedFloorValue?.variantId ===
+                                              variant.variantId
+                                                ? "#f0f0f0"
+                                                : "#fff",
+                                            width: "80px",
+                                          }}
+                                          onClick={() =>
+                                            setSelectedFloorValue(variant)
+                                          }
+                                        >
+                                          <Typography
+                                            variant="body2"
+                                            sx={{
+                                              ...textConfigs.style.basicFont,
+                                            }}
+                                          >
+                                            {variant.sizeName} m
+                                          </Typography>
+                                        </Box>
+                                      )
+                                    )}
+                                  </Box>
+                                </>
+                              )}
+                            </Box>
+                            <Box>
+                              <IconButton
+                                onClick={() => handleEditProduct("floor")}
+                              >
+                                <FaEdit style={{ fontSize: "18px" }} />
+                              </IconButton>
+                              <IconButton
+                                onClick={() => handleRemoveProduct("floor")}
+                              >
+                                <FaTrash style={{ fontSize: "18px" }} />
+                              </IconButton>
+                            </Box>
+                          </Box>
                           <Box
                             sx={{
                               display: "flex",
@@ -1229,33 +1470,61 @@ const CalculatePrice = () => {
                             }}
                           >
                             {selectedFloorValue && (
-                              <Box>
-                                <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                                  {t("price")}: ${selectedFloorValue.price}
+                              <Stack
+                                direction="row"
+                                justifyContent="space-between"
+                                alignItems="flex-start"
+                                sx={{ width: "100%", mb: 1 }}
+                              >
+                                <Typography
+                                  sx={{
+                                    fontSize: { xs: "14px", sm: "14px" },
+                                    ...textConfigs.style.basicFont,
+                                    fontWeight: "bold",
+                                    color: "primary.main",
+                                  }}
+                                >
+                                  {t("your.need")}{" "}
+                                  {require(selectedFloorValue, selectedFloorValue.sizeName, selectedFloorValue.price, "floor", "", selectedFloorVariant.numberOfPiecesPerBox)}{" "}
+                                  {t("box")} {"("}
+                                  {
+                                    selectedFloorVariant.numberOfPiecesPerBox
+                                  }{" "}
+                                  {t("pieces")}
+                                  {")"} {t("of.wallpaper.for")}{" "}
+                                  {String(floorArea)}
+                                  (m²)
                                 </Typography>
-                                <Typography style={{ fontSize: "10px", ...textConfigs.style.basicFont, }}>
-                                  {t("total")}: ${" "}
-                                  {calculatePrice(
-                                    selectedFloorValue,
-                                    selectedFloorValue.sizeName,
-                                    selectedFloorValue.price,
-                                    "floor"
-                                  ).toFixed(2)}
-                                </Typography>
-                              </Box>
+                                <Box>
+                                  <Typography
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                      ...textConfigs.style.basicFont,
+                                    }}
+                                  >
+                                    {t("price")}: ${selectedFloorValue.price}
+                                  </Typography>
+                                  <Typography
+                                    style={{
+                                      fontSize: "14px",
+                                      fontWeight: "bold",
+                                      ...textConfigs.style.basicFont,
+                                    }}
+                                  >
+                                    {t("total")}: ${" "}
+                                    {calculatePrice(
+                                      selectedFloorValue,
+                                      selectedFloorValue.sizeName,
+                                      selectedFloorValue.price,
+                                      "floor",
+                                      "",
+                                      selectedFloorVariant.numberOfPiecesPerBox
+                                    ).toFixed(2)}
+                                  </Typography>
+                                </Box>
+                              </Stack>
                             )}
-                            <Box>
-                              <IconButton
-                                onClick={() => handleEditProduct("floor")}
-                              >
-                                <FaEdit style={{ fontSize: "14px" }} />
-                              </IconButton>
-                              <IconButton
-                                onClick={() => handleRemoveProduct("floor")}
-                              >
-                                <FaTrash style={{ fontSize: "14px" }} />
-                              </IconButton>
-                            </Box>
                           </Box>
                         </CardContent>
                       </Card>
@@ -1263,7 +1532,10 @@ const CalculatePrice = () => {
                       <Button
                         variant="contained"
                         onClick={() => setOpenFloorModal(true)}
-                        sx={{ width: "200px !important", ...textConfigs.style.basicFont, }}
+                        sx={{
+                          width: "200px !important",
+                          ...textConfigs.style.basicFont,
+                        }}
                       >
                         {t("select.floor")}
                       </Button>
@@ -1282,87 +1554,187 @@ const CalculatePrice = () => {
                   },
                   top: { xs: "0px", md: isSticky ? "50px" : "0px" },
                   width: { xs: "auto", md: isSticky ? "20%" : "auto" },
-                  padding: 2,
+                  padding: 3,
+                  borderRadius: 2,
                   border: "1px solid #ccc",
-                  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
+                  boxShadow: "0px 8px 16px rgba(0, 0, 0, 0.2)",
                   backgroundColor: "#fff",
                   zIndex: 1000,
                 }}
               >
-                <Typography variant="h6" sx={{...textConfigs.style.basicFont,}}>{t("estimated.price")}</Typography>
+                <Typography
+                  variant="h6"
+                  sx={{
+                    ...textConfigs.style.basicFont,
+                    fontWeight: "bold",
+                    mb: 2,
+                  }}
+                >
+                  {t("estimated.price")}
+                </Typography>
 
                 {selectedPaints.length > 0 ||
                 selectedWallpaper ||
                 selectedFloor ? (
                   <>
-                    {" "}
-                    <Typography variant="body2" sx={{...textConfigs.style.basicFont,}}>
-                      {t("product.detail.note.price")}
-                    </Typography>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
-                      {i18n.language === "en"
-                        ? `${t("paints")} ${t("price")}`
-                        : `${t("price")} ${t("floor")}`}
-                      : ${" "}
-                      {selectedVariants &&
-                      Object.keys(selectedVariants).length > 0
-                        ? Object.values(selectedVariants)
-                            .reduce((total, variant, index) => {
-                              const selectedVariant =
-                                variant.selectedVariantValue;
-                              if (selectedVariant) {
-                                const sizeName = selectedVariant.sizeName;
-                                const price = selectedVariant.price;
-                                const paint = selectedPaints[index];
-                                const uniqueKey = `${paint.productId}-${index}`;
-                                return (
-                                  total +
-                                  calculatePrice(
-                                    paint,
-                                    sizeName,
-                                    price,
-                                    "paint",
-                                    uniqueKey
-                                  )
-                                );
-                              }
-                              return total;
-                            }, 0)
-                            .toFixed(2)
-                        : (0).toFixed(2)}
-                    </Typography>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
-                      {i18n.language === "en"
-                        ? `${t("wallpaper")} ${t("price")}`
-                        : `${t("price")} ${t("floor")}`}
-                      : $
-                      {selectedWallpaperVariant
-                        ? calculatePrice(
-                            selectedWallpaper,
-                            selectedWallpaperVariant.sizeName,
-                            selectedWallpaperVariant.price,
-                            "wallpaper"
-                          ).toFixed(2)
-                        : (0).toFixed(2)}
-                    </Typography>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
-                      {i18n.language === "en"
-                        ? `${t("floor")} ${t("price")}`
-                        : `${t("price")} ${t("floor")}`}
-                      : $
-                      {selectedFloorValue
-                        ? calculatePrice(
-                            selectedFloor,
-                            selectedFloorValue.sizeName,
-                            selectedFloorValue.price,
-                            "floor"
-                          ).toFixed(2)
-                        : (0).toFixed(2)}
-                    </Typography>
-                    <Typography variant="body1" sx={{...textConfigs.style.basicFont,}}>
-                      {t("total")} {t("estimated.price")}: $
-                      {totalEstimatedPrice().toFixed(2)}
-                    </Typography>
+                    <Box
+                      sx={{
+                        backgroundColor: "#f5f5f5",
+                        padding: 1,
+                        borderRadius: 1,
+                        mb: 2,
+                      }}
+                    >
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {t("product.detail.note.price")}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        {i18n.language === "en"
+                          ? `${t("paints")} ${t("price")}`
+                          : `${t("price")} ${t("floor")}`}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        $
+                        {selectedVariants &&
+                        Object.keys(selectedVariants).length > 0
+                          ? Object.values(selectedVariants)
+                              .reduce((total, variant, index) => {
+                                const selectedVariant =
+                                  variant.selectedVariantValue;
+                                if (selectedVariant) {
+                                  const sizeName = selectedVariant.sizeName;
+                                  const price = selectedVariant.price;
+                                  const paint = selectedPaints[index];
+                                  const uniqueKey = `${paint.productId}-${index}`;
+                                  return (
+                                    total +
+                                    calculatePrice(
+                                      paint,
+                                      sizeName,
+                                      price,
+                                      "paint",
+                                      uniqueKey
+                                    )
+                                  );
+                                }
+                                return total;
+                              }, 0)
+                              .toFixed(2)
+                          : (0).toFixed(2)}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        {i18n.language === "en"
+                          ? `${t("wallpaper")} ${t("price")}`
+                          : `${t("price")} ${t("wallpaper")}`}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        $
+                        {selectedWallpaperVariant
+                          ? calculatePrice(
+                              selectedWallpaper,
+                              selectedWallpaperVariant.sizeName,
+                              selectedWallpaperVariant.price,
+                              "wallpaper"
+                            ).toFixed(2)
+                          : (0).toFixed(2)}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mb: 1,
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        {i18n.language === "en"
+                          ? `${t("floor")} ${t("price")}`
+                          : `${t("price")} ${t("floor")}`}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{ ...textConfigs.style.basicFont }}
+                      >
+                        $
+                        {selectedFloorValue
+                          ? calculatePrice(
+                              selectedFloor,
+                              selectedFloorValue.sizeName,
+                              selectedFloorValue.price,
+                              "floor",
+                              "",
+                              selectedFloorVariant.numberOfPiecesPerBox
+                            ).toFixed(2)
+                          : (0).toFixed(2)}
+                      </Typography>
+                    </Box>
+
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        mt: 2,
+                      }}
+                    >
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        {t("total")} {t("estimated.price")}
+                      </Typography>
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          fontWeight: "bold",
+                        }}
+                      >
+                        ${totalEstimatedPrice().toFixed(2)}
+                      </Typography>
+                    </Box>
                   </>
                 ) : (
                   <Typography variant="body1">{t("caculate.noti")}</Typography>

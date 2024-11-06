@@ -42,6 +42,11 @@ const navItems = [
     path: "/contact",
     state: "contact",
   },
+  {
+    display: "calculate.price",
+    path: "/calculate-price",
+    state: "calculate.price",
+  },
 ];
 
 const termItems = [
@@ -108,17 +113,17 @@ const sectionColors = [
 
 const aboutMenu = [
   {
-    display: "About Us",
+    display: "about.us",
     path: "/about",
     state: "/about",
   },
   {
-    display: "Constructors",
+    display: "constructors",
     path: "/constructors",
     state: "/constructors",
   },
   {
-    display: "Advisory",
+    display: "advisory",
     path: "/advisory",
     state: "/advisory",
   },

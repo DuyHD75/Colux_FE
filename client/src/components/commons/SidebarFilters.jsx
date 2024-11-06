@@ -114,6 +114,7 @@ const SidebarFilters = ({ categories, category, onChange }) => {
         padding: "20px",
         border: "1px solid #ddd",
         borderRadius: "4px",
+        boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
       }}
     >
       <Collapse defaultActiveKey={[]} ghost>

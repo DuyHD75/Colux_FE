@@ -39,12 +39,18 @@ const ColorDetailInfo = ({ color }) => {
   };
 
   const handleColorClick = (color) => {
-    navigate(`/colors/${section}/${collection}/${collectionId}/${color.name}/${color.id}`);
+    navigate(
+      `/colors/${section}/${collection}/${collectionId}/${color.name}/${color.id}`
+    );
     setSelectedColor(color.name);
   };
 
   return (
-    <Box bgcolor={color.hex} position="relative" sx={{ minHeight: { xs: "800px", md: "600px" } }}>
+    <Box
+      bgcolor={color.hex}
+      position="relative"
+      sx={{ minHeight: { xs: "800px", md: "600px" } }}
+    >
       <Container maxWidth="lg" sx={{ padding: "0px !important" }}>
         <Box display="flex" flexDirection={{ xs: "column", md: "row" }}>
           <Box
@@ -79,10 +85,12 @@ const ColorDetailInfo = ({ color }) => {
               "&::-webkit-scrollbar": {
                 display: "none",
               },
-              width: { xs: "100%", md: "76%" },
+              width: { xs: "100%", md: "900px" },
               scrollbarWidth: "none",
-              cursor: "grab",
+              cursor: "pointer",
               paddingLeft: { xs: 0, md: 0 },
+              boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.2)",
+              zIndex: 10,
             }}
           >
             <Box display="inline-flex" minWidth="max-content">
@@ -114,9 +122,12 @@ const ColorDetailInfo = ({ color }) => {
                             left: 0,
                             width: "100%",
                             height: "2px",
-                            backgroundColor: item.hex === color.hex
-                              ? isNearBlack(item.hex) ? "#ffffff" : "#000000"
-                              : "none",
+                            backgroundColor:
+                              item.hex === color.hex
+                                ? isNearBlack(item.hex)
+                                  ? "#ffffff"
+                                  : "#000000"
+                                : "none",
                           }}
                         />
                       )}
@@ -142,11 +153,20 @@ const ColorDetailInfo = ({ color }) => {
             <Box my={2}>
               <Typography
                 variant="body2"
-                sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                sx={{
+                  ...textConfigs.style.basicFont,
+                  color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                }}
               >
                 {t("code")}: {color.code}
               </Typography>
-              <Typography variant="h4" sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}>
+              <Typography
+                variant="h4"
+                sx={{
+                  ...textConfigs.style.basicFont,
+                  color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                }}
+              >
                 {color.name}
               </Typography>
               <Box display="flex" alignItems="center" onClick={handleToggle}>
@@ -160,7 +180,15 @@ const ColorDetailInfo = ({ color }) => {
                 >
                   {t("full.detail")}
                 </Typography>
-                {isExpanded ? <FaChevronUp color={isNearBlack(color.hex) ? "#ffffff" : "#000000"} /> : <FaChevronDown color={isNearBlack(color.hex) ? "#ffffff" : "#000000"}/>}
+                {isExpanded ? (
+                  <FaChevronUp
+                    color={isNearBlack(color.hex) ? "#ffffff" : "#000000"}
+                  />
+                ) : (
+                  <FaChevronDown
+                    color={isNearBlack(color.hex) ? "#ffffff" : "#000000"}
+                  />
+                )}
               </Box>
             </Box>
 
@@ -169,13 +197,19 @@ const ColorDetailInfo = ({ color }) => {
                 <Grid item xs={12} md={6}>
                   <Typography
                     variant="body2"
-                    sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                    }}
                   >
                     LRV: {color.lrv}
                   </Typography>
                   <Typography
                     variant="body2"
-                    sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                    }}
                   >
                     {t("available.in")}: {color.interior && "Interior"}{" "}
                     {color.exterior && "Exterior"}
@@ -184,15 +218,20 @@ const ColorDetailInfo = ({ color }) => {
                 <Grid item xs={12} md={6}>
                   <Typography
                     variant="body2"
-                    sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                    }}
                   >
-                    {t("color.collections")}: {color.collections.map((item) => (
-                      item.name + ", "
-                    ))}
+                    {t("color.collections")}:{" "}
+                    {color.collections.map((item) => item.name + ", ")}
                   </Typography>
                   <Typography
                     variant="body2"
-                    sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                    }}
                   >
                     {t("color.family")}: {color.colorFamily[0].name}
                   </Typography>
@@ -200,17 +239,33 @@ const ColorDetailInfo = ({ color }) => {
               </Grid>
             )}
 
-            <Typography mt={2} sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}>
+            <Typography
+              mt={2}
+              sx={{
+                ...textConfigs.style.basicFont,
+                color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+              }}
+            >
               {color.description}
             </Typography>
 
             <Box mt={2}>
-              <Typography variant="h6" sx={{ ...textConfigs.style.basicFont, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  ...textConfigs.style.basicFont,
+                  color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                }}
+              >
                 {t("get.color")}
               </Typography>
               <Box
                 display="flex"
-                flexDirection={{ xs: "column", md: "row", color: isNearBlack(color.hex) ? "#ffffff" : "#000000", }}
+                flexDirection={{
+                  xs: "column",
+                  md: "row",
+                  color: isNearBlack(color.hex) ? "#ffffff" : "#000000",
+                }}
                 gap={2}
                 mt={2}
               >
@@ -236,7 +291,13 @@ const ColorDetailInfo = ({ color }) => {
                         variant="caption"
                         sx={{
                           ...textConfigs.style.basicFont,
-                          paddingLeft: { xs: "1rem", md: 0, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", },
+                          paddingLeft: {
+                            xs: "1rem",
+                            md: 0,
+                            color: isNearBlack(color.hex)
+                              ? "#ffffff"
+                              : "#000000",
+                          },
                         }}
                       >
                         {t("interior")}
@@ -266,7 +327,13 @@ const ColorDetailInfo = ({ color }) => {
                         variant="caption"
                         sx={{
                           ...textConfigs.style.basicFont,
-                          paddingLeft: { xs: "1rem", md: 0, color: isNearBlack(color.hex) ? "#ffffff" : "#000000", },
+                          paddingLeft: {
+                            xs: "1rem",
+                            md: 0,
+                            color: isNearBlack(color.hex)
+                              ? "#ffffff"
+                              : "#000000",
+                          },
                         }}
                       >
                         {t("exterior")}

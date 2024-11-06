@@ -48,7 +48,13 @@ const ProductDetailInfo = ({ product }) => {
   const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState(null);
 
-
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const pageIndex = 0;
 
@@ -127,53 +133,67 @@ const ProductDetailInfo = ({ product }) => {
             setCart(response.data.carts);
           }
           if (err) {
-            toast.error('Failed to fetch cart data');
+            toast.error("Failed to fetch cart data");
           }
         } catch (error) {
-          toast.error('An error occurred while fetching cart data');
+          toast.error("An error occurred while fetching cart data");
         }
       }
     };
     getCart();
   }, [user]);
-  console.log('paintID', selectedProduct?.id);
+  console.log("paintID", selectedProduct?.id);
 
   const handleAddToCart = (quantity) => {
     const status = 1;
-    const updateQuantityType = 'INCREMENTAL';
+    const updateQuantityType = "INCREMENTAL";
     const customerId = user.userId;
 
-    const cartItems = [{
-      ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
-      ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
-      productId: product.productId,
-      quantity: quantity,
-      ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
-      ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
-    }];
+    const cartItems = [
+      {
+        ...(selectedVariant.categoryName === "Paint" && {
+          variantId: selectedVariant.variantId,
+        }),
+        ...(selectedVariant.categoryName === "Wallpaper" && {
+          variantId: selectedVariant.variantId,
+        }),
+        ...(selectedVariant.categoryName === "Floor" && {
+          variantId: selectedVariant.variantId,
+        }),
+        productId: product.productId,
+        quantity: quantity,
+        ...(selectedVariant.categoryName === "Paint" && {
+          paintId: selectedProduct.id,
+        }),
+        ...(selectedVariant.categoryName === "Wallpaper" && {
+          wallpaperId: selectedProduct.id,
+        }),
+        ...(selectedVariant.categoryName === "Floor" && {
+          floorId: selectedProduct.id,
+        }),
+      },
+    ];
 
-    updateCart(
-
-      cart.cartId,
-      customerId,
-      status,
-      updateQuantityType,
-      cartItems
-
-    );
+    updateCart(cart.cartId, customerId, status, updateQuantityType, cartItems);
   };
 
-  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
-    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (!response) {
-      toast.error('Quantity not enough to add');
-    }
-    else {
-      toast.success('Added to cart successfully');
-    }
-  }, []);
+  const updateCart = useCallback(
+    async (cartId, customerId, status, updateQuantityType, cartItems) => {
+      const { response, err } = await cartApi.saveCart(
+        cartId,
+        customerId,
+        status,
+        updateQuantityType,
+        cartItems
+      );
+      if (!response) {
+        toast.error("Quantity not enough to add");
+      } else {
+        toast.success("Added to cart successfully");
+      }
+    },
+    []
+  );
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
@@ -185,10 +205,17 @@ const ProductDetailInfo = ({ product }) => {
               gutterBottom
               sx={{ ...textConfigs.style.basicFont }}
             >
-              {product.productName}
+              {capitalizeWords(product.productName)}
             </Typography>
           </Grid>
-          <Grid item xs={12} md={3}>
+          <Grid
+            item
+            xs={12}
+            md={3}
+            display="flex"
+            alignItems="center"
+            justifyContent="end"
+          >
             <Box
               sx={{
                 display: "flex",
@@ -481,7 +508,7 @@ const ProductDetailInfo = ({ product }) => {
                             variant="body2"
                             sx={{ ...textConfigs.style.basicFont }}
                           >
-                            {variant.sizeName}
+                            {variant.sizeName} L
                           </Typography>
                         </Box>
                       ))}
@@ -590,7 +617,6 @@ const ProductDetailInfo = ({ product }) => {
                 sx={{
                   display: "flex",
                   flexDirection: { xs: "column", sm: "row" },
-
                 }}
               >
                 <Box
@@ -616,8 +642,9 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${selectedVariant.quantity
-                      } ${t("products")})`
+                      ? `${t("still.in.stock")} (${
+                          selectedVariant.quantity
+                        } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -681,30 +708,33 @@ const ProductDetailInfo = ({ product }) => {
               {t("product.detail.estimated.cost.link")}
             </Link>
             <Grid container spacing={2} mt={1}>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} display="flex" justifyContent="center">
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: "#f11a00",
+                    backgroundColor: "#c11700",
                     padding: "12px",
-                    ":hover": { backgroundColor: "#01ae5e" },
+                    width: "70%",
+                    ":hover": { backgroundColor: "#1c2759" },
                     ...textConfigs.style.basicFont,
                   }}
-                  fullWidth
-                  onClick={() => { handleAddToCart(quantity) }}
+                  onClick={() => {
+                    handleAddToCart(quantity);
+                  }}
                 >
                   {t("add.to.cart")}
                 </Button>
               </Grid>
-              <Grid item xs={12} md={6}>
+              <Grid item xs={12} md={6} display="flex" justifyContent="center">
                 <Button
                   variant="contained"
                   sx={{
-                    backgroundColor: "#01ae5e",
+                    backgroundColor: "#018e4d",
                     padding: "12px",
+                    width: "70%",
+                    ":hover": { backgroundColor: "#1c2759" },
                     ...textConfigs.style.basicFont,
                   }}
-                  fullWidth
                 >
                   {t("buy.now")}
                 </Button>

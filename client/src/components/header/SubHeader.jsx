@@ -36,14 +36,14 @@ export const SubHeader = () => {
           </MenuItem>
           <MenuItem className="" sx={{ cursor: "default", fontSize: "12px" }}>
             <EmailIcon className="mr-0.5" sx={{ fontSize: "12px" }} />
-            kolux7529@gmail.com
+            coluxalpha@gmail.com
           </MenuItem>
           <MenuItem
             className="capitalize"
             sx={{ cursor: "default", fontSize: "12px" }}
           >
             <PhoneIcon className="mr-0.5" sx={{ fontSize: "12px" }} />
-            0123456789
+            0327113934
           </MenuItem>
         </Typography>
 

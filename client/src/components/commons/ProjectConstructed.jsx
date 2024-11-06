@@ -35,6 +35,14 @@ const ProjectConstructed = () => {
       window.removeEventListener("resize", handleResize);
     };
   }, []);
+
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   return (
     <Box
       sx={{
@@ -47,7 +55,7 @@ const ProjectConstructed = () => {
         <Typography
           variant="h3"
           gutterBottom
-          sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
+          sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText, fontSize: "30px", fontWeight: "bold" }}
         >
           {t('home.project.title')}
         </Typography>
@@ -105,7 +113,7 @@ const ProjectConstructed = () => {
                 style={{ ...textConfigs.style.headerText, cursor: "pointer" }}
                 onClick={() => setSelectedSlideIndex(index)}
               >
-                {project.name}
+                {capitalizeWords(project.name)}
               </SwiperSlide>
             ))}
           </Swiper>
