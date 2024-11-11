@@ -1,15 +1,15 @@
 import AddProduct from "../page/AddProduct";
 import Home from "../page/Home";
-import ManageFloor from "../page/ManageFloor";
-import ManagePaint from "../page/ManagePaint";
+// import ManageFloor from "../page/ManageFloor";
+import ManageProduct from "../page/ManageProduct";
 import ManageUser from "../page/ManageUser";
-import ManageWallpaper from "../page/ManageWallpaper";
+// import ManageWallpaper from "../page/ManageWallpaper";
 
 export const routesGen = {
   home: "/",
   manageUser: "/manageUser",
   addProduct: "/addProduct",
-  managePaint: "/managePaint",
+  manageProduct: "/manage-product",
   ManageFloor: "/ManageFloor",
   manageWallpaper: "/manageWallpaper",
 };
@@ -31,20 +31,20 @@ const routes = [
     state: "addProduct",
   },
   {
-    path: routesGen.managePaint,
-    element: <ManagePaint />,
-    state: "managePaint",
+    path: routesGen.manageProduct,
+    element: <ManageProduct />,
+    state: "manageProduct",
   },
-  {
-    path: routesGen.ManageFloor,
-    element: <ManageFloor />,
-    state: "manageFloor",
-  },
-  {
-    path: routesGen.manageWallpaper,
-    element: <ManageWallpaper />,
-    state: "manageWallpaper",
-  },
+  // {
+  //   path: routesGen.ManageFloor,
+  //   element: <ManageFloor />,
+  //   state: "manageFloor",
+  // },
+  // {
+  //   path: routesGen.manageWallpaper,
+  //   element: <ManageWallpaper />,
+  //   state: "manageWallpaper",
+  // },
   
     
 
