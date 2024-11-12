@@ -18,12 +18,13 @@ import colorsApi from "../../api/modules/colors.api";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import { useTranslation } from "react-i18next";
 
-const sections = ["Color Family", "Room", "Collection", "Exterior & Interior"];
+
 const exteriors = data.exteriors;
 
 const ColorSwitcher = () => {
   
   const { t } = useTranslation(); 
+  const sections = [t("color.family"), t("room"), t("collections"), `${t("exterior")} & ${t("interior")}`];
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -135,19 +136,19 @@ const ColorSwitcher = () => {
   }, [dispatch])
 
   useEffect(() => {
-    if (selectedSection === "Room" && collection) {
+    if (selectedSection === t("room") && collection) {
       const foundRoom = rooms.find((room) => room.roomType === collection);
       if (foundRoom) {
         setSelectedRoom(foundRoom);
       }
-    } else if (selectedSection === "Collection" && collection) {
+    } else if (selectedSection === t("collections") && collection) {
       const foundCollection = collections.find(
         (col) => col.name === collection
       );
       if (foundCollection) {
         setSelectedCollection(foundCollection);
       }
-    } else if (selectedSection === "Exterior & Interior" && collection) {
+    } else if (selectedSection === `${t("exterior")} & ${t("interior")}` && collection) {
       const foundExterior = exteriors.find(
         (exterior) => exterior.name === collection
       );
@@ -160,18 +161,18 @@ const ColorSwitcher = () => {
   useEffect(() => {
     const path = location.pathname;
     if (path.includes(`/colors/color-family`)) {
-      setSelectedSection("Color Family");
+      setSelectedSection(t("color.family"));
     } else if (path.includes(`/colors/rooms`)) {
-      setSelectedSection("Room");
+      setSelectedSection(t("room"));
     } else if (path.includes(`/colors/collections`)) {
-      setSelectedSection("Collection");
+      setSelectedSection(t("collections"));
     } else if (path.includes(`/colors/exteriors&interiors`)) {
-      setSelectedSection("Exterior & Interior");
+      setSelectedSection(`${t("exterior")} & ${t("interior")}`);
     }
   }, [location.pathname]);
 
   useEffect(() => {
-    if (selectedSection === "Color Family" && collectionId) {
+    if (selectedSection === t("color.family") && collectionId) {
       const foundColor = extendedColorFamilies.find(
         (colorFamily) => colorFamily.id === collectionId
       );
@@ -184,16 +185,16 @@ const ColorSwitcher = () => {
   const handleSectionChange = (section) => {
     setSelectedSection(section);
     switch (section) {
-      case "Color Family":
+      case t("color.family"):
         navigate(`/colors/color-family/${selectedColor?.name}/${selectedColor?.id}`);
         break;
-      case "Room":
+      case t("room"):
         navigate(`/colors/rooms/${selectedRoom?.roomType}/${selectedRoom?.id}`);
         break;
-      case "Collection":
+      case t("collections"):
         navigate(`/colors/collections/${selectedCollection?.name}/${selectedCollection?.id}`);
         break;
-      case "Exterior & Interior":
+      case `${t("exterior")} & ${t("interior")}`:
         navigate(`/colors/exteriors&interiors/${selectedExterior?.name}/${selectedExterior?.id}`);
         break;
       default:
@@ -203,25 +204,25 @@ const ColorSwitcher = () => {
 
   const renderContent = () => {
     switch (selectedSection) {
-      case "Color Family":
+      case t("color.family"):
         return (
           <ColorFamilies
             onColorSelect={setSelectedColor}
             selectedColor={selectedColor}
           />
         );
-      case "Room":
+      case t("room"):
         return (
           <RoomBox onRoomSelect={setSelectedRoom} selectedRoom={selectedRoom} />
         );
-      case "Collection":
+      case t("collections"):
         return (
           <CollectionBox
             onCollectionSelect={setSelectedCollection}
             selectedCollection={selectedCollection}
           />
         );
-      case "Exterior & Interior":
+      case `${t("exterior")} & ${t("interior")}`:
         return (
           <ExteriorBox
             onExteriorSelect={setSelectedExterior}
@@ -241,30 +242,30 @@ const ColorSwitcher = () => {
     let hex = "";
 
     switch (selectedSection) {
-      case "Color Family":
+      case t("color.family"):
         img = selectedColor.image;
-        section = "COLOR FAMILY";
+        section = t("color.family");
         title = selectedColor.title;
         description = selectedColor.description;
         hex = selectedColor.hex;
         break;
-      case "Room":
+      case t("room"):
         img = selectedRoom.image;
-        section = "ROOM";
+        section = t("room");
         title = selectedRoom.title;
         description = selectedRoom.description;
         hex = selectedRoom.hex;
         break;
-      case "Collection":
+      case t("collections"):
         img = selectedCollection.image;
-        section = "COLLECTION";
+        section = t("collections");
         title = selectedCollection.title;
         description = selectedCollection.description;
         hex = selectedCollection.hex;
         break;
-      case "Exterior & Interior":
+      case `${t("exterior")} & ${t("interior")}`:
         img = selectedExterior.img;
-        section = "EXTERIOR & INTERIOR";
+        section = `${t("exterior")} & ${t("interior")}`;
         title = selectedExterior.title;
         description = selectedExterior.description;
         hex = selectedExterior.hex;
@@ -286,13 +287,13 @@ const ColorSwitcher = () => {
 
   const renderListColors = () => {
     switch (selectedSection) {
-      case "Color Family":
+      case t("color.family"):
         return <ListColorsByColorFamily/>;
-      case "Room":
+      case t("room"):
         return <ListColorsByRoom />;
-      case "Collection":
+      case t("collections"):
         return <ListColorsByCollection />;
-      case "Exterior & Interior":
+      case `${t("exterior")} & ${t("interior")}`:
         return <ListColorsByExterior />;
       default:
         return null;
@@ -343,6 +344,7 @@ const ColorSwitcher = () => {
                         backgroundColor: "#ebebeb",
                       },
                       marginLeft: "0px !important",
+                      textTransform: "capitalize"
                     }}
                     onClick={() => handleSectionChange(section)}
                   >
@@ -352,7 +354,7 @@ const ColorSwitcher = () => {
                   {index < sections.length - 1 && (
                     <Box
                       sx={{
-                        borderLeft: "1px solid #e5e7eb",
+                        borderLeft: "2px solid #e5e7eb",
                         height: "24px",
                         alignSelf: "center",
                         marginLeft: "0px !important",

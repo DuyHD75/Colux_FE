@@ -9,12 +9,20 @@ import { useTranslation } from "react-i18next";
 const Blogs = () => {
   const { blogs } = useSelector((state) => state.blogs);
   const { t } = useTranslation();
+
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
   return (
     <Box sx={{ ...backgroundConfigs.style.backgroundContext }}>
       <Container maxWidth="lg" className="py-10">
         <Typography
           variant="h3"
-          sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
+          sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText, fontSize: "30px", fontWeight: "bold" }}
         >
           {t('home.blogs.title')}
         </Typography>
@@ -45,7 +53,7 @@ const Blogs = () => {
                         variant="h5"
                         sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
                       >
-                        {blog.title}
+                        {capitalizeWords(blog.title)}
                       </Typography>
                       <Typography
                         variant="body1"
@@ -125,7 +133,7 @@ const Blogs = () => {
                     variant="h6"
                     sx={{ fontFamily: "Nunito", ...textConfigs.style.headerText }}
                   >
-                    {blog.title}
+                    {capitalizeWords(blog.title)}
                   </Typography>
                   <Typography
                     variant="body2"

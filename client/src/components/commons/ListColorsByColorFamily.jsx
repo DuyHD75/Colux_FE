@@ -8,6 +8,7 @@ import {
   FormControl,
   InputLabel,
   Pagination,
+  TextField,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -17,13 +18,17 @@ import { BsFillHexagonFill } from "react-icons/bs";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 
 const ListColorsByColorFamily = () => {
+  const { t, i18n } = useTranslation();
+
   const { section, collection, collectionId } = useParams();
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
   const [totalPages, setTotalPages] = useState(0);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [colorFamily, setColorFamily] = useState([]);
   const [colors, setColors] = useState([]);
@@ -59,7 +64,7 @@ const ListColorsByColorFamily = () => {
         const { response, err } = await colorsApi.getColorFamily();
         if (response && response.code === 200) {
           setColorFamily([...response.data.colorFalimies]);
-         
+
           const matchedColorFamily = response.data.colorFalimies.find(
             (colorFamily) => colorFamily.id === collectionId
           );
@@ -77,24 +82,22 @@ const ListColorsByColorFamily = () => {
     };
 
     fetchData();
-  }, [dispatch, collectionId]); 
-  
+  }, [dispatch, collectionId]);
+
   useEffect(() => {
     const getListColors = async () => {
       if (selectedCollection) {
         dispatch(setGlobalLoading(true));
         try {
-          const { response } = collection === "All Colors" ? 
-          await colorsApi.getAllColors(
-              currentPage - 1,
-              colorsPerPage
-            )
-          :  await colorsApi.getColorByColorFamilyAndCollection(
-            collectionId,
-            selectedCollection,
-            currentPage - 1,
-            colorsPerPage
-          );
+          const { response } =
+            collection === "All Colors"
+              ? await colorsApi.getAllColors(currentPage - 1, colorsPerPage)
+              : await colorsApi.getColorByColorFamilyAndCollection(
+                  collectionId,
+                  selectedCollection,
+                  currentPage - 1,
+                  colorsPerPage
+                );
           if (response && response.code === 200) {
             setColors(response.data.colors.content);
             setTotalPages(response.data.colors.totalPages);
@@ -133,26 +136,89 @@ const ListColorsByColorFamily = () => {
     setCurrentPage(value);
   };
 
-  const paginatedColors = colors.slice(
-    0 * colorsPerPage,
-    1 * colorsPerPage
-  );
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
+  const paginatedColors = colors.slice(0 * colorsPerPage, 1 * colorsPerPage);
 
   return (
     <Container maxWidth="lg" className="my-10">
-      <Grid container>
-        <Grid item xs={12} md={8}>
-          <Typography variant="h3" sx={{ ...textConfigs.style.headerText }}>
-            {collection} Paint Colors
+      <Grid container spacing={2} marginBottom={2}>
+        <Grid
+          item
+          xs={12}
+          md={5}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "start",
+          }}
+        >
+          <Typography
+            variant="h3"
+            sx={{
+              ...textConfigs.style.headerText,
+              fontSize: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            {i18n.language === "en"
+              ? `${collection} ${t("paint.colors")}`
+              : `${t("paint.colors")} ${collection}`}
           </Typography>
         </Grid>
         <Grid
           item
           xs={12}
           md={4}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TextField
+            variant="outlined"
+            size="small"
+            label={t("search")}
+            fullWidth
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#1c2759",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#1c2759",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1c2759",
+                },
+              },
+              ...textConfigs.style.basicFont,
+            }}
+            InputLabelProps={{
+              sx: {
+                color: "#1c2759",
+                "&.Mui-focused": {
+                  color: "#1c2759",
+                },
+                "&:hover": {
+                  color: "#1c2759",
+                },
+              ...textConfigs.style.basicFont,
+              },
+            }}
+            onChange={handleSearchChange}
+          />
+        </Grid>
+        <Grid
+          item
+          xs={12}
+          md={3}
           sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
         >
-          <FormControl fullWidth variant="outlined" sx={{ marginBottom: 2 }}>
+          <FormControl fullWidth variant="outlined">
             <InputLabel
               sx={{
                 color: selectedCollection ? "#1c2759" : "",
@@ -162,7 +228,7 @@ const ListColorsByColorFamily = () => {
                 ...textConfigs.style.basicFont,
               }}
             >
-              Collections
+              {t("collections")}
             </InputLabel>
             <Select
               sx={{
@@ -182,7 +248,8 @@ const ListColorsByColorFamily = () => {
               }}
               value={selectedCollection || `All Colors ${collection}`}
               onChange={handleChange}
-              label="Collections"
+              label={t("collections")}
+              size="small"
             >
               {colorFamily
                 .filter((color) => color.id === collectionId)

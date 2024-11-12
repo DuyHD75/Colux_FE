@@ -6,6 +6,7 @@ import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
+import textConfigs from "../../config/text.config";
 
 // Hàm kiểm tra độ sáng của màu nền
 const getContrastColor = (hex) => {
@@ -103,11 +104,19 @@ const HomeColorFamilies = () => {
     rows.push(row);
   });
 
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <div className="flex flex-col items-center mt-5 py-10">
       <div className="text-center mb-4">
-        <h1 className="text-3xl text-[#1c2759]">{t('home.colors.title')}</h1>
-        <p className="text-xl m-2 text-[#747474]">
+        <h1 className="text-3xl text-[#1c2759] font-bold" style={{ textTransform: 'capitalize', ...textConfigs.style.basicFont}}>{capitalizeWords(t('home.colors.title'))}</h1>
+        <p className="text-xl m-2 text-[#000000]" style={{ ...textConfigs.style.basicFont}}>
         {t('home.colors.desc')}
         </p>
       </div>

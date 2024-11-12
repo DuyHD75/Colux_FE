@@ -66,7 +66,7 @@ const Footer = () => {
               <Grid
                 item
                 xs={12}
-                md={4}
+                md={6}
                 key="ourCompany"
                 className="text-white font-['Nunito']"
                 sx={{ mb: 3 }}
@@ -91,7 +91,7 @@ const Footer = () => {
               <Grid
                 item
                 xs={12}
-                md={4}
+                md={6}
                 key="termsOfUse"
                 className="text-white"
                 sx={{ mb: 3 }}
@@ -113,7 +113,7 @@ const Footer = () => {
                 ))}
               </Grid>
 
-              <Grid item xs={12} md={4} key="product" className="text-white">
+              {/* <Grid item xs={12} md={4} key="product" className="text-white">
                 <Typography
                   variant="h5"
                   sx={{ fontFamily: "Nunito", marginX: "8px" }}
@@ -129,7 +129,7 @@ const Footer = () => {
                     {t(item.display)}
                   </Link>
                 ))}
-              </Grid>
+              </Grid> */}
             </Grid>
           </Grid>
         </Box>

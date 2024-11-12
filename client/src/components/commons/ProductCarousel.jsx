@@ -38,6 +38,14 @@ const ProductCarousel = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
 
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
   return (
     <Box sx={{ ...backgroundConfigs.style.backgroundPrimary }}>
       <Container
@@ -51,9 +59,11 @@ const ProductCarousel = () => {
             ...textConfigs.style.headerText,
             color: "#fff",
             paddingBottom: "20px",
+            fontSize: "30px",
+            fontWeight: "bold"
           }}
         >
-          {t('home.products.title')}
+          {capitalizeWords(t('home.products.title'))}
         </Typography>
         <Grid
           container
@@ -180,7 +190,7 @@ const ProductCarousel = () => {
                               textAlign: "center",
                             }}
                           >
-                            {product.name}
+                            {capitalizeWords(product.name)}
                           </Typography>
                           <Typography
                             variant="body1"
