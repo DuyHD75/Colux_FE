@@ -466,7 +466,7 @@ export const Header = () => {
                       key={index}
                       className="text-[#1c2759] capitalize justify-start text-base font-['Nunito']"
                     >
-                      {item.display}
+                      {t(item.display)}
                     </Link>
                   </MenuItem>
                 ))}

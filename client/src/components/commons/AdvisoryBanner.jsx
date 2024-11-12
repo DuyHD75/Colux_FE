@@ -38,7 +38,7 @@ const AdvisoryBanner = () => {
             <Typography
               variant="h4"
               gutterBottom
-              sx={{ ...textConfigs.style.headerText }}
+              sx={{ ...textConfigs.style.headerText, fontSize: "30px", fontWeight: "bold" }}
             >
               {t('home.advansory.title')}
             </Typography>

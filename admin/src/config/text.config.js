@@ -10,7 +10,7 @@ const textConfigs = {
     },
     subText: {
       fontFamily: '"Nunito", sans-serif',
-      color: "#000000",
+      color: "#747474",
     },
     normalText: {
       fontFamily: '"Nunito", sans-serif',

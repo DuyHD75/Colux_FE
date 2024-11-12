@@ -3,10 +3,8 @@ import {
   Card,
   CardContent,
   CardMedia,
-  IconButton,
   Typography,
   Box,
-  SvgIcon,
 } from "@mui/material";
 import StarIcon from "@mui/icons-material/Star";
 import StarBorderIcon from "@mui/icons-material/StarBorder";
@@ -15,16 +13,6 @@ import { Link, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import textConfigs from "../../config/text.config";
 
-const HeartOutlineIcon = (props) => (
-  <SvgIcon {...props} sx={{ fontSize: "1rem" }}>
-    <path
-      d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"
-      fill="none"
-      stroke="gray"
-      strokeWidth="2"
-    />
-  </SvgIcon>
-);
 
 const ProductCard = ({ product }) => {
   const { t } = useTranslation();
@@ -32,6 +20,14 @@ const ProductCard = ({ product }) => {
   if (!product) {
     return null;
   }
+
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const ratingAverage = product.ratingAverage || 0;
   const fullStars = Math.floor(ratingAverage);
@@ -53,16 +49,6 @@ const ProductCard = ({ product }) => {
         position: "relative",
       }}
     >
-      <IconButton
-        sx={{
-          position: "absolute",
-          top: 1,
-          right: 3,
-          zIndex: 1,
-        }}
-      >
-        <HeartOutlineIcon />
-      </IconButton>
 
       <Link to={`/products/${productCategory}/${productCategoryId}/${product.productName}/${product.productId}`} onClick={handleClick}>
         <Box
@@ -122,7 +108,7 @@ const ProductCard = ({ product }) => {
               ...textConfigs.style.basicFont,
             }}
           >
-            {product.productName}
+            {capitalizeWords(product.productName)}
           </Typography>
           {Number.isFinite(fullStars) && (
           <Box sx={{ mt: 1,}}>
