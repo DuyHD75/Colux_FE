@@ -42,7 +42,7 @@ const ResetPassword = ({ switchAuthState }) => {
       const { response, err } = await userApi.resetPassword(values);
       setIsResetPasswordRequest(false);
 
-      if (response && response.code === 200) {
+      if (response) {
         resetPasswordForm.resetForm();
         dispatch(setUser(response));
         toast.success(response.message);

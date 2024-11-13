@@ -49,7 +49,7 @@ const Login = ({ switchAuthState }) => {
       const { response, err } = await userApi.login(values);
       setIsLoginRequest(false);
 
-      if (response && response.code === 200) {
+      if (response) {
         dispatch(setUser(response.data.user));
         loginForm.resetForm();
         toast.success("Login Successfully!");

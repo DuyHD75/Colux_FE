@@ -50,7 +50,7 @@ const Register = ({ switchAuthState }) => {
       setIsRegisterRequest(false);
       console.log(response);
       
-      if (response && response.code === 200) {
+      if (response) {
         registerForm.resetForm();
         setSuccessMessage(response.message);
       } else { 

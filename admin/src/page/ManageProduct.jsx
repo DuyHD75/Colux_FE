@@ -46,33 +46,6 @@ import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import textConfigs from "../config/text.config";
 
-// const variantAvailable = [
-//   {
-//     variantId: "f114789b-ace9-4b9a-991d-1e08bc7ebc93",
-//     sizeName: "15",
-//     categoryName: "Paint",
-//     packageType: "Barrel",
-//   },
-//   {
-//     variantId: "ef2066d0-4d11-4d49-8d6a-e4b10bf51c87",
-//     sizeName: "8",
-//     categoryName: "Paint",
-//     packageType: "Barrel",
-//   },
-//   {
-//     variantId: "a074a079-6b9a-4399-be4c-6abf78f357e1",
-//     sizeName: "5",
-//     categoryName: "Paint",
-//     packageType: "Barrel",
-//   },
-//   {
-//     variantId: "ecb02819-3717-4fa5-ab78-52adb2528f08",
-//     sizeName: "12",
-//     categoryName: "Paint",
-//     packageType: "Barrel",
-//   },
-// ];
-
 const ManageProduct = () => {
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
@@ -106,6 +79,7 @@ const ManageProduct = () => {
     status: 0,
     variants: [],
     id: null,
+    floorId: `${Date.now()}-${Math.floor(Math.random() * 1000000)}`,
   });
   const [showAddVariantRow, setShowAddVariantRow] = useState(null);
   const [showAddFloorRow, setShowAddFloorRow] = useState(false);
@@ -120,13 +94,12 @@ const ManageProduct = () => {
   };
 
   const handleAddVariantRowToggle = (id) => {
-    if (id !== null) {
-      setShowAddVariantRow((prev) => (prev === id ? null : id));
-    }
+    // if (id !== null) {
+    setShowAddVariantRow((prev) => (prev === id ? null : id));
+    // }
   };
 
   const handleSaveVariantPaint = (id, paintId) => {
-
     if (!selectedVariantId) {
       alert("Please select a variant.");
       return;
@@ -176,7 +149,9 @@ const ManageProduct = () => {
     setSelectedVariantId("");
   };
 
-  const handleSaveVariantFloor = (floorId) => {
+  console.log(editRow);
+
+  const handleSaveVariantFloor = (id, floorId) => {
     if (!selectedVariantId) {
       alert("Please select a variant.");
       return;
@@ -191,7 +166,10 @@ const ManageProduct = () => {
     }
 
     const updateFloors = editRow.floors.map((floor) => {
-      if (floor.id === floorId) {
+      if (
+        (id === null && floor.floorId === floorId) ||
+        (id !== null && floor.id === id)
+      ) {
         const existingVariantIndex = floor.variants.findIndex(
           (variant) => variant.variantId === selectedVariantId
         );
@@ -223,7 +201,7 @@ const ManageProduct = () => {
     setSelectedVariantId("");
   };
 
-  const handleSaveVariantWallpaper = (wallpaperId) => {
+  const handleSaveVariantWallpaper = (id, wallpaperId) => {
     if (!selectedVariantId) {
       alert("Please select a variant.");
       return;
@@ -239,7 +217,10 @@ const ManageProduct = () => {
 
     if (wallpaperId) {
       const updateWallpapers = editRow.wallpapers.map((wallpaper) => {
-        if (wallpaper.id === wallpaperId) {
+        if (
+          (id === null && wallpaper.wallpaperId === wallpaperId) ||
+          (id !== null && wallpaper.id === id)
+        ) {
           const existingVariantIndex = wallpaper.variants.findIndex(
             (variant) => variant.variantId === selectedVariantId
           );
@@ -277,6 +258,7 @@ const ManageProduct = () => {
           status: 0,
           variants: [],
           id: null,
+          wallpaperId: `${Date.now()}-${Math.floor(Math.random() * 1000000)}`,
         },
       ];
       const selectedVariant = variantAvailable.find(
@@ -317,30 +299,91 @@ const ManageProduct = () => {
     setEditRow({ ...editRow, paints: updatedPaints });
   };
 
+  const handleDeleteVariantWallpaper = (id, variantId, wallpaperId) => {
+    const updatedWallpapers = editRow.wallpapers.map((wallpaper) => {
+      if (
+        (id === null && wallpaper.wallpaperId === wallpaperId) ||
+        (id !== null && wallpaper.id === id)
+      ) {
+        return {
+          ...wallpaper,
+          variants: wallpaper.variants.filter(
+            (variant) => variant.variantId !== variantId
+          ),
+        };
+      }
+      return wallpaper;
+    });
+
+    setEditRow({ ...editRow, wallpapers: updatedWallpapers });
+  };
+
+  const handleDeleteVariantFloor = (id, variantId, floorId) => {
+    const updatedFloors = editRow.floors.map((floor) => {
+      if (
+        (id === null && floor.floorId === floorId) ||
+        (id !== null && floor.id === id)
+      ) {
+        return {
+          ...floor,
+          variants: floor.variants.filter(
+            (variant) => variant.variantId !== variantId
+          ),
+        };
+      }
+      return floor;
+    });
+
+    setEditRow({ ...editRow, floors: updatedFloors });
+  };
+
   const handleColorSelection = (colorId) => {
-    setSelectedColors(
-      (prevSelected) =>
-        prevSelected.includes(colorId)
-          ? prevSelected.filter((id) => id !== colorId) // Remove if already selected
-          : [...prevSelected, colorId] // Add if not selected
-    );
+    const color = colors.find((c) => c.id === colorId);
+    if (!color) return;
+
+    setSelectedColors((prevSelected) => {
+      // Check if colorId is already selected
+      const isSelected = prevSelected.some(
+        (selected) => selected.color.id === colorId
+      );
+
+      if (isSelected) {
+        // Remove if already selected
+        return prevSelected.filter((selected) => selected.color.id !== colorId);
+      } else {
+        // Add if not selected, with the specified structure
+        const newColorSelection = {
+          color: {
+            name: color.name,
+            code: color.code,
+            hex: color.hex,
+            interior: color.interior,
+            exterior: color.exterior,
+            colorTypeId: 0,
+            id: color.id,
+          },
+        };
+
+        return [...prevSelected, newColorSelection];
+      }
+    });
   };
 
   const handleAddColorsToProduct = () => {
     if (editRow.paints) {
       const paintsToAdd = selectedColors
-        .map((colorId) => {
-          const color = colors.find((c) => c.id === colorId);
-          if (!editRow.paints.some((p) => p.color.id === colorId)) {
+        .map((color) => {
+          // const color = colors.find((c) => c.id === colorId);
+          if (!editRow.paints.some((p) => p.color.id === color.id)) {
             return {
               color: {
-                name: color.name,
-                code: color.code,
-                hex: color.hex,
-                interior: color.interior,
-                exterior: color.exterior,
+                name: color.color.name,
+                code: color.color.code,
+                hex: color.color.hex,
+                interior: color.color.interior,
+                exterior: color.color.exterior,
                 colorTypeId: 0,
-                id: color.id,
+                id: color.color.id,
               },
               status: 0,
               variants: [],
@@ -361,17 +404,19 @@ const ManageProduct = () => {
       setOpenAddColorDialog(false);
       setSelectedColors([]);
     } else {
-      const paintsToAdd = selectedColors.map((colorId) => {
-        const color = colors.find((c) => c.id === colorId);
+      console.log(selectedColors);
+
+      const paintsToAdd = selectedColors.map((color) => {
+        // const color = colors.find((c) => c.id === colorId);
         return {
           color: {
-            name: color.name,
-            code: color.code,
-            hex: color.hex,
-            interior: color.interior,
+            name: color.color.name,
+            code: color.color.code,
+            hex: color.color.hex,
+            interior: color.color.interior,
             exterior: color.exterior,
             colorTypeId: 0,
-            id: color.id,
+            id: color.color.id,
           },
           status: 0,
           variants: [],
@@ -446,6 +491,7 @@ const ManageProduct = () => {
         status: 0,
         variants: [],
         id: null,
+        floorId: `${Date.now()}-${Math.floor(Math.random() * 1000000)}`,
       });
     }
   };
@@ -608,7 +654,7 @@ const ManageProduct = () => {
 
         return { ...prev, images: updatedImages };
       });
-    } 
+    }
   }, [avatarUrl]);
 
   useEffect(() => {
@@ -716,7 +762,6 @@ const ManageProduct = () => {
   };
 
   const handleAddProperties = () => {
-
     const newProperties = selectedProperties.map((property) => ({
       property: availableProperties.find(
         (p) => p.propertyId === property.propertyId
@@ -749,7 +794,6 @@ const ManageProduct = () => {
 
     handleCloseProperties();
   };
-
 
   const ban = (productId) => {
     setRows(
@@ -1115,80 +1159,17 @@ const ManageProduct = () => {
                 justifyContent="space-between"
                 width="100%"
               >
-                <TextField
-                  margin="dense"
-                  label="Place Of Origin"
-                  name="placeOfOrigin"
-                  value={editRow?.placeOfOrigin || ""}
-                  onChange={handleEditChange}
-                  fullWidth
-                  size="small"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "#ccc",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#999",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#3f51b5",
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  margin="dense"
-                  label="Warranty"
-                  name="warranty"
-                  value={editRow?.warranty || ""}
-                  onChange={handleEditChange}
-                  fullWidth
-                  size="small"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "#ccc",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#999",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#3f51b5",
-                      },
-                    },
-                  }}
-                />
-                <TextField
-                  margin="dense"
-                  label="Surface"
-                  name="applicableSurface"
-                  value={editRow?.applicableSurface || ""}
-                  onChange={handleEditChange}
-                  fullWidth
-                  size="small"
-                  sx={{
-                    "& .MuiOutlinedInput-root": {
-                      "& fieldset": {
-                        borderColor: "#ccc",
-                      },
-                      "&:hover fieldset": {
-                        borderColor: "#999",
-                      },
-                      "&.Mui-focused fieldset": {
-                        borderColor: "#3f51b5",
-                      },
-                    },
-                  }}
-                />
                 <FormControl fullWidth margin="dense">
-                  <InputLabel id="category-label">Category</InputLabel>
+                  <InputLabel id="placeOfOrigin-label">
+                    Place Of Origin
+                  </InputLabel>
                   <Select
-                    labelId="category-label"
-                    name="category"
-                    value={editRow?.category?.categoryId || ""}
+                    labelId="placeOfOrigin-label"
+                    name="placeOfOrigin"
                     onChange={handleEditChange}
-                    label="Category"
+                    value={editRow?.placeOfOrigin}
+                    label="Place Of Origin"
+                    placeholder="Place Of Origin"
                     size="small"
                     sx={{
                       "& .MuiOutlinedInput-root": {
@@ -1204,14 +1185,74 @@ const ManageProduct = () => {
                       },
                     }}
                   >
-                    {categories.map((category) => (
-                      <MenuItem
-                        key={category.categoryId}
-                        value={category.categoryId}
-                      >
-                        {category.name}
-                      </MenuItem>
-                    ))}
+                    <MenuItem value="Viet Nam">Viet Nam</MenuItem>
+                    <MenuItem value="Korean">Korean</MenuItem>
+                    <MenuItem value="America">America</MenuItem>
+                    <MenuItem value="Japan">Japan</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="warranty-label">Warranty</InputLabel>
+                  <Select
+                    labelId="warranty-label"
+                    name="warranty"
+                    onChange={handleEditChange}
+                    value={editRow?.warranty}
+                    label="Warranty"
+                    placeholder="Warranty"
+                    size="small"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "#ccc",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#999",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#3f51b5",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="1 years">1 years</MenuItem>
+                    <MenuItem value="2 years">2 years</MenuItem>
+                    <MenuItem value="3 years">3 years</MenuItem>
+                    <MenuItem value="4 years">4 years</MenuItem>
+                    <MenuItem value="5 years">5 years</MenuItem>
+                    <MenuItem value="6 years">6 years</MenuItem>
+                    <MenuItem value="7 years">7 years</MenuItem>
+                    <MenuItem value="8 years">8 years</MenuItem>
+                    <MenuItem value="9 years">9 years</MenuItem>
+                    <MenuItem value="10 years">10 years</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl fullWidth margin="dense">
+                  <InputLabel id="surface-label">Surface</InputLabel>
+                  <Select
+                    labelId="surface-label"
+                    name="applicableSurface"
+                    onChange={handleEditChange}
+                    value={editRow?.applicableSurface}
+                    label="Surface"
+                    placeholder="Surface"
+                    size="small"
+                    sx={{
+                      "& .MuiOutlinedInput-root": {
+                        "& fieldset": {
+                          borderColor: "#ccc",
+                        },
+                        "&:hover fieldset": {
+                          borderColor: "#999",
+                        },
+                        "&.Mui-focused fieldset": {
+                          borderColor: "#3f51b5",
+                        },
+                      },
+                    }}
+                  >
+                    <MenuItem value="Wall">Wall</MenuItem>
+                    <MenuItem value="Floor">Floor</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth margin="dense">
@@ -1237,8 +1278,8 @@ const ManageProduct = () => {
                       },
                     }}
                   >
-                    {brands.map((brand) => (
-                      <MenuItem key={brand.brandId} value={brand.brandId}>
+                    {brands.map((brand, i) => (
+                      <MenuItem key={i} value={brand.brandId}>
                         {brand.name}
                       </MenuItem>
                     ))}
@@ -1392,7 +1433,7 @@ const ManageProduct = () => {
                       <TableBody>
                         {editRow.paints ? (
                           editRow.paints.map((paint, paintIndex) => (
-                            <React.Fragment key={paint.id}>
+                            <React.Fragment key={paintIndex}>
                               <TableRow
                                 sx={{
                                   backgroundColor:
@@ -1476,7 +1517,7 @@ const ManageProduct = () => {
                                 .slice(1)
                                 .map((variant, variantIndex) => (
                                   <TableRow
-                                    key={variant.variantId}
+                                    key={variantIndex}
                                     sx={{
                                       backgroundColor:
                                         paintIndex % 2 === 0
@@ -1734,9 +1775,10 @@ const ManageProduct = () => {
                                           <Button
                                             variant="outlined"
                                             onClick={() =>
-                                              handleDeleteVariant(
+                                              handleDeleteVariantWallpaper(
                                                 wallpaper.id,
-                                                variant.variantId
+                                                variant.variantId,
+                                                wallpaper.wallpaperId
                                               )
                                             }
                                           >
@@ -1779,9 +1821,9 @@ const ManageProduct = () => {
                                         size="small"
                                         sx={{ width: 200, mr: 1 }}
                                       >
-                                        {filteredVariants.map((variant) => (
+                                        {filteredVariants.map((variant, i) => (
                                           <MenuItem
-                                            key={variant.variantId}
+                                            key={i}
                                             value={variant.variantId}
                                           >
                                             {variant.sizeName}{" "}
@@ -1829,7 +1871,8 @@ const ManageProduct = () => {
                                         size="small"
                                         onClick={() =>
                                           handleSaveVariantWallpaper(
-                                            wallpaper.id
+                                            wallpaper.id,
+                                            wallpaper.wallpaperId
                                           )
                                         }
                                         sx={{ minWidth: 60, height: "36px" }}
@@ -1852,10 +1895,15 @@ const ManageProduct = () => {
                                     <Button
                                       variant="outlined"
                                       onClick={() =>
-                                        handleAddVariantRowToggle(wallpaper.id)
+                                        handleAddVariantRowToggle(
+                                          wallpaper.id === null
+                                            ? wallpaper.wallpaperId
+                                            : wallpaper.id
+                                        )
                                       }
                                     >
-                                      {showAddVariantRow === wallpaper.id
+                                      {showAddVariantRow === wallpaper.id ||
+                                      wallpaper.wallpaperId
                                         ? "Cancel"
                                         : "Add variant"}
                                     </Button>
@@ -1902,11 +1950,8 @@ const ManageProduct = () => {
                                   size="small"
                                   sx={{ width: 200, mr: 1 }}
                                 >
-                                  {filteredVariants.map((variant) => (
-                                    <MenuItem
-                                      key={variant.variantId}
-                                      value={variant.variantId}
-                                    >
+                                  {filteredVariants.map((variant, i) => (
+                                    <MenuItem key={i} value={variant.variantId}>
                                       {variant.sizeName}{" "}
                                       {variant.categoryName === "Paint"
                                         ? "L"
@@ -2114,9 +2159,10 @@ const ManageProduct = () => {
                                       <Button
                                         variant="outlined"
                                         onClick={() =>
-                                          handleDeleteVariant(
+                                          handleDeleteVariantFloor(
                                             floor.id,
-                                            floor.variants[0].variantId
+                                            floor.variants[0].variantId,
+                                            floor.floorId
                                           )
                                         }
                                       >
@@ -2159,9 +2205,10 @@ const ManageProduct = () => {
                                       <Button
                                         variant="outlined"
                                         onClick={() =>
-                                          handleDeleteVariant(
+                                          handleDeleteVariantFloor(
                                             floor.id,
-                                            variant.variantId
+                                            variant.variantId,
+                                            floor.floorId
                                           )
                                         }
                                       >
@@ -2197,9 +2244,9 @@ const ManageProduct = () => {
                                       size="small"
                                       sx={{ width: 200, mr: 1 }}
                                     >
-                                      {filteredVariants.map((variant) => (
+                                      {filteredVariants.map((variant, i) => (
                                         <MenuItem
-                                          key={variant.variantId}
+                                          key={i}
                                           value={variant.variantId}
                                         >
                                           {variant.sizeName}{" "}
@@ -2246,7 +2293,10 @@ const ManageProduct = () => {
                                       variant="outlined"
                                       size="small"
                                       onClick={() =>
-                                        handleSaveVariantFloor(floor.id)
+                                        handleSaveVariantFloor(
+                                          floor.id,
+                                          floor.floorId
+                                        )
                                       }
                                       sx={{ minWidth: 60, height: "36px" }}
                                     >
@@ -2331,7 +2381,7 @@ const ManageProduct = () => {
                       sx={{
                         position: "relative",
                         width: "100%",
-                        height: "200px",
+                        height: "400px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
@@ -2377,14 +2427,16 @@ const ManageProduct = () => {
                   </Grid>
                 ))
               ) : (
-                <Typography
-                  variant="body1"
-                  color="textSecondary"
-                  align="center"
-                  my={2}
-                >
-                  There are no images for this product.
-                </Typography>
+                <Grid item xs={12} md={12}>
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    align="center"
+                    my={2}
+                  >
+                    There are no images for this product.
+                  </Typography>
+                </Grid>
               )}
             </Grid>
 
@@ -2404,12 +2456,12 @@ const ManageProduct = () => {
           <DialogTitle>Select Properties</DialogTitle>
           <DialogContent>
             <FormGroup>
-              {availableProperties.map((property) => (
-                <div key={property.propertyId}>
+              {availableProperties.map((property, i) => (
+                <div key={i}>
                   <Typography variant="subtitle1">{property.name}</Typography>
-                  {property.propertyValues.map((value) => (
+                  {property.propertyValues.map((value, i) => (
                     <FormControlLabel
-                      key={value.id}
+                      key={i}
                       control={
                         <Checkbox
                           checked={selectedProperties.some(
@@ -2447,12 +2499,12 @@ const ManageProduct = () => {
           <DialogTitle>Select Features</DialogTitle>
           <DialogContent>
             <FormGroup>
-              {availableFeatures.map((feature) => (
-                <div key={feature.featureId}>
+              {availableFeatures.map((feature, i) => (
+                <div key={i}>
                   <Typography variant="subtitle1">{feature.name}</Typography>
-                  {feature.featureValues.map((value) => (
+                  {feature.featureValues.map((value, i) => (
                     <FormControlLabel
-                      key={value.id}
+                      key={i}
                       control={
                         <Checkbox
                           checked={selectedFeatures.some(
@@ -2523,12 +2575,14 @@ const ManageProduct = () => {
                     </TableRow>
                   </TableHead>
                   <TableBody>
-                    {colors.map((color) => (
-                      <TableRow key={color.id}>
+                    {colors.map((color, i) => (
+                      <TableRow key={i}>
                         <TableCell>
                           <input
                             type="checkbox"
-                            checked={selectedColors.includes(color.id)}
+                            checked={selectedColors.some(
+                              (selected) => selected.color.id === color.id
+                            )}
                             onChange={() => handleColorSelection(color.id)}
                           />
                         </TableCell>
