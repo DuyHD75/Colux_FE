@@ -4,20 +4,15 @@ import {
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Card,
-  CardContent,
   Box,
   Grid,
   Rating,
   List,
   ListItem,
-  ListItemIcon,
-  ListItemText,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import data from "../../data/data";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { useTranslation } from "react-i18next";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
@@ -65,22 +60,22 @@ const ProductCollapse = ({ product }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             {product.code}
           </Typography>
-          <Typography variant="h6" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="h6" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             {product.productName}
           </Typography>
-          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             {product.description}
           </Typography>
-          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             <strong>{t("origin")}:</strong> {product.placeOfOrigin}
           </Typography>
-          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             <strong>{t("warranty")}:</strong> {product.warranty}
           </Typography>
-          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont }}>
+          <Typography variant="body2" sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}>
             <strong>{t("applicable.surface")}:</strong>{" "}
             {product.applicableSurface}
           </Typography>
@@ -92,7 +87,7 @@ const ProductCollapse = ({ product }) => {
                   variant="body2"
                   color="#000"
                   fontWeight="bold"
-                  sx={{ ...textConfigs.style.basicFont }}
+                  sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}
                 >
                   {t("colors")}:
                 </Typography>
@@ -102,7 +97,7 @@ const ProductCollapse = ({ product }) => {
                   variant="body2"
                   color="#000"
                   fontWeight="bold"
-                  sx={{ ...textConfigs.style.basicFont }}
+                  sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}
                 >
                   {t("type")}:
                 </Typography>
@@ -112,7 +107,7 @@ const ProductCollapse = ({ product }) => {
                   variant="body2"
                   color="#000"
                   fontWeight="bold"
-                  sx={{ ...textConfigs.style.basicFont }}
+                  sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}
                 >
                   {t("type")}:
                 </Typography>
@@ -220,7 +215,7 @@ const ProductCollapse = ({ product }) => {
                     variant="body2"
                     color="#000"
                     fontWeight="bold"
-                    sx={{ marginTop: 2, ...textConfigs.style.basicFont }}
+                    sx={{ marginTop: 2, ...textConfigs.style.basicFont, paddingBottom: "4px" }}
                   >
                     {t("size")}:
                   </Typography>
@@ -250,7 +245,7 @@ const ProductCollapse = ({ product }) => {
                       >
                         <Typography
                           variant="body2"
-                          sx={{ ...textConfigs.style.basicFont }}
+                          sx={{ ...textConfigs.style.basicFont, paddingBottom: "4px" }}
                         >
                           {variant.sizeName}
                         </Typography>
@@ -263,7 +258,7 @@ const ProductCollapse = ({ product }) => {
           )}
           <Typography
             variant="body2"
-            sx={{ fontWeight: "bold", mb: 0, ...textConfigs.style.basicFont }}
+            sx={{ fontWeight: "bold", mb: 0, ...textConfigs.style.basicFont, paddingBottom: "4px" }}
           >
             {t("property")}:
           </Typography>
@@ -288,6 +283,7 @@ const ProductCollapse = ({ product }) => {
                       padding: "0",
                       display: "flex",
                       alignItems: "center",
+                      paddingBottom: "4px"
                     }}
                   >
                     <Typography
@@ -317,7 +313,7 @@ const ProductCollapse = ({ product }) => {
           </Box>
           <Typography
             variant="body2"
-            sx={{ fontWeight: "bold", mb: 0, ...textConfigs.style.basicFont }}
+            sx={{ fontWeight: "bold", mb: 0, ...textConfigs.style.basicFont, paddingBottom: "4px" }}
           >
             {t("features")}:
           </Typography>
@@ -342,6 +338,7 @@ const ProductCollapse = ({ product }) => {
                       padding: "0",
                       display: "flex",
                       alignItems: "center",
+                      paddingBottom: "4px"
                     }}
                   >
                     <Typography

@@ -4,51 +4,42 @@ import ManagePaint from "../page/ManagePaint";
 import ManageUser from "../page/ManageUser";
 import AdminLayout from "../components/layout/AdminLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
+import Home from "../page/Home";
+import ManageProduct from "../page/ManageProduct";
 
-export const adminRoutesGen = {
+export const routesGen = {
+  home: "/",
+  manageUser: "/manageUser",
+  addProduct: "/add-product",
+  manageProduct: "/manage-products",
   dashboard: "/admins/dashboard",
-  addProduct: "/admins/add-product",
   managePaint: "/admins/manage-paint",
-  manageUser: "/admins/manage-user",
 };
-
-const adminRoutes = [
+const routes = [
   {
-    path: "/admins/*",
+    path: "/*",
     element: (
       <ProtectedRoute>
         <AdminLayout />
         <Dashboard />
       </ProtectedRoute>
     ),
-    children: [
-      {
-        index: true,
-        element: <Dashboard />,
-        state: "dashboard",
-      },
-      {
-        path: "dashboard",
-        element: <Dashboard />,
-        state: "dashboard",
-      },
-      {
-        path: "add-product",
-        element: <AddProduct />,
-        state: "addProduct",
-      },
-      {
-        path: "manage-paint",
-        element: <ManagePaint />,
-        state: "managePaint",
-      },
-      {
-        path: "manage-user",
-        element: <ManageUser />,
-        state: "manageUser",
-      },
-    ],
+  
   },
-];
-
-export default adminRoutes;
+  {
+    path: routesGen.manageUser,
+    element: <ManageUser />,
+    state: "manageUser",
+  },
+  {
+    path: routesGen.addProduct,
+    element: <AddProduct />,
+    state: "addProduct",
+  },
+  {
+    path: routesGen.manageProduct,
+    element: <ManageProduct />,
+    state: "manageProduct",
+  },
+]
+export default routes;

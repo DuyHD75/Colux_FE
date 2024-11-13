@@ -21,17 +21,31 @@ const Banner = () => {
         backgroundPosition: "center",
         padding: "20px",
         textAlign: "center",
-        marginTop: {xs: "56px", md: "96px"},
+        marginTop: { xs: "56px", md: "96px" },
         minHeight: "600px",
-        
       }}
     >
-      <Typography variant="h4" gutterBottom sx={{...textConfigs.style.headerText,}}>
-      {t('home.baner.title')}
+      <Typography
+        variant="h4"
+        gutterBottom
+        sx={{
+          ...textConfigs.style.headerText,
+          textShadow: "2px 2px 4px rgba(0, 0, 0, 0.5)",
+        }}
+      >
+        {t("home.baner.title")}
       </Typography>
-      <Typography variant="body1" paragraph sx={{...textConfigs.style.headerText,}}>
-      {t('home.baner.desc')}
+      <Typography
+        variant="body1"
+        paragraph
+        sx={{
+          ...textConfigs.style.headerText,
+          textShadow: "1px 1px 3px rgba(0, 0, 0, 0.5)",
+        }}
+      >
+        {t("home.baner.desc")}
       </Typography>
+
       <Button
         component={Link}
         to="/colors"
@@ -43,7 +57,7 @@ const Banner = () => {
           ...textConfigs.style.normalText,
         }}
       >
-        {t('home.baner.btn')}
+        {t("home.baner.btn")}
       </Button>
     </Box>
   );

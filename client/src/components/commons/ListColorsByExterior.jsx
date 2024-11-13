@@ -5,6 +5,7 @@ import {
   Typography,
 
   Pagination,
+  TextField,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
@@ -14,6 +15,8 @@ import { BsFillHexagonFill } from "react-icons/bs";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
+
 
 const ListColorsByExterior = () => {
   const { section, collection, collectionId } = useParams();
@@ -23,6 +26,8 @@ const ListColorsByExterior = () => {
   const [totalPages, setTotalPages] = useState(0);
   const [interior, setInterior] = useState(false);
   const [exterior, setExterior] = useState(false);
+  const { t, i18n } = useTranslation();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const [colors, setColors] = useState([]);
 
@@ -82,6 +87,10 @@ const ListColorsByExterior = () => {
     setCurrentPage(value);
   };
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
 
   const paginatedColors = colors.slice(
     0 * colorsPerPage,
@@ -90,13 +99,65 @@ const ListColorsByExterior = () => {
 
   return (
     <Container maxWidth="lg" className="my-10">
-      <Grid container>
-        <Grid item xs={12} md={12}>
-          <Typography variant="h3" sx={{ ...textConfigs.style.headerText }}>
-            {collection} Paint Colors
+      <Grid container spacing={2} marginBottom={2}>
+        <Grid item xs={12} md={8}>
+          <Typography
+            variant="h3"
+            sx={{
+              ...textConfigs.style.basicFont,
+              fontSize: "30px",
+              fontWeight: "bold",
+            }}
+          >
+            {i18n.language === "en"
+              ? `${collection} ${t("paint.colors")}`
+              : `${t("paint.colors")} ${collection}`}
           </Typography>
         </Grid>
-    
+        <Grid
+          item
+          xs={12}
+          md={4}
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <TextField
+            variant="outlined"
+            size="small"
+            label={t("search")}
+            fullWidth
+            sx={{
+              "& .MuiOutlinedInput-root": {
+                "& fieldset": {
+                  borderColor: "#1c2759",
+                },
+                "&:hover fieldset": {
+                  borderColor: "#1c2759",
+                },
+                "&.Mui-focused fieldset": {
+                  borderColor: "#1c2759",
+                },
+              },
+              ...textConfigs.style.basicFont,
+            }}
+            InputLabelProps={{
+              sx: {
+                color: "#1c2759",
+                "&.Mui-focused": {
+                  color: "#1c2759",
+                },
+                "&:hover": {
+                  color: "#1c2759",
+                },
+                ...textConfigs.style.basicFont,
+              },
+            }}
+            onChange={handleSearchChange}
+          />
+        </Grid>
       </Grid>
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {
