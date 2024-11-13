@@ -8,6 +8,9 @@ import GlobalLoading from "../commons/GlobalLoading";
 import Cookies from "js-cookie";
 import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
+import ChatPopup from "../commons/ChatPopup";
+import { StompSessionProvider } from 'react-stomp-hooks';
+
 
 const actionState = {
   login: "login",
@@ -21,7 +24,7 @@ const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
- 
+
   useEffect(() => {
     const authUser = async () => {
       if (!user) {
@@ -42,7 +45,7 @@ const MainLayout = () => {
     appState === actionState.login ||
     appState === actionState.register ||
     appState === actionState.forgotPassword ||
-    appState === actionState.resetPassword || 
+    appState === actionState.resetPassword ||
     appState === actionState.verify
   );
 
@@ -54,6 +57,10 @@ const MainLayout = () => {
       {/* global loading */}
       <GlobalLoading />
       {/* global loading */}
+      {/* <StompSessionProvider url="https://colux.site/ws">
+        <ChatPopup />
+      </StompSessionProvider> */}
+      <ChatPopup />
       <Box className="flex min-h-screen">
         {/* main */}
         <Box

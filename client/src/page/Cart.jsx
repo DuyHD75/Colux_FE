@@ -46,18 +46,25 @@ const Cart = () => {
 
   const handleCheckout = (data) => {
     dispatch(setCheckoutDetail(data));
+    const checkoutData = {
+      products: data,
+      totalAmount: data.reduce((acc, product) => acc + (product.cartItemQuantity * product.cartItemVariant.priceSell), 0),
+      billing: {},
+      shippingFee: 0,
+    }
+    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
     navigate('/billing');
   };
 
-  const handleCheckboxChange = (productId, isChecked) => {
+  const handleCheckboxChange = (variantId, isChecked) => {
     setCheckedProducts(prevCheckedProducts => ({
       ...prevCheckedProducts,
-      [productId]: isChecked,
+      [variantId]: isChecked,
     }));
   };
 
-   const getCheckedProducts = () => {
-    return products && products.filter(product => checkedProducts[product.cartItemVariant.productDetails.productId]);
+  const getCheckedProducts = () => {
+    return products && products.filter(product => checkedProducts[product.cartItemVariant.variantId]);
   };
 
   const areAllProductsUnchecked = () => {
@@ -72,7 +79,6 @@ const Cart = () => {
     const status = 1;
     const updateQuantityType = 'DECREMENTAL';
     const customerId = user.userId;
-
     const cartItems = [{
       variantId: updatedProducts[index].cartItemVariant.variantId,
       productId: updatedProducts[index].cartItemVariant.productDetails.productId,
@@ -81,15 +87,12 @@ const Cart = () => {
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Wallpaper' && { wallpaperId: updatedProducts[index].cartItemVariant.productDetails.wallpaperDetails.wallpaperId }),
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Floor' && { floorId: updatedProducts[index].cartItemVariant.productDetails.floorDetails.floorId }),
     }];
-
     updateCart(
-
       cart.cartId,
       customerId,
       status,
       updateQuantityType,
       cartItems
-
     );
     setProducts(updatedProducts);
   };
@@ -100,7 +103,6 @@ const Cart = () => {
     const status = 1;
     const updateQuantityType = 'INCREMENTAL';
     const customerId = user.userId;
-
     const cartItems = [{
       variantId: updatedProducts[index].cartItemVariant.variantId,
       productId: updatedProducts[index].cartItemVariant.productDetails.productId,
@@ -109,38 +111,33 @@ const Cart = () => {
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Wallpaper' && { wallpaperId: updatedProducts[index].cartItemVariant.productDetails.wallpaperDetails.wallpaperId }),
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Floor' && { floorId: updatedProducts[index].cartItemVariant.productDetails.floorDetails.floorId }),
     }];
-
     updateCart(
-
       cart.cartId,
       customerId,
       status,
       updateQuantityType,
       cartItems
-
     );
     setProducts(updatedProducts);
   };
 
-  const handleRemove = (index, variantId) => {
-     const variantIds = [variantId];
-    deleteCart(cart.cartId, variantIds);
+  const handleRemove = (index, variantId, id) => {
+    const ids = [id]
+    const itemDeleteRequests = { [variantId]: ids };
+    deleteCart(cart.cartId, itemDeleteRequests);
     const updatedProducts = [...products];
     updatedProducts.splice(index, 1);
-   
+
     setProducts(updatedProducts);
   };
 
-
-  const deleteCart = useCallback(async (cartId,variantIds) => {
-    const { response, err } = await cartApi.deleteCartItem(cartId, variantIds);
+  const deleteCart = useCallback(async (cartId, itemDeleteRequests) => {
+    const { response, err } = await cartApi.deleteCartItem(cartId, itemDeleteRequests);
     if (!response) {
-       console.log('err', err);
       return toast.error(err);
-          
     }
     else {
-    toast.success('Delete item successfully');      
+      toast.success('Delete item successfully');
     }
   }, []);
 
@@ -148,11 +145,6 @@ const Cart = () => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
     if (!response) {
       return toast.error(err);
-      
-    }
-    else{
-      console.log('response', response);
-      
     }
   }, []);
 
@@ -164,7 +156,6 @@ const Cart = () => {
     const status = 1;
     const updateQuantityType = 'OVERRIDE';
     const customerId = user.userId;
-
     const cartItems = [{
       variantId: updatedProducts[index].cartItemVariant.variantId,
       productId: updatedProducts[index].cartItemVariant.productDetails.productId,
@@ -173,26 +164,21 @@ const Cart = () => {
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Wallpaper' && { wallpaperId: updatedProducts[index].cartItemVariant.productDetails.wallpaperDetails.wallpaperId }),
       ...(updatedProducts[index].cartItemVariant.categoryName === 'Floor' && { floorId: updatedProducts[index].cartItemVariant.productDetails.floorDetails.floorId }),
     }];
-
     updateCart(
-
       cart.cartId,
       customerId,
       status,
       updateQuantityType,
       cartItems
-
     );
-
     setProducts(updatedProducts);
   };
-console.log("products",products);
 
   const calculateTotalAmount = () => {
     let totalAmount = 0;
     if (products) {
       totalAmount = products
-        .filter(product => checkedProducts[product.cartItemVariant.productDetails.productId])
+        .filter(product => checkedProducts[product.cartItemVariant.variantId])
         .reduce((acc, product) => {
           const quantity = product.cartItemQuantity;
           const price = product.cartItemVariant.priceSell;
@@ -273,7 +259,7 @@ console.log("products",products);
                   <Stack key={product.id} marginY={1} sx={{ p: '1rem' }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} flex borderBottom={1} borderColor='#e0e0e0' paddingBottom='1rem'>
                       <ProductInfo product={product} />
-                      <Stack direction='row' spacing={{ xs: 0, md: 6 }} flex={1} sx={{  alignItems: 'center', mt: { xs: "1rem", md: 0 } }} >
+                      <Stack direction='row' spacing={{ xs: 0, md: 6 }} flex={1} sx={{ alignItems: 'center', mt: { xs: "1rem", md: 0 } }} >
                         <Stack direction='column' justifyContent='flex-start' alignItems={{ xs: 'center', sm: 'normal' }} flex={1}>
                           <Stack direction='column' spacing={1} alignItems='center'>
                             <Typography variant='h4' marginBottom='2.8px' sx={{ ...TextConfig.style.basicFont, width: 'max-content' }} fontSize='14px'>Your price: </Typography>
@@ -296,16 +282,16 @@ console.log("products",products);
                             <Typography variant='h4' sx={{ ...TextConfig.style.basicFont }} fontSize='17px'>{product.cartItemQuantity * product.cartItemVariant.priceSell}$</Typography>
                           </Stack>
                           <Stack marginTop='20px' direction='row' justifyContent='center'>
-                            <Link  style={{ textAlign:'center',  width: '60px', color: '#0069AF', fontSize: '13px', fontWeight: 'bold' }} onClick={() => handleRemove(index,product.cartItemVariant.variantId)}>Remove</Link>
+                            <Link style={{ textAlign: 'center', width: '60px', color: '#0069AF', fontSize: '13px', fontWeight: 'bold' }} onClick={() => handleRemove(index, product.cartItemVariant.variantId, product.cartItemVariant.categoryName === "Paint" ? product.cartItemVariant.productDetails.paintDetails.paintId : (product.cartItemVariant.categoryName === "Floor" ? product.cartItemVariant.productDetails.floorDetails.floorId : product.cartItemVariant.productDetails.wallpaperDetails.wallpaperId))}>Remove</Link>
                           </Stack>
                         </Stack>
                         <Stack direction='column' justifyContent='flex-end' alignItems='center' flex={1} borderLeft={{ xs: '1px solid #E5E5E5', md: 0 }}>
                           <Typography variant='h4' sx={{ ...TextConfig.style.basicFont, fontSize: '1rem', color: 'green', fontWeight: 'bold', width: 'max-content' }}>In Stock</Typography>
                           <Checkbox
                             sx={{ width: '20px', height: '20px', flex: { xs: 1, md: 0 } }}
-                            key={product.cartItemVariant.productDetails.productId}
-                            checked={checkedProducts[product.cartItemVariant.productDetails.productId] || false}
-                            onChange={(e) => handleCheckboxChange(product.cartItemVariant.productDetails.productId, e.target.checked)}
+                            key={product.cartItemVariant.variantId}
+                            checked={checkedProducts[product.cartItemVariant.variantId] || false}
+                            onChange={(e) => handleCheckboxChange(product.cartItemVariant.variantId, e.target.checked)}
                           />
                         </Stack>
                       </Stack>
