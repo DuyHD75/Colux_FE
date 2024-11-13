@@ -5,6 +5,8 @@ import Footer from "../footer/Footer";
 import Header from "../header/Header";
 import { useSelector } from "react-redux";
 import GlobalLoading from "../common/GlobalLoading";
+import SlideBar from "../common/SlideBar";
+
 
 const actionState = {
   login: "login",
@@ -37,6 +39,7 @@ const MainLayout = () => {
           className="flex-grow overflow-hidden min-h-screen"
           component="main"
         >
+          <SlideBar></SlideBar>
           <Outlet />
         </Box>
         {/* main */}

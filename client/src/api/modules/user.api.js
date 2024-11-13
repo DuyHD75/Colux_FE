@@ -44,6 +44,7 @@ const userApi = {
         lastName,
         email,
         password,
+        role: "USER",
       });
 
       return { response };
