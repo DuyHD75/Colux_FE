@@ -15,11 +15,12 @@ const ProductInfo = ({ product, padding }) => {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                 }}>{product.cartItemVariant.productDetails.productName}</Typography>
-                <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Inventory : {product.cartItemVariant.variantInventory}</Typography>
-                <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Product #: {product.cartItemVariant.productDetails.code}</Typography>
-                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Container Size: <span style={{ marginLeft: '26px' }}>{product.cartItemVariant.packageType} </span></Typography>
-                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Sheen:<span style={{ marginLeft: '79px' }}>{product.cartItemVariant.variantDescription}</span></Typography>
-                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Base:<span style={{ marginLeft: '85px' }}>{product.cartItemVariant.categoryName}</span></Typography>
+                <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Inventory : <span style={{ marginLeft: '18px' }}>{product.cartItemVariant.variantInventory}</span></Typography>
+                <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Product #: <span style={{ marginLeft: '20px' }}> {product.cartItemVariant.productDetails.code}</span></Typography>
+                { product.cartItemVariant.categoryName==="Paint"&&<Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Color Code : <span style={{ marginLeft: '8px' }}>{product.cartItemVariant.productDetails.paintDetails.hex}</span></Typography>}
+                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Package Type: <span style={{ marginLeft: '26px' }}>{product.cartItemVariant.packageType} </span></Typography>
+                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Size Name:<span style={{ marginLeft: '47px' }}>{product.cartItemVariant.variantDescription}</span></Typography>
+                <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Category:<span style={{ marginLeft: '57px' }}>{product.cartItemVariant.categoryName}</span></Typography>
             </Stack>
         </Stack>)
 }

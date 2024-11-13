@@ -6,21 +6,69 @@ import { Link } from 'react-router-dom';
 import Container from '../components/commons/Container';
 import ProductInfo from '../components/commons/ProductInfo';
 import { useSelector } from 'react-redux';
-import { LiaCcVisa } from "react-icons/lia";
+import cartApi from '../api/modules/cart.api';
+import { toast } from 'react-toastify';
 
 const Checkout = () => {
 
-    const products = useSelector((state) => state.checkout.checkoutData);
+    const { user } = useSelector((state) => state.user);
+    const [checkoutData, setCheckoutData] = useState(localStorage.getItem('checkoutData') ? JSON.parse(localStorage.getItem('checkoutData')) : { products: [], totalAmount: 0, shippingFee: 0, billing: {} });
+    const [paymentMethod, setPaymentMethod] = useState('');
     const [isChecked, setIsChecked] = useState(false);
+    const [note, setNote] = useState('');
+
+    const handlePaymentMethodChange = (e) => {
+        setPaymentMethod(e.target.value);
+    }
+
+    const handleNoteBlur = (event) => {
+        // Xử lý khi trường nhập liệu mất tiêu điểm
+        setNote(event.target.value);
+    };
 
     const handleCheckboxChange = (e) => {
         setIsChecked(e.target.checked);
     };
 
-    const calculateTotalAmount = () => {
-        let totalAmount = products.reduce((acc, product) => acc + product.total, 0);
-        return totalAmount;
-    };
+    const handleCheckout = async () => {
+        try {
+            const orderData = {
+                status: 1,
+                toName: checkoutData.billing.fullName,
+                toPhone: checkoutData.billing.phoneNumber,
+                toEmail: user.email,
+                toAddress: checkoutData.billing.address,
+                toWardName: checkoutData.billing.ward,
+                toDistrictName: checkoutData.billing.district,
+                toProvinceName: checkoutData.billing.province,
+                note: note,
+                customerId: user.userId,
+                purchaseProducts: checkoutData.products.map(product => ({
+                    productId: product.cartItemVariant.productDetails.productId,
+                    variantId: product.cartItemVariant.variantId,
+                    quantity: product.cartItemQuantity,
+                    ...(product.cartItemVariant.categoryName === 'Paint' && { paintId: product.cartItemVariant.productDetails.paintDetails.paintId }),
+                    ...(product.cartItemVariant.categoryName === 'Wallpaper' && { wallpaperId: product.cartItemVariant.productDetails.wallpaperDetails.wallpaperId }),
+                    ...(product.cartItemVariant.categoryName === 'Floor' && { floorId: product.cartItemVariant.productDetails.floorDetails.floorId }),
+                })),
+                totalAmount: checkoutData.totalAmount,
+                tax: 10.00,
+                shippingCost: 4,
+                totalPay: checkoutData.totalAmount + 10.00 + 4,
+                paymentMethod: paymentMethod,
+                paymentStatus: 1,
+            }
+            const response = await cartApi.createOrder(orderData);
+            if (response) {
+                const paymentUrl = response.response.data.data.orderPaypalCheckoutLink
+                window.location.href = paymentUrl; // Hoặc sử dụng navigate(paymentUrl) nếu bạn đang sử dụng react-router-dom v6
+            } else {
+                toast.error('Order failed');
+            }
+        } catch (error) {
+            toast.error('Order failed');
+        }
+    }
 
     return (
         <>
@@ -94,7 +142,7 @@ const Checkout = () => {
                                     <Stack direction='row' spacing={2}>
                                         <FormControl variant="standard" sx={{ color: 'inherit' }}>
                                             <InputLabel htmlFor="component" sx={{ ...TextConfig.style.basicFont }}>Phone Number</InputLabel>
-                                            <Input id="component" defaultValue="0818080927" />
+                                            <Input id="component" defaultValue={checkoutData.billing.phoneNumber} />
                                         </FormControl>
                                         <Stack direction='row' alignItems='center'>
                                             <Checkbox />
@@ -130,20 +178,33 @@ const Checkout = () => {
                                     </Typography>
                                 </Box>
                                 <Box sx={{
-                                    padding: '16px',
+                                    padding: '0 16px 16px 16px',
                                 }}>
                                     {/* <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '14px', marginBottom: '16px' }}>Credit Card ************2905</Typography> */}
-
-                                    <Stack direction='row' spacing={1} alignItems='center'>
-
-                                        <LiaCcVisa style={{ fontSize: '2rem' }} />
-                                        <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '16px', marginBottom: '16px' }}>Credit Card </Typography>
-                                        <input type="radio" class="border-indigo-500" />
+                                    <Stack direction='row' spacing={2} alignItems='center' >
+                                        <Stack direction='row' justifyContent='center' alignItems='center'>
+                                            <input type="radio" name="paymentMethod" value="CASH" className="border-indigo-500"
+                                                onChange={handlePaymentMethodChange} />
+                                            <img src='https://cdn.iconscout.com/icon/free/png-512/free-cod-icon-download-in-svg-png-gif-file-formats--credit-debit-bank-payment-methods-vol-2-pack-business-icons-32290.png?f=webp&w=256' style={{ width: '4rem', height: '4rem' }} />
+                                            <Typography sx={{ ...TextConfig.style.basicFont, fontWeight: 'bold', fontSize: '16px', }}>Cash on Delivery</Typography>
+                                        </Stack>
+                                        <Stack direction='row' spacing={1} alignItems='center'>
+                                            <input type="radio" name="paymentMethod" value="PAYPAL" className="border-indigo-500"
+                                                onChange={handlePaymentMethodChange} />
+                                            <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' style={{ width: '4rem', height: '2rem' }} />
+                                            <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '16px', marginBottom: '16px' }}>PayPal</Typography>
+                                        </Stack>
+                                        <Stack direction='row' spacing={1} alignItems='center'>
+                                            <input type="radio" name="paymentMethod" value="PAYOS" className="border-indigo-500"
+                                                onChange={handlePaymentMethodChange} />
+                                            <img src='https://payos.vn/wp-content/uploads/sites/13/2023/07/payos-logo.svg' style={{ width: '4rem', height: '2rem' }} />
+                                            <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '16px', marginBottom: '16px' }}>PayOs</Typography>
+                                        </Stack>
                                     </Stack>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>Kieu Dat</Typography>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>FPT University</Typography>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Da Nang, U.S. Virgin Islands 90001
-                                    </Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>{checkoutData.billing.fullName}</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}> {checkoutData.billing.ward}, {checkoutData.billing.district}, {checkoutData.billing.province}</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>{checkoutData.billing.address}</Typography>
+                                    <TextField variant='outlined' size='large' sx={{ width: '100%', marginTop: '16px' }} label='Note' onBlur={handleNoteBlur} />
                                 </Box>
 
                             </Box>
@@ -167,27 +228,27 @@ const Checkout = () => {
                                     alignItems: 'center',
                                 }}>
                                     <Typography fontWeight='bold' fontSize='14px' sx={{ ...TextConfig.style.basicFont }}>
-                                        {products && products.length} item(s)
+                                        {checkoutData.products && checkoutData.products.length} item(s)
                                     </Typography>
                                 </Box>
-                                {products && products.map((product, index) => (
-                                    <Stack key={index} direction={{ xs: 'column', md: 'row' }} borderBottom={index !== products.length - 1 ? '1px solid #E5E5E5' : 'none'} paddingBottom='20px'>
+                                {checkoutData.products && checkoutData.products.map((product, index) => (
+                                    <Stack key={index} direction={{ xs: 'column', md: 'row' }} borderBottom={index !== checkoutData.products.length - 1 ? '1px solid #E5E5E5' : 'none'} paddingBottom='20px'>
                                         <ProductInfo product={product} padding='30px 8px 0px 16px' />
                                         <Stack flex={1.5} direction='row' justifyContent={{ xs: 'center', sm: 'normal' }} spacing={{ xs: 3, sm: 0 }} paddingX='11.35px'>
                                             <Box sx={{
                                                 padding: '30px 8px 0px',
                                             }}>
-                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Your Price <br /><strong>{product.price}$</strong></Typography>
+                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Your Price <br /><strong>{product.cartItemVariant.priceSell}$</strong></Typography>
                                             </Box>
                                             <Box sx={{
                                                 padding: '30px 8px 0px',
                                             }}>
-                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Qty <br /> <strong>{product.quantity}</strong> </Typography>
+                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Qty <br /> <strong>{product.cartItemQuantity}</strong> </Typography>
                                             </Box>
                                             <Box sx={{
                                                 padding: '30px 8px 0px',
                                             }}>
-                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Item Total <br /> <strong>{product.total}$</strong></Typography>
+                                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '13px' }}>Item Total <br /> <strong>{product.cartItemQuantity * product.cartItemVariant.priceSell}$</strong></Typography>
                                             </Box>
                                         </Stack>
                                     </Stack>
@@ -207,7 +268,7 @@ const Checkout = () => {
                             }}>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', paddingBottom: '10px' }}>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Subtotal</Typography>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>{checkoutData.totalAmount}$</Typography>
                                 </Box>
                                 <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Apply coupon code</Typography>
                                 <Stack direction='row' justifyContent='flex-start' pt='8.4px'>
@@ -217,13 +278,20 @@ const Checkout = () => {
                                     }} />
                                     <Button variant='contained' sx={{ ...TextConfig.style.basicFont }}>Apply</Button>
                                 </Stack>
-                                <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Estimated Tax:
-                                    <br />
-                                    <em>(Determined later)</em>
-                                </Typography>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Shipping Fee:
+                                        <br />
+                                        <em>(Determined later)</em>
+                                    </Typography>
+                                    <Box>
+                                        <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', textDecoration: 'line-through' }}>{checkoutData.shippingFee}$ </Typography>
+                                        {checkoutData.shippingFee > 0 && <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Free</Typography>}
+                                    </Box>
+
+                                </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{calculateTotalAmount()}$</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{checkoutData.totalAmount}$</Typography>
                                 </Box>
                                 <Typography marginTop='12px' sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Product pricing shown reflects applicable sales and discounts
                                 </Typography>
@@ -247,7 +315,7 @@ const Checkout = () => {
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>I agree to the Sherwin-Williams<Link style={{ color: '#0069AF', fontSize: '11.9px' }}> Online Terms and Conditions of SaleOpens in new window.</Link></Typography>
                                 </Stack>
                             </Box>
-                            <button disabled={!isChecked} style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' href='/billing' >Agree and Pay</button>
+                            <button disabled={!isChecked} style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleCheckout()} >Agree and Pay</button>
                         </Box>
                     </Stack>
                 </Container>

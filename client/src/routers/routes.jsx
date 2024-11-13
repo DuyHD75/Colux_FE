@@ -24,6 +24,7 @@ import BlogHome from "../page/BlogHome";
 import BlogDetail from "../page/detail/BlogDetail";
 import VerifyEmail from "../components/commons/VerifyEmail";
 import ChangePassword from "../page/ChangePassword";
+import ResultPayment from "../page/ResultPayment";
 
 export const routesGen = {
   home: "/",
@@ -43,6 +44,7 @@ export const routesGen = {
   helps: "/helps",
   points : "/points",
   changePassword: "/changePassword",  
+  resultPayment: "/resultPayment"
 };
 
 const routes = [
@@ -242,6 +244,9 @@ const routes = [
     element: <ChangePassword />,
     state: "changePassword"
   },
-];
-
+  {
+    path: routesGen.resultPayment,
+    element: <ResultPayment/>,
+    state: "resultPayment"
+  }]
 export default routes;
