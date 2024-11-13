@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import adminApi from "../../api/modules/admin.api";
 import { setAdmin } from "../../redux/reducer/adminSlice";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+import routesGen from "../../router/router";
 
 const Login = () => {
   const dispatch = useDispatch();
@@ -43,11 +44,11 @@ const Login = () => {
       
       setIsLoginRequest(false);
       dispatch(setGlobalLoading(false));
-
-      if (response && response.code === 200) {
+      console.log(response);
+      if (response) {
         loginForm.resetForm();
         dispatch(setAdmin(response.data));
-        navigate('/admins/dashboard');
+        navigate("/dashboard");
       } else {
         setErrorMessage(err.exception);
       }

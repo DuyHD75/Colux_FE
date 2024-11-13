@@ -49,7 +49,7 @@ const Dashboard = () => {
 
 
   return (
-    <Box component="main" sx={{ flexGrow: 1, py: 2 }}>
+    <Box  component="main" sx={{ flexGrow: 1, py: 2 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           {/* Stats Overview */}

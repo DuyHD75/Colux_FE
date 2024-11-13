@@ -408,8 +408,6 @@ const AddProduct = () => {
       direction="row"
       spacing={1}
       my={1}
-      marginLeft={"280px"}
-      marginRight={"40px"}
     >
       {/* <SlideBar></SlideBar> */}
 

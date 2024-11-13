@@ -22,7 +22,6 @@ function App() {
         pauseOnHover
       />
       <CssBaseline />
-      <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>
             {routes.map((route, index) =>
@@ -58,7 +57,6 @@ function App() {
             )}
           </Route>
         </Routes>
-      </BrowserRouter>
     </I18nextProvider>
   );
 }

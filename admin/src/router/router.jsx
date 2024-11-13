@@ -1,30 +1,37 @@
 import Dashboard from "../page/Dashboard";
 import AddProduct from "../page/AddProduct";
-import ManagePaint from "../page/ManagePaint";
 import ManageUser from "../page/ManageUser";
-import AdminLayout from "../components/layout/AdminLayout";
+import MainLayout from "../components/layout/MainLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
-import Home from "../page/Home";
 import ManageProduct from "../page/ManageProduct";
+import Login from "../page/Auth"
 
 export const routesGen = {
-  home: "/",
   manageUser: "/manageUser",
   addProduct: "/add-product",
   manageProduct: "/manage-products",
-  dashboard: "/admins/dashboard",
-  managePaint: "/admins/manage-paint",
+  dashboard: "/dashboard",
+  managePaint: "/manage-paint",
 };
 const routes = [
   {
-    path: "/*",
+    index: true,
+    element: <Login />,
+    state: "login",
+  },
+  {
+    path: "/login",
+    element: <Login />,
+    state: "login",
+  },
+  {
+    path: routesGen.dashboard,
     element: (
       <ProtectedRoute>
-        <AdminLayout />
         <Dashboard />
       </ProtectedRoute>
     ),
-  
+    state: "dashboard"
   },
   {
     path: routesGen.manageUser,
