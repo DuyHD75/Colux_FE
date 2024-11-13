@@ -2,25 +2,16 @@ import React, { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/userSlice";
-import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Link } from "react-router-dom";
-import { FaFacebook } from "react-icons/fa";
-import { FcGoogle } from "react-icons/fc";
 import { LoadingButton } from "@mui/lab";
 import { useNavigate } from "react-router-dom";
+import adminApi from "../../api/modules/admin.api";
+import { setAdmin } from "../../redux/reducer/adminSlice";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
-const actionState = {
-  login: "login",
-  register: "register",
-  forgotPassword: "forgotPassword",
-};
-
-const Login = ({ switchAuthState }) => {
+const Login = () => {
   const dispatch = useDispatch();
   const [isLoginRequest, setIsLoginRequest] = useState(false);
   const [errorMessage, setErrorMessage] = useState();
@@ -46,14 +37,17 @@ const Login = ({ switchAuthState }) => {
     onSubmit: async (values) => {
       setErrorMessage(undefined);
       setIsLoginRequest(true);
-      const { response, err } = await userApi.login(values);
+      dispatch(setGlobalLoading(true));
+      
+      const { response, err } = await adminApi.login(values);
+      
       setIsLoginRequest(false);
+      dispatch(setGlobalLoading(false));
 
       if (response && response.code === 200) {
         loginForm.resetForm();
-        dispatch(setUser(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/');
+        dispatch(setAdmin(response.data));
+        navigate('/admins/dashboard');
       } else {
         setErrorMessage(err.exception);
       }
@@ -62,42 +56,13 @@ const Login = ({ switchAuthState }) => {
 
   return (
     <div className="w-full bg-gray-800 rounded-lg shadow dark:border-gray-700 sm:max-w-lg xl:p-0">
-      {/* Nút Back Home */}
-      <div className="absolute top-4 left-4">
-        <Link to="/" className="text-white underline">
-          Back Home
-        </Link>
-      </div>
       <div className="p-6 space-y-4 sm:p-8">
-        <div className="grid grid-cols-12 gap-4 items-center">
-          <div className="col-span-4 flex justify-start">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
-              Login with
-            </h1>
-          </div>
-          <div className="col-span-8 flex justify-center items-center gap-6">
-            {/* <Link to="/login-facebook" className="flex items-center">
-              <FaFacebook
-                color="#4267b2"
-                size={32}
-                className="bg-white rounded-full"
-              />
-            </Link> */}
-            <Link to="/login-google" className="flex items-center">
-              <FcGoogle size={32} className="bg-white rounded-full" />
-            </Link>
-          </div>
-        </div>
-
         <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
-          Or login to your account
+          Admin Login
         </h1>
         <form className="space-y-4" onSubmit={loginForm.handleSubmit}>
           <div>
-            <label
-              htmlFor="email"
-              className="block mb-2 text-sm font-medium text-white"
-            >
+            <label htmlFor="email" className="block mb-2 text-sm font-medium text-white">
               Email
             </label>
             <input
@@ -153,22 +118,13 @@ const Login = ({ switchAuthState }) => {
               </p>
             )}
           </div>
-          <div className="flex items-center justify-between">
-            <Link
-              href="#"
-              className="text-sm font-medium text-primary-500 hover:underline"
-              onClick={() => switchAuthState(actionState.forgotPassword)}
-            >
-              Forgot password?
-            </Link>
-          </div>
           <LoadingButton
             type="submit"
             loading={isLoginRequest}
             variant="contained"
             sx={{
               width: "100%",
-              color: "white",
+              color: "white", 
               bgcolor: "primary.main",
               "&:hover": {
                 bgcolor: "primary.dark",
@@ -180,23 +136,13 @@ const Login = ({ switchAuthState }) => {
               borderRadius: "8px",
               ":focus": {
                 outline: "none",
-                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)", 
+                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)",
               },
             }}
           >
             Login
           </LoadingButton>
           {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-          <p className="text-sm font-light text-gray-400">
-            Don’t have an account yet?{" "}
-            <Link
-              href="register"
-              className="font-medium text-primary-500 hover:underline"
-              onClick={() => switchAuthState(actionState.register)}
-            >
-              Register
-            </Link>
-          </p>
         </form>
       </div>
     </div>

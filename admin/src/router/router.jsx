@@ -1,52 +1,54 @@
+import Dashboard from "../page/Dashboard";
 import AddProduct from "../page/AddProduct";
-import Home from "../page/Home";
-import ManageFloor from "../page/ManageFloor";
 import ManagePaint from "../page/ManagePaint";
 import ManageUser from "../page/ManageUser";
-import ManageWallpaper from "../page/ManageWallpaper";
+import AdminLayout from "../components/layout/AdminLayout";
+import ProtectedRoute from "../components/common/ProtectedRoute";
 
-export const routesGen = {
-  home: "/",
-  manageUser: "/manageUser",
-  addProduct: "/addProduct",
-  managePaint: "/managePaint",
-  ManageFloor: "/ManageFloor",
-  manageWallpaper: "/manageWallpaper",
+export const adminRoutesGen = {
+  dashboard: "/admins/dashboard",
+  addProduct: "/admins/add-product",
+  managePaint: "/admins/manage-paint",
+  manageUser: "/admins/manage-user",
 };
 
-const routes = [
+const adminRoutes = [
   {
-    index: true,
-    element: <Home />,
-    state: "home",
+    path: "/admins/*",
+    element: (
+      <ProtectedRoute>
+        <AdminLayout />
+        <Dashboard />
+      </ProtectedRoute>
+    ),
+    children: [
+      {
+        index: true,
+        element: <Dashboard />,
+        state: "dashboard",
+      },
+      {
+        path: "dashboard",
+        element: <Dashboard />,
+        state: "dashboard",
+      },
+      {
+        path: "add-product",
+        element: <AddProduct />,
+        state: "addProduct",
+      },
+      {
+        path: "manage-paint",
+        element: <ManagePaint />,
+        state: "managePaint",
+      },
+      {
+        path: "manage-user",
+        element: <ManageUser />,
+        state: "manageUser",
+      },
+    ],
   },
-  {
-    path: routesGen.manageUser,
-    element: <ManageUser />,
-    state: "manageUser",
-  },
-  {
-    path: routesGen.addProduct,
-    element: <AddProduct />,
-    state: "addProduct",
-  },
-  {
-    path: routesGen.managePaint,
-    element: <ManagePaint />,
-    state: "managePaint",
-  },
-  {
-    path: routesGen.ManageFloor,
-    element: <ManageFloor />,
-    state: "manageFloor",
-  },
-  {
-    path: routesGen.manageWallpaper,
-    element: <ManageWallpaper />,
-    state: "manageWallpaper",
-  },
-  
-    
+];
 
-]
-export default routes;
+export default adminRoutes;
