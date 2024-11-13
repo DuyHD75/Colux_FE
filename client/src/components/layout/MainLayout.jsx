@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
@@ -10,6 +10,8 @@ import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
 import ChatPopup from "../commons/ChatPopup";
 import { StompSessionProvider } from 'react-stomp-hooks';
+import cartApi from "../../api/modules/cart.api";
+import { toast } from "react-toastify";
 
 
 const actionState = {
@@ -24,6 +26,8 @@ const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.user);
+  const [itemCart, setItemCart] = useState(0);
+
 
   useEffect(() => {
     const authUser = async () => {
@@ -37,8 +41,22 @@ const MainLayout = () => {
         }
       }
     };
+   
     authUser();
   }, []);
+
+  useEffect(() => {
+    const getCart = async () => {
+      if (user) {
+        const { response, err } = await cartApi.getCart(user.userId);
+        if (response) {
+          setItemCart(response.data.carts.cartItems.length);
+          console.log(itemCart);
+          
+        }
+      }
+    };
+    getCart();}, [user]);
 
 
   const showHeaderFooter = !(
@@ -52,7 +70,7 @@ const MainLayout = () => {
   return (
     <div>
       {/* header */}
-      {showHeaderFooter && <Header />}
+      {showHeaderFooter && <Header itemCart={itemCart}/>}
       {/* header */}
       {/* global loading */}
       <GlobalLoading />
