@@ -3,38 +3,28 @@ import proxyClient from "../client/proxy.client";
 const userEndpoints = {
   getCart: ({ userID }) => `order-service/api/v1/carts/${userID}`,
   saveCart: "order-service/api/v1/carts/add-to-cart",
-  deleteCartItem: "order-service/api/v1/carts/delete-cart-item"
+  deleteCartItem: "order-service/api/v1/carts/delete-cart-item",
+  createOrder: "/order-service/api/v1/orders/create",
+  getOrdersbyCustomerId: ({ customerId }) =>
+    `/order-service/api/v1/orders/customerId/${customerId}`,
 };
 
 const cartApi = {
   getCart: async (userID) => {
     try {
-      console.log("userID", userID);
-
       const response = await proxyClient.get(userEndpoints.getCart({ userID }));
-
-      console.log("response", response);
-
       return { response };
     } catch (err) {
       return { err };
     }
   },
-  deleteCartItem: async (cartId,variantIds) => {
+  deleteCartItem: async (cartId, itemDeleteRequests) => {
     try {
-      console.log("cartId", cartId);
-      console.log("variantIds", variantIds);
-      const response = await proxyClient.delete(userEndpoints.deleteCartItem,
-       { data: { cartId, variantIds }}
-
-      );
-
-      console.log("response", response);
-
+      const response = await proxyClient.delete(userEndpoints.deleteCartItem, {
+        data: { cartId, itemDeleteRequests },
+      });
       return { response };
     } catch (err) {
-      console.log("err", err);
-      
       return { err };
     }
   },
@@ -46,19 +36,31 @@ const cartApi = {
     cartItems
   ) => {
     try {
-      console.log("cartId", cartId);
-      console.log("userId", customerId);
-      console.log("status", status);
-      console.log("updateQuantityType", updateQuantityType);
-      console.log("cartItems", cartItems);
-      
-      const response = await proxyClient.post(userEndpoints.saveCart,
-        ({cartId,
+      const response = await proxyClient.post(userEndpoints.saveCart, {
+        cartId,
         customerId,
         status,
         updateQuantityType,
-        cartItems})
-              );
+        cartItems,
+      });
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  createOrder: async (order) => {
+    try {
+      const response = await proxyClient.post(userEndpoints.createOrder, order);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getOrdersbyCustomerId: async (customerId) => {
+    try {
+      const response = await proxyClient.get(
+        userEndpoints.getOrdersbyCustomerId({ customerId })
+      );
       return { response };
     } catch (err) {
       return { err };
