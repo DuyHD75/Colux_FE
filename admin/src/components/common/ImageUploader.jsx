@@ -22,13 +22,12 @@ const ImageUploader = ({ handleUpload }) => {
 
     const response = await uploadImageApi.uploadImage(images);
 
-    if(response) {
+    if(response.data) {
+      console.log(response);
       handleUpload((prev) => [...prev, ...response.data.fileUrls])
     } else {
-      alert("Err while upload image");
-
+      alert("Error while upload image");
     }
-
     setIsUploading(false);
   };
 

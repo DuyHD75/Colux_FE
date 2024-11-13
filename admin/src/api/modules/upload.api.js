@@ -7,6 +7,7 @@ const uploadImageEndpoint = {
   const uploadImageApi = {
     uploadImage: async (images) => {
       try {
+        console.log(images)
         const response = await proxyClient.post(
           uploadImageEndpoint.uploadImage,
           images,
@@ -14,6 +15,8 @@ const uploadImageEndpoint = {
             multipart: true,
           }
         );
+        console.log(response);
+        
         return response;
       } catch (err) {
         console.error("Error uploading image:", err);
