@@ -33,7 +33,7 @@ const VerifyEmail = () => {
           } else if (userType === "reset") {
             ({ response, err } = await userApi.verifyResetPassword(key));
           }
-          if (response && response.code === 200) {
+          if (response) {
             setSuccess(true);
             toast.success(response.message);
             if (userType === "account") {

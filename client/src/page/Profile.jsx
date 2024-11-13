@@ -6,14 +6,27 @@ import { user } from '../data/Product'
 import { CiEdit } from "react-icons/ci";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { useSelector } from 'react-redux'
-import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
+import { useDispatch, useSelector } from 'react-redux'
+import userApi from '../api/modules/user.api'
+import { toast } from 'react-toastify'
 
 const Profile = () => {
 
     const [editInfo, setEditInfo] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
     const { user } = useSelector((state) => state.user);
+
+    const updateProfile = async (values) => {
+        const profile={
+            firstName: values.firstName,
+            lastName: values.lastName,
+            phone: values.phone,
+        }
+        const { response, err } = await userApi.updateProfile(profile);
+        if (response) {          
+            toast.success("Update profile successfully")
+        }
+    }
 
     const formikInfo = useFormik({
         initialValues: {
@@ -31,7 +44,7 @@ const Profile = () => {
                 .required("Phone number is required!"),
         }),
         onSubmit: (values) => {
-            alert(JSON.stringify(values, null, 2));
+            updateProfile(values)
             setEditInfo(false)
         },
     });

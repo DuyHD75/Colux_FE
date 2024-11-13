@@ -163,6 +163,7 @@ const AddProduct = () => {
           formikProductInfo.resetForm();
           setSelectedProperties([]);
           setSelectedFeatures([]);
+          setSelectedImage(null);
           toast.success(response.message);
         } else {
           toast.error(err.exception);
@@ -207,12 +208,15 @@ const AddProduct = () => {
       code: "",
       phone: "",
     },
-    code: Yup.string()
-      // .matches(/^SUP-\d{6}$/, "Code must be in the format SUP-000001")
-      .required("Required!"),
-    phone: Yup.string()
-      .matches(/^[0-9]{10}$/, "Phone must be a valid 10-digit number")
-      .required("Required!"),
+    validationSchema: Yup.object({
+      name: Yup.string().required("Required"),
+      code: Yup.string()
+        // .matches(/^SUP-\d{6}$/, "Code must be in the format SUP-000001")
+        .required("Required!"),
+      phone: Yup.string()
+        .matches(/^[0-9]{10}$/, "Phone must be a valid 10-digit number")
+        .required("Required!"),
+    }),
     onSubmit: async (values) => {
       try {
         const { response, err } = await productsApi.addSupplier(values);
@@ -434,7 +438,13 @@ const AddProduct = () => {
           </Typography>
         </Box>
 
-        <form onSubmit={formikProductInfo.handleSubmit}>
+        <form
+          style={{
+            borderBottom: "1px solid #000",
+            boxShadow: "0 2px 0 rgba(0, 0, 0, 0.2)",
+          }}
+          onSubmit={formikProductInfo.handleSubmit}
+        >
           <Typography
             sx={{
               ...textConfig.style.headerText,
@@ -510,16 +520,20 @@ const AddProduct = () => {
               >
                 Origin
               </Typography>
-              <TextField
+              <Select
                 name="placeOfOrigin"
                 onChange={formikProductInfo.handleChange}
                 onBlur={formikProductInfo.handleBlur}
                 value={formikProductInfo.values.placeOfOrigin}
-                type="text"
                 placeholder="Origin"
                 size="small"
                 sx={{ width: "100%" }}
-              />
+              >
+                <MenuItem value="Viet Nam">Viet Nam</MenuItem>
+                <MenuItem value="Korean">Korean</MenuItem>
+                <MenuItem value="America">America</MenuItem>
+                <MenuItem value="Japan">Japan</MenuItem>
+              </Select>
               {formikProductInfo.touched.placeOfOrigin &&
               formikProductInfo.errors.placeOfOrigin ? (
                 <div className="text-red-500 text-sm mt-1">
@@ -537,16 +551,26 @@ const AddProduct = () => {
               >
                 Warranty
               </Typography>
-              <TextField
+              <Select
                 name="warranty"
                 onChange={formikProductInfo.handleChange}
                 onBlur={formikProductInfo.handleBlur}
                 value={formikProductInfo.values.warranty}
-                type="text"
                 placeholder="Warranty"
                 size="small"
                 sx={{ width: "100%" }}
-              />
+              >
+                <MenuItem value="1 years">1 years</MenuItem>
+                <MenuItem value="2 years">2 years</MenuItem>
+                <MenuItem value="3 years">3 years</MenuItem>
+                <MenuItem value="4 years">4 years</MenuItem>
+                <MenuItem value="5 years">5 years</MenuItem>
+                <MenuItem value="6 years">6 years</MenuItem>
+                <MenuItem value="7 years">7 years</MenuItem>
+                <MenuItem value="8 years">8 years</MenuItem>
+                <MenuItem value="9 years">9 years</MenuItem>
+                <MenuItem value="10 years">10 years</MenuItem>
+              </Select>
               {formikProductInfo.touched.warranty &&
               formikProductInfo.errors.warranty ? (
                 <div className="text-red-500 text-sm mt-1">
@@ -564,16 +588,18 @@ const AddProduct = () => {
               >
                 Surface
               </Typography>
-              <TextField
+              <Select
                 name="applicableSurface"
                 onChange={formikProductInfo.handleChange}
                 onBlur={formikProductInfo.handleBlur}
                 value={formikProductInfo.values.applicableSurface}
-                type="text"
                 placeholder="Surface"
                 size="small"
                 sx={{ width: "100%" }}
-              />
+              >
+                <MenuItem value="Wall">Wall</MenuItem>
+                <MenuItem value="Floor">Floor</MenuItem>
+              </Select>
               {formikProductInfo.touched.applicableSurface &&
               formikProductInfo.errors.applicableSurface ? (
                 <div className="text-red-500 text-sm mt-1">
@@ -708,10 +734,7 @@ const AddProduct = () => {
                 sx={{ width: "100%" }}
               >
                 {suppliers.map((supplier, index) => (
-                  <MenuItem
-                    key={index}
-                    value={supplier.id}
-                  >
+                  <MenuItem key={index} value={supplier.id}>
                     {supplier.name}
                   </MenuItem>
                 ))}
@@ -762,7 +785,23 @@ const AddProduct = () => {
                 </Stack>
               </div>
 
-              <Button variant="contained" onClick={handleAddClickProperties}>
+              <Button
+                size="small"
+                variant="contained"
+                sx={{
+                  bgcolor: "#1c2759",
+                  textTransform: "none",
+                  fontSize: "14px",
+                  borderRadius: "10px",
+                  px: "1rem",
+                  mt: "1rem",
+                  "&:hover": {
+                    opacity: 0.9,
+                    bgcolor: "#1c2759",
+                  },
+                }}
+                onClick={handleAddClickProperties}
+              >
                 Add Properties
               </Button>
             </Stack>
@@ -803,7 +842,23 @@ const AddProduct = () => {
                 </Stack>
               </div>
 
-              <Button variant="contained" onClick={handleAddClickFeature}>
+              <Button
+                size="small"
+                variant="contained"
+                sx={{
+                  bgcolor: "#1c2759",
+                  textTransform: "none",
+                  fontSize: "14px",
+                  borderRadius: "10px",
+                  px: "1rem",
+                  mt: "1rem",
+                  "&:hover": {
+                    opacity: 0.9,
+                    bgcolor: "#1c2759",
+                  },
+                }}
+                onClick={handleAddClickFeature}
+              >
                 Add Features
               </Button>
             </Stack>
@@ -903,6 +958,7 @@ const AddProduct = () => {
               borderRadius: "10px",
               px: "1rem",
               mt: "1rem",
+              mb: 4,
               "&:hover": {
                 opacity: 0.9,
                 bgcolor: "#1c2759",
@@ -922,7 +978,7 @@ const AddProduct = () => {
               mt: 4,
             }}
           >
-            Add Brand{" "}
+            Brand{" "}
           </Typography>
 
           <Stack direction="row" spacing={1} mt={1}>
@@ -1010,7 +1066,7 @@ const AddProduct = () => {
               mt: 4,
             }}
           >
-            Add Supplier{" "}
+            Supplier{" "}
           </Typography>
 
           <Stack direction="row" spacing={1} mt={1}>
@@ -1084,7 +1140,7 @@ const AddProduct = () => {
                 onBlur={formikSupplierInfo.handleBlur}
                 value={formikSupplierInfo.values.phone}
                 type="text"
-                placeholder="Code"
+                placeholder="Phone"
                 size="small"
                 sx={{ width: "100%" }}
               />
@@ -1122,8 +1178,15 @@ const AddProduct = () => {
             style={{ width: "50%" }}
             onSubmit={formikPropertyInfo.handleSubmit}
           >
-            <Typography sx={{ fontSize: "16px", fontWeight: "bold", mt: 4, ...textConfig.style.basicFont }}>
-              Add Properties
+            <Typography
+              sx={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                mt: 4,
+                ...textConfig.style.basicFont,
+              }}
+            >
+              Properties
             </Typography>
             {formikPropertyInfo.values.map((property, index) => (
               <div key={index}>
@@ -1369,8 +1432,15 @@ const AddProduct = () => {
             style={{ width: "50%" }}
             onSubmit={formikFeatureInfo.handleSubmit}
           >
-            <Typography sx={{ fontSize: "16px", fontWeight: "bold", mt: 4, ...textConfig.style.basicFont }}>
-              Add Feature
+            <Typography
+              sx={{
+                fontSize: "16px",
+                fontWeight: "bold",
+                mt: 4,
+                ...textConfig.style.basicFont,
+              }}
+            >
+              Feature
             </Typography>
             {formikFeatureInfo.values.map((feature, index) => (
               <div key={index}>
@@ -1612,7 +1682,16 @@ const AddProduct = () => {
       {/* Dialog to select Properties */}
       <Dialog open={openProperties} onClose={handleCloseProperties}>
         <DialogTitle>Select Properties</DialogTitle>
-        <DialogContent>
+        <DialogContent
+          sx={{
+            maxHeight: "600px",
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           <FormGroup>
             {availableProperties.map((property) => (
               <div key={property.propertyId}>
@@ -1645,15 +1724,32 @@ const AddProduct = () => {
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseProperties} color="primary">
-            Cancel
+          <Button
+            onClick={handleCloseProperties}
+            color="primary"
+            sx={{
+              textTransform: "none",
+              ...textConfig.style.basicFont,
+              fontSize: "16px",
+            }}
+          >
+            Close
           </Button>
         </DialogActions>
       </Dialog>
       {/* Dialog to select features */}
       <Dialog open={openFeature} onClose={handleCloseFeature}>
         <DialogTitle>Select Features</DialogTitle>
-        <DialogContent>
+        <DialogContent
+          sx={{
+            maxHeight: "600px",
+            overflowY: "auto",
+            scrollbarWidth: "none",
+            "&::-webkit-scrollbar": {
+              display: "none",
+            },
+          }}
+        >
           <FormGroup>
             {availableFeatures.map((feature) => (
               <div key={feature.featureId}>
@@ -1686,7 +1782,15 @@ const AddProduct = () => {
           </FormGroup>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleCloseFeature} color="primary">
+          <Button
+            onClick={handleCloseFeature}
+            color="primary"
+            sx={{
+              textTransform: "none",
+              ...textConfig.style.basicFont,
+              fontSize: "16px",
+            }}
+          >
             Cancel
           </Button>
         </DialogActions>

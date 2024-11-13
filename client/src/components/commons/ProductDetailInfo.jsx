@@ -148,52 +148,38 @@ const ProductDetailInfo = ({ product }) => {
     const status = 1;
     const updateQuantityType = "INCREMENTAL";
     const customerId = user.userId;
-
-    const cartItems = [
-      {
-        ...(selectedVariant.categoryName === "Paint" && {
-          variantId: selectedVariant.variantId,
-        }),
-        ...(selectedVariant.categoryName === "Wallpaper" && {
-          variantId: selectedVariant.variantId,
-        }),
-        ...(selectedVariant.categoryName === "Floor" && {
-          variantId: selectedVariant.variantId,
-        }),
-        productId: product.productId,
-        quantity: quantity,
-        ...(selectedVariant.categoryName === "Paint" && {
-          paintId: selectedProduct.id,
-        }),
-        ...(selectedVariant.categoryName === "Wallpaper" && {
-          wallpaperId: selectedProduct.id,
-        }),
-        ...(selectedVariant.categoryName === "Floor" && {
-          floorId: selectedProduct.id,
-        }),
-      },
-    ];
-
-    updateCart(cart.cartId, customerId, status, updateQuantityType, cartItems);
-  };
-
-  const updateCart = useCallback(
-    async (cartId, customerId, status, updateQuantityType, cartItems) => {
-      const { response, err } = await cartApi.saveCart(
+    const cartId = cart?cart.cartId:'';
+    const cartItems = [{
+      ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
+      ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
+      productId: product.productId,
+      quantity: quantity,
+      ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
+      ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
+    }];
+    
+      updateCart(
         cartId,
         customerId,
         status,
         updateQuantityType,
         cartItems
+  
       );
-      if (!response) {
-        toast.error("Quantity not enough to add");
-      } else {
-        toast.success("Added to cart successfully");
-      }
-    },
-    []
-  );
+     
+  };
+
+  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
+    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
+    if (!response) {
+      toast.error('Quantity not enough to add');
+    }
+    else {
+      toast.success('Added to cart successfully');
+    }
+  }, []);
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>

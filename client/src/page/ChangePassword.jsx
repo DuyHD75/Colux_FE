@@ -33,7 +33,7 @@ const ChangePassword = () => {
       setErrorMessage(undefined);
       const { response } = await customerApi.changePassword(values);
 
-      if (response && response.code === 200) {
+      if (response) {
         formikPassword.resetForm();
         toast.success(response.message);
       } else {
