@@ -50,6 +50,7 @@ const MainLayout = () => {
         <Box
           component="main"
           sx={{
+            bgcolor:'#F8F9FA',
             flexGrow: 1,
             p: 3,
             ml: showHeaderFooter ? '240px' : 0,

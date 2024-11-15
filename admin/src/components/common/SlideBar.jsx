@@ -82,7 +82,7 @@ const Sidebar = () => {
             <ListItem component={Link} to="#" sx={{ pl: 4 }}>
               <ListItemText primary="Billing" sx={{ ...textConfigs.style.basicFont }}/>
             </ListItem>
-            <ListItem component={Link} to="#" sx={{ pl: 4 }}>
+            <ListItem component={Link} to="/manage-orders" sx={{ pl: 4 }}>
               <ListItemText primary="Invoice" sx={{ ...textConfigs.style.basicFont }}/>
             </ListItem>
           </List>

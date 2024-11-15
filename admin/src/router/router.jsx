@@ -5,6 +5,8 @@ import MainLayout from "../components/layout/MainLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import ManageProduct from "../page/ManageProduct";
 import Login from "../page/Auth"
+import ManageOrder from "../page/ManageOrder";
+import OrderDetails from "../page/OrderDetails";
 
 export const routesGen = {
   manageUser: "/manageUser",
@@ -12,6 +14,8 @@ export const routesGen = {
   manageProduct: "/manage-products",
   dashboard: "/dashboard",
   managePaint: "/manage-paint",
+  manageOrder: "/manage-orders",
+  orderDetails: "/orderDetails/:id",
 };
 const routes = [
   {
@@ -47,6 +51,16 @@ const routes = [
     path: routesGen.manageProduct,
     element: <ManageProduct />,
     state: "manageProduct",
+  },
+  {
+    path: routesGen.manageOrder,
+    element: <ManageOrder />,
+    state: "manageOrders",
+  },
+  {
+    path: routesGen.orderDetails,
+    element: <OrderDetails />,
+    state: "orderDetails",
   },
 ]
 export default routes;
