@@ -10,9 +10,9 @@ import textConfigs from "../../config/text.config";
 
 const { Panel } = Collapse;
 
-const SidebarFilters = ({ categories, category, onChange }) => {
+const SidebarFilters = ({ categories, category, onChange, categoryName }) => {
   const { t } = useTranslation();
-  const [selectedRatings, setSelectedRatings] = useState([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [selectedPropertys, setSelectedPropertys] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(category);
@@ -54,22 +54,20 @@ const SidebarFilters = ({ categories, category, onChange }) => {
   useEffect(() => {
     if (category !== selectedCategory) {
       setSelectedCategory(category);
-      setSelectedRatings([]);
+      setSelectedPriceRange(null);
       setSelectedPropertys([]);
       setSelectedFeatures([]);
-      onChange("rating", []);
+      onChange("priceRange", []);
       onChange("property", []);
       onChange("features", []);
       onChange("category", [category]);
     }
   }, [category, selectedCategory, onChange]);
 
-  const handleRatingChange = (value) => {
-    const newSelectedRatings = selectedRatings.includes(value)
-      ? selectedRatings.filter((item) => item !== value)
-      : [...selectedRatings, value];
-    setSelectedRatings(newSelectedRatings);
-    onChange("rating", newSelectedRatings);
+  const handlePriceRangeChange = (e) => {
+    const value = e.target.value;
+    setSelectedPriceRange((prev) => (prev === value ? null : value));
+    onChange("priceRange", value === selectedPriceRange ? null : value);
   };
 
   const handlepropertyChange = (checked, propertyId) => {
@@ -97,12 +95,11 @@ const SidebarFilters = ({ categories, category, onChange }) => {
       selectedCat;
 
     if (selectedCat === "all") {
-      navigate(`/products`);
+      navigate("/products");
       setSelectedCategory("all");
       onChange("category", ["all"]);
     } else {
       setSelectedCategory(selectedCat);
-      onChange("category", [selectedCat]);
       navigate(`/products/${selectedCatName}/${selectedCat}`);
     }
   };
@@ -144,129 +141,154 @@ const SidebarFilters = ({ categories, category, onChange }) => {
             )}
           </Radio.Group>
         </Panel>
+
         <Panel
-          header={t("rating")}
-          key="1"
+          header={t("price.range")}
+          key="4"
           style={{ marginBottom: "10px", ...textConfigs.style.basicFont }}
         >
-          {[1, 2, 3, 4, 5].map((value) => (
+          <Radio.Group
+            value={selectedPriceRange}
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              padding: "5px 0",
+              ...textConfigs.style.basicFont,
+            }}
+          >
+            {["0-100", "100-200", "200-300", "300-400", "400-500", "500+"].map(
+              (range) => (
+                <Radio
+                  key={range}
+                  value={range}
+                  onClick={() =>
+                    handlePriceRangeChange({ target: { value: range } })
+                  }
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    padding: "5px 0",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  {t(`price.range.${range}`)}
+                </Radio>
+              )
+            )}
+          </Radio.Group>
+        </Panel>
+        {categoryName && (
+          <Panel
+            header={t("property")}
+            key="2"
+            style={{
+              marginBottom: "10px",
+              ...textConfigs.style.basicFont,
+            }}
+          >
             <div
-              key={value}
               style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "5px 0",
+                maxHeight: "200px",
+                overflowY: "auto",
+                padding: "10px",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
               }}
             >
-              <Checkbox
-                checked={selectedRatings.includes(value)}
-                onChange={() => handleRatingChange(value)}
-                style={{ marginRight: "10px" }}
-              />
-              <Rate
-                value={value}
-                disabled
-                style={{ color: "#f39c12", fontSize: 16 }}
-              />
+              <style>
+                {`
+                ::-webkit-scrollbar {
+                  display: none;
+                }
+              `}
+              </style>
+              {properties.length > 0 ? (
+                properties
+                  .filter(
+                    (property) =>
+                      property.category && property.category === categoryName
+                  )
+                  .map((property, index) => (
+                    <Checkbox
+                      key={index}
+                      checked={selectedPropertys.includes(property.propertyId)}
+                      onChange={(e) =>
+                        handlepropertyChange(
+                          e.target.checked,
+                          property.propertyId
+                        )
+                      }
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "5px 0",
+                        ...textConfigs.style.basicFont,
+                      }}
+                    >
+                      {property.name}
+                    </Checkbox>
+                  ))
+              ) : (
+                <div>{t("no.property")}</div>
+              )}
             </div>
-          ))}
-        </Panel>
+          </Panel>
+        )}
 
-        <Panel
-          header={t("property")}
-          key="2"
-          style={{
-            marginBottom: "10px",
-            ...textConfigs.style.basicFont,
-          }}
-        >
-          <div
+        {categoryName && (
+          <Panel
+            header={t("features")}
+            key="3"
             style={{
-              maxHeight: "200px",
-              overflowY: "auto",
-              padding: "10px",
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
+              marginBottom: "10px",
+              ...textConfigs.style.basicFont,
             }}
           >
-            <style>
-              {`
+            <div
+              style={{
+                maxHeight: "200px",
+                overflowY: "auto",
+                padding: "10px",
+                scrollbarWidth: "none",
+                msOverflowStyle: "none",
+              }}
+            >
+              <style>
+                {`
                 ::-webkit-scrollbar {
                   display: none;
                 }
               `}
-            </style>
-            {properties.length > 0 ? (
-              properties.map((property, index) => (
-                <Checkbox
-                  key={index}
-                  checked={selectedPropertys.includes(property.propertyId)}
-                  onChange={(e) =>
-                    handlepropertyChange(e.target.checked, property.propertyId)
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "5px 0",
-                    ...textConfigs.style.basicFont,
-                  }}
-                >
-                  {property.name}
-                </Checkbox>
-              ))
-            ) : (
-              <div>{t("no.property")}</div>
-            )}
-          </div>
-        </Panel>
-
-        <Panel
-          header={t("features")}
-          key="3"
-          style={{
-            marginBottom: "10px",
-            ...textConfigs.style.basicFont,
-          }}
-        >
-          <div
-            style={{
-              maxHeight: "200px", 
-              overflowY: "auto", 
-              padding: "10px",
-              scrollbarWidth: "none", 
-              msOverflowStyle: "none", 
-            }}
-          >
-            <style>
-              {`
-                ::-webkit-scrollbar {
-                  display: none;
-                }
-              `}
-            </style>
-            {features.length > 0 ? (
-              features.map((feature, index) => (
-                <Checkbox
-                  key={index}
-                  checked={selectedFeatures.includes(feature.featureId)}
-                  onChange={(e) =>
-                    handleFeatureChange(e.target.checked, feature.featureId)
-                  }
-                  style={{
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "5px 0",
-                    ...textConfigs.style.basicFont,
-                  }}
-                >
-                  {feature.name}
-                </Checkbox>
-              ))
-            ) : (
-              <div>{t("no.features")}</div>
-            )}
-          </div>
-        </Panel>
+              </style>
+              {features.length > 0 ? (
+                features
+                  .filter(
+                    (feature) =>
+                      feature.category && feature.category === categoryName
+                  )
+                  .map((feature, index) => (
+                    <Checkbox
+                      key={index}
+                      checked={selectedFeatures.includes(feature.featureId)}
+                      onChange={(e) =>
+                        handleFeatureChange(e.target.checked, feature.featureId)
+                      }
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        padding: "5px 0",
+                        ...textConfigs.style.basicFont,
+                      }}
+                    >
+                      {feature.name}
+                    </Checkbox>
+                  ))
+              ) : (
+                <div>{t("no.features")}</div>
+              )}
+            </div>
+          </Panel>
+        )}
       </Collapse>
     </div>
   );

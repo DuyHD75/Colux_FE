@@ -13,6 +13,7 @@ import {
   Tooltip,
   MenuItem,
   Grid,
+  TextField,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -25,10 +26,13 @@ import BackgroundColor from "../../config/background.config";
 import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
 import colorsApi from "../../api/modules/colors.api";
+import productApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
 import "../../i18n";
 import { useTranslation } from "react-i18next";
 import productsApi from "../../api/modules/products.api";
+import textConfigs from "../../config/text.config";
+import { BsFillHexagonFill } from "react-icons/bs";
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -45,10 +49,50 @@ export const Header = () => {
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
   const [anchorElAbout, setAnchorElAbout] = useState(false);
+  const [hoveredColor, setHoveredColor] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchKey, setSearchKey] = useState(null);
+
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const handleChangeLanguage = (language) => {
     i18n.changeLanguage(language);
   };
+
+  const handleSearchChange = async (e) => {
+    const searchQuery = e.target.value;
+    setSearchKey(searchQuery);
+    if (searchQuery.trim() === "") {
+      setSearchResults(null);
+      return;
+    }
+    try {
+      const { response, err } = await productApi.search(
+        searchQuery.replace(/#/g, "").trim()
+      );
+      if (response) {
+        setSearchResults(response.data.Results);
+      } else if (err) {
+        toast.error(err);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      toast.error("An error occurred while fetching color family.");
+    }
+  };
+
+  const hideResearchResult = () => {
+    setSearchResults(null);
+    setSearchKey("");
+  };
+
+  console.log(searchResults);
 
   useEffect(() => {
     const getListColofamily = async () => {
@@ -258,14 +302,290 @@ export const Header = () => {
           </Typography>
           {/* End logo mobile */}
 
-          {/* Start nav items */}
-          <NavItemsHeader
-            setAnchorElNav={setAnchorElNav}
-            setAnchorElCategories={setAnchorElCategories}
-            setAnchorElColors={setAnchorElColors}
-            setAnchorElAbout={setAnchorElAbout}
-          />
-          {/* End nav items */}
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              display: { xs: "none", md: "flex" },
+            }}
+          >
+            {/* Search Field */}
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                px: 2,
+                justifyContent: "center",
+              }}
+            >
+              <Box sx={{ width: "60%" }}>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  label={t("search")}
+                  fullWidth
+                  value={searchKey}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": { borderColor: "#1c2759" },
+                      "&:hover fieldset": { borderColor: "#1c2759" },
+                      "&.Mui-focused fieldset": { borderColor: "#1c2759" },
+                    },
+                    ...textConfigs.style.basicFont,
+                    mt: 1,
+                  }}
+                  InputLabelProps={{
+                    sx: {
+                      color: "#1c2759",
+                      "&.Mui-focused": { color: "#1c2759" },
+                    },
+                  }}
+                  onChange={handleSearchChange}
+                />
+              </Box>
+              <NavItemsHeader
+                setAnchorElNav={setAnchorElNav}
+                setAnchorElCategories={setAnchorElCategories}
+                setAnchorElColors={setAnchorElColors}
+                setAnchorElAbout={setAnchorElAbout}
+                sx={{ flex: "1 1 100%" }}
+              />
+            </Box>
+
+            {/* Search Results */}
+            {searchResults && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "50%", // Điều chỉnh vị trí dọc của Box
+                  left: 0,
+                  right: 0,
+                  minHeight: "400px", // Đặt chiều cao tối thiểu cho Box ngoài
+                  maxHeight: "800px", // Chiều cao tối đa
+                  background: "#fff",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                  borderRadius: "8px",
+                  display: "flex", // Sử dụng flexbox để quản lý layout
+                  flexDirection: "column", // Đảm bảo các phần nằm theo chiều dọc
+                  gap: 2,
+                  px: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {/* Colors Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                    pr: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "left",
+                      color: "#1c2759",
+                      borderBottom: "2px solid #1c2759",
+                      pb: 1,
+                      mb: 2,
+                      mt: 1,
+                    }}
+                  >
+                    Colors
+                  </Typography>
+                  {searchResults.colors.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        overflowY: "auto",
+                        minHeight: "200px", // Đặt chiều cao tối thiểu cho Box ngoài
+                        maxHeight: "400px", // Chiều cao tối đa
+                      }}
+                    >
+                      <style>
+                        {`
+                        ::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}
+                      </style>
+                      <Grid container spacing={2} sx={{ marginTop: 1 }}>
+                        {searchResults.colors.map((color, index) => (
+                          <Grid
+                            item
+                            xs={6}
+                            md={3}
+                            key={index}
+                            sx={{ padding: "0 !important" }}
+                          >
+                            <Link
+                              to={`/colors/color-family/${
+                                color.colorFamily[0].name
+                                  ? color.colorFamily[0].name
+                                  : "colorfamilyname"
+                              }/${
+                                color.colorFamily[0].id
+                                  ? color.colorFamily[0].id
+                                  : "colorfamilyid"
+                              }/${color.name}/${color.id}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                transform:
+                                  hoveredColor === color.hex
+                                    ? "scale(1.1)"
+                                    : "scale(1)",
+                                transition: "transform 0.3s ease",
+                                marginTop: 2,
+                              }}
+                              onMouseEnter={() => setHoveredColor(color.hex)}
+                              onMouseLeave={() => setHoveredColor(null)}
+                              onClick={hideResearchResult}
+                            >
+                              <BsFillHexagonFill
+                                size={60}
+                                style={{
+                                  color: color.hex,
+                                  filter: "drop-shadow(0px 0px 4px #ccc)",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  marginTop: "0.5rem",
+                                }}
+                              >
+                                {color.name} <br />
+                                {color.hex}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "#1c2759",
+                        mb: 2,
+                      }}
+                    >
+                      No colors found.
+                    </Typography>
+                  )}
+                </Box>
+
+                {/* Products Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                    pr: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "left",
+                      color: "#1c2759",
+                      borderBottom: "2px solid #1c2759",
+                      pb: 1,
+                      mb: 2,
+                    }}
+                  >
+                    Products
+                  </Typography>
+                  {searchResults.products.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        overflowY: "auto",
+                        minHeight: "200px", // Đặt chiều cao tối thiểu cho Box ngoài
+                        maxHeight: "400px", // Chiều cao tối đa
+                        mb: 2,
+                      }}
+                    >
+                      <style>
+                        {`
+                        ::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}
+                      </style>
+                      <Grid container spacing={2}>
+                        {searchResults.products.map((product, index) => (
+                          <Grid item xs={6} md={3} key={index}>
+                            <Link
+                              to={`/products/${
+                                product.category.name
+                                  ? product.category.name
+                                  : "category-name"
+                              }/${
+                                product.category.categoryId
+                                  ? product.category.categoryId
+                                  : "category-id"
+                              }/${product.productName}/${product.productId}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                textAlign: "center",
+                              }}
+                              onClick={hideResearchResult}
+                            >
+                              <img
+                                src={product.images?.[0]?.url || ""}
+                                alt={product.productName}
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  marginTop: "0.5rem",
+                                  fontSize: "14px",
+                                }}
+                              >
+                                {capitalizeWords(product.productName)}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "#1c2759",
+                        mb: 2,
+                      }}
+                    >
+                      No products found.
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            )}
+          </Box>
 
           {/* Start menu colors */}
           <Menu
@@ -474,7 +794,7 @@ export const Header = () => {
             </Grid>
           </Menu>
           {/* End menu About */}
-          <Box sx={{ display: "flex", gap: 0 }}>
+          <Box sx={{ display: { xs: "none", md: "flex" }, gap: 0 }}>
             <Button
               onClick={() => handleChangeLanguage("vi")}
               sx={{ minWidth: 50, padding: 1 }}
@@ -482,7 +802,10 @@ export const Header = () => {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fviet-nam-flat.png?alt=media&token=ee236707-6f4c-47c4-998f-4ccc2416caf3"
                 alt="Vietnamese"
-                style={{ width: "30px", opacity: i18n.language === "vi" ? 1 : 0.5, }}
+                style={{
+                  width: "30px",
+                  opacity: i18n.language === "vi" ? 1 : 0.5,
+                }}
               />
             </Button>
 
@@ -493,7 +816,10 @@ export const Header = () => {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fenglish-flat.webp?alt=media&token=b0c4d065-3f2b-4605-9be3-670dac602b82"
                 alt="English"
-                style={{ width: "30px", opacity: i18n.language === "en" ? 1 : 0.5, }}
+                style={{
+                  width: "30px",
+                  opacity: i18n.language === "en" ? 1 : 0.5,
+                }}
               />
             </Button>
           </Box>
@@ -533,20 +859,17 @@ export const Header = () => {
                     <ShoppingCartIcon />
                   </IconButton>
                   <Tooltip title={`${user.firstName} ${user.lastName}`}>
-                  <Link to="/profile" style={{ textDecoration: "none" }}>
-                    <IconButton
-                      sx={{
-                        p: "10px",
-                        "&:hover": {
-                          backgroundColor: "transparent",
-                        },
-                      }}
-                    >
-                      <Avatar
-                        alt={user.firstName}
-                        src={user.imageUrl}
-                      />
-                    </IconButton>
+                    <Link to="/profile" style={{ textDecoration: "none" }}>
+                      <IconButton
+                        sx={{
+                          p: "10px",
+                          "&:hover": {
+                            backgroundColor: "transparent",
+                          },
+                        }}
+                      >
+                        <Avatar alt={user.firstName} src={user.imageUrl} />
+                      </IconButton>
                     </Link>
                   </Tooltip>
                 </Typography>

@@ -6,7 +6,7 @@ import { Box } from "@mui/material";
 const Colors = () => {
   return (
     <Fragment >
-      <Box sx={{ marginTop: {xs: "56px", md: "96px"}}}>
+      <Box sx={{ marginTop: {xs: "56px", md: "128px"}}}>
       <Navigate></Navigate>
       <ColorSwitcher></ColorSwitcher>
       </Box>

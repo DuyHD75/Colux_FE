@@ -8,7 +8,8 @@ import backgroundConfigs from "../../config/background.config";
 import { useSelector } from "react-redux";
 import menuConfigs from "../../config/menu.config";
 import data from "../../data/data";
-import { selectPosts } from '../../redux/reducer/postsSlice';
+import { selectPosts } from "../../redux/reducer/postsSlice";
+import { useTranslation } from "react-i18next";
 
 const StyledBreadcrumb = styled(Chip)(({ theme }) => {
   const backgroundColor =
@@ -32,40 +33,29 @@ const StyledBreadcrumb = styled(Chip)(({ theme }) => {
 });
 
 const Navigate = () => {
+  const { t } = useTranslation();
+
   const { appState } = useSelector((state) => state.appState);
   const { colorFamilies } = useSelector((state) => state.colorFamilies);
-  const { collections } = useSelector((state) => state.collections);
   const { colorFamily } = useParams();
-  const posts = useSelector(selectPosts); 
-  const rooms = data.rooms;
-  const exteriors = data.exteriors;
+  const posts = useSelector(selectPosts);
 
-  const { section, collection: collectionName, categoryName, slug } = useParams();
+  const {
+    section,
+    collection,
+    colorName,
+    collectionId,
+    colorId,
+    categoryName,
+    productCategory,
+    productCategoryId,
+    productName,
+    productId,
+    slug,
+  } = useParams();
   // console.log({ section, collectionName, categoryName, slug });
 
-  let datas = [];
-
-  if (section) {
-    switch (section) {
-      case "color-family":
-        datas = colorFamilies;
-        break;
-      case "rooms":
-        datas = rooms;
-        break;
-      case "collections":
-        datas = collections;
-        break;
-      case "exteriors":
-        datas = exteriors;
-        break;
-      default:
-        datas = [];
-    }
-  }
-
   const post = posts.find((post) => post.slug === slug);
-  const { productCategory } = useParams();
 
   return (
     <Box className="p-5" sx={{ ...backgroundConfigs.style.backgroundContext }}>
@@ -74,18 +64,19 @@ const Navigate = () => {
           <StyledBreadcrumb
             component="a"
             href="/"
-            label="Home"
+            label={t("home")}
             icon={<HomeIcon fontSize="small" />}
             sx={{ fontSize: "1rem" }}
           />
+
           {menuConfigs.navItems.map((item, index) => {
-            if (appState === item.state && item.state !== "home") {
+            if (appState === item.state && item.state !== "home" && item.state !== "colors") {
               return (
                 <StyledBreadcrumb
                   key={index}
                   component="a"
                   href={item.path}
-                  label={item.display}
+                  label={t(item.display)}
                   sx={{ fontSize: "1rem" }}
                 />
               );
@@ -101,7 +92,7 @@ const Navigate = () => {
                   key={index}
                   component="a"
                   href={item.path}
-                  label={item.display}
+                  label={t(item.display)}
                   sx={{ fontSize: "1rem" }}
                 />
               );
@@ -110,23 +101,60 @@ const Navigate = () => {
             }
           })}
 
-          {colorFamilies
-            .filter(item => item.name === colorFamily)
-            .map((item, index) => (
-              <StyledBreadcrumb
-                key={index}
-                component="a"
-                href="#"
-                label={item.name}
-                sx={{ fontSize: "1rem" }}
-              />
-            ))
-          }
+          {section && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/colors/color-family/All Colors/0`}
+              label={t("colors")}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {section && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/colors/${section}/${collection}/${collectionId}`}
+              label={collection}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {section && colorName && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/colors/${section}/${collection}/${collectionId}/${colorName}/${colorId}`}
+              label={colorName}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {productCategory && productName && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/products/`}
+              label={t("products")}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
           {productCategory && (
             <StyledBreadcrumb
               component="a"
-              href={`/products/${encodeURIComponent(productCategory)}`} 
+              href={`/products/${encodeURIComponent(
+                productCategory
+              )}/${productCategoryId}`}
               label={productCategory}
+              sx={{ fontSize: "1rem" }}
+            />
+          )}
+
+          {productName && productCategory && (
+            <StyledBreadcrumb
+              component="a"
+              href={`/products/${encodeURIComponent(
+                productCategory
+              )}/${productCategoryId}/${productName}/${productId}`}
+              label={productName}
               sx={{ fontSize: "1rem" }}
             />
           )}
@@ -143,16 +171,7 @@ const Navigate = () => {
           {section === "blog" && categoryName && (
             <StyledBreadcrumb
               component="a"
-              href={`/blogs/category/${encodeURIComponent(categoryName)}`} 
-              label={categoryName}
-              sx={{ fontSize: "1rem" }}
-            />
-          )}
-
-          {section === "products" && categoryName && (
-            <StyledBreadcrumb
-              component="a"
-              href={`/products/${encodeURIComponent(categoryName)}`} 
+              href={`/blogs/category/${encodeURIComponent(categoryName)}`}
               label={categoryName}
               sx={{ fontSize: "1rem" }}
             />

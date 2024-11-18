@@ -50,7 +50,7 @@ const ProductCard = ({ product }) => {
       }}
     >
 
-      <Link to={`/products/${productCategory}/${productCategoryId}/${product.productName}/${product.productId}`} onClick={handleClick}>
+      <Link to={`/products/${productCategory ? productCategory : product.category.name}/${productCategoryId ? productCategoryId : product.category.category}/${product.productName}/${product.productId}`} onClick={handleClick}>
         <Box
           sx={{
             display: "flex",

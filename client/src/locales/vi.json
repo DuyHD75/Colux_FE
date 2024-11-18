@@ -118,5 +118,15 @@
     "roll": "Cuộn",
     "room": "Phòng",
     "paint.colors": "Màu sơn",
-    "search": "Tìm kiếm"
+    "search": "Tìm kiếm",
+    "sold": "Đã bán",
+    "price.range": "Phạm vi giá",
+    "price.range.0-100": "0 - 100$",
+    "price.range.100-200": "100 - 200$",
+    "price.range.200-300": "200 - 300$",
+    "price.range.300-400": "300 - 400$",
+    "price.range.400-500": "400 - 500$",
+    "price.range.500+": "500$ +",
+  "free.ship": "Miễn phí giao hàng cho đơn từ 500$",
+  "return": "Đổi trả trong vòng 7 ngày"
 }

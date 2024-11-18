@@ -24,7 +24,7 @@
   "home.colors.title": "CHOOSE A PAINT COLOR FAMILY",
   "home.colors.desc": "We have over 200 paint colors to choose from",
   "home.blogs.title": "New blogs every day",
-  "home.products.title": "View our latest products",
+  "home.products.title": "See our best selling products",
   "home.advansory.title": "Custom Home Design Advisory",
   "home.advansory.desc1": "Unlock the Door to Your Dream Home with KOLUX 3D Home Design Services",
   "home.advansory.desc2": "Discover the Art of Personalized Home Design with KOLUX's 3D Advisory",
@@ -119,5 +119,15 @@
   "roll": "Roll",
   "room": "Room",
   "paint.colors": "Paint Colors",
-  "search": "Search"
+  "search": "Search",
+  "sold": "Sold",
+  "price.range": "Price range",
+  "price.range.0-100": "0 - 100$",
+  "price.range.100-200": "100 - 200$",
+  "price.range.200-300": "200 - 300$",
+  "price.range.300-400": "300 - 400$",
+  "price.range.400-500": "400 - 500$",
+  "price.range.500+": "500$ +",
+  "free.ship": "Free shipping for orders over $500",
+  "return": "Return within 7 days"
 }

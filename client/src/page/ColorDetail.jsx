@@ -19,12 +19,12 @@ const ColorDetail = () => {
     const getColorDetail = async () => {
       dispatch(setGlobalLoading(true));
       try {
-        const { response } = await colorsApi.getColorByColorId(colorId);
+        const { response, err } = await colorsApi.getColorByColorId(colorId);
 
-        if (response && response.code === 200) {
+        if (response) {
           setColor(response.data.color);
         } else {
-          toast.error(response.exception);
+          toast.error(err.exception);
         }
       } catch (error) {
         console.error("Error fetching color details:", error);
@@ -39,7 +39,7 @@ const ColorDetail = () => {
 
   return (
     <Fragment>
-      <Box sx={{ marginTop: { xs: "56px", md: "96px" } }}>
+      <Box sx={{ marginTop: { xs: "56px", md: "128px" } }}>
         <Navigate />
         {color && <ColorDetailIfno color={color} />}
         <AdvisoryBanner></AdvisoryBanner>

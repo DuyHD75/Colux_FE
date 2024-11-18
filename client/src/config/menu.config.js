@@ -115,17 +115,17 @@ const aboutMenu = [
   {
     display: "about.us",
     path: "/about",
-    state: "/about",
+    state: "about",
   },
   {
     display: "constructors",
     path: "/constructors",
-    state: "/constructors",
+    state: "constructors",
   },
   {
     display: "advisory",
     path: "/advisory",
-    state: "/advisory",
+    state: "advisory",
   },
 ];
 
