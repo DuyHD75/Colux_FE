@@ -1,4 +1,4 @@
-import { Box, Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography } from '@mui/material';
+import { Box, Button, Divider, IconButton, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Typography, Grid } from '@mui/material';
 import React, { Fragment } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom';
 import { routesGen } from '../router/router';
@@ -7,6 +7,8 @@ import textConfigs from '../config/text.config';
 import backgroundConfigs from '../config/background.config';
 import { Delete } from '@mui/icons-material';
 import { RiDeleteBin6Line } from "react-icons/ri";
+import CloseIcon from "@mui/icons-material/Close";
+import ImageUploader from '../components/common/ImageUploader';
 
 const OrderDetails = () => {
     const location = useLocation();
@@ -220,11 +222,11 @@ const OrderDetails = () => {
                                                 </TableCell>
                                                 <TableCell>
                                                     <Stack direction='column' spacing={2} alignItems='start'>
-                                                        <Typography sx={{ ...textConfigs.style.basicFont, fontWeight:'bold' }}>{product.productDetails.productName}</Typography>
+                                                        <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: 'bold' }}>{product.productDetails.productName}</Typography>
                                                         <Stack direction='row' spacing={2}>
                                                             <Typography sx={{ color: '#9F9BA9', fontSize: '14px', ...textConfigs.style.basicFont }}>Code: {product.productDetails.code}</Typography>
-                                                            <Typography sx={{ fontSize: '14px', ...textConfigs.style.basicFont, color:'#4D94DD' }}>{product.categoryName}</Typography>
-                                                            {product.categoryName === 'Paint' && <Typography sx={{ color:'#4D94DD', fontSize: '14px', ...textConfigs.style.basicFont }}>{product.productDetails.paintDetails.hex}</Typography>
+                                                            <Typography sx={{ fontSize: '14px', ...textConfigs.style.basicFont, color: '#4D94DD' }}>{product.categoryName}</Typography>
+                                                            {product.categoryName === 'Paint' && <Typography sx={{ color: '#4D94DD', fontSize: '14px', ...textConfigs.style.basicFont }}>{product.productDetails.paintDetails.hex}</Typography>
                                                             }
                                                         </Stack>
                                                     </Stack>
@@ -250,7 +252,7 @@ const OrderDetails = () => {
 
                                                 <TableCell sx={{ ...textConfigs.style.basicFont }} align="center">
                                                     <IconButton>
-                                                        <RiDeleteBin6Line style={{color:'red'}}/>
+                                                        <RiDeleteBin6Line style={{ color: 'red' }} />
                                                     </IconButton>
                                                 </TableCell>
                                             </TableRow>
@@ -260,24 +262,112 @@ const OrderDetails = () => {
                             </TableContainer>
                             <Divider />
                             <Stack direction='column' alignItems='end' mt={2}>
-                                <Stack width='30%' direction='row' justifyContent='space-between' alignItems='center'>
+                                <Stack width='35%' direction='row' justifyContent='space-between' alignItems='center'>
                                     <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont }}>Total Price:</Typography>
-                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color:'#4D94DD' }}>${order.totalAmount}</Typography>
+                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color: '#4D94DD' }}>$10.000.000</Typography>
                                 </Stack>
-                                <Stack width='30%' direction='row' justifyContent='space-between' alignItems='center'>
+                                <Stack width='35%' direction='row' justifyContent='space-between' alignItems='center'>
                                     <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont }}>Tax:</Typography>
-                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color:'#4D94DD' }}>${order.tax}</Typography>
+                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color: '#4D94DD' }}>$10.000.000</Typography>
                                 </Stack>
-                                <Stack width='30%' direction='row' justifyContent='space-between' alignItems='center'>
+                                <Stack width='35%' direction='row' justifyContent='space-between' alignItems='center'>
                                     <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont }}>Shipping Fee:</Typography>
-                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, textDecoration: 'line-through', color:'#4D94DD' }}>${order.shippingCost}</Typography>
+                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, textDecoration: 'line-through', color: '#4D94DD' }}>$10.000.000</Typography>
                                 </Stack>
-                                <Stack width='30%' direction='row' justifyContent='space-between' alignItems='center'>
+                                <Stack width='35%' direction='row' justifyContent='space-between' alignItems='center'>
                                     <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont }}>Total Payment:</Typography>
-                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color:'#4D94DD' }}>${order.totalPay}</Typography>
+                                    <Typography sx={{ fontWeight: '700', ...textConfigs.style.basicFont, color: '#4D94DD' }}>$10.000.000</Typography>
                                 </Stack>
                             </Stack>
                         </Stack>
+                        <Box bgcolor='white'
+                            p={2}
+                            sx={{
+                                boxShadow: '0px 4px 12px rgba(0, 0, 0, 0.1)', // Thêm boxShadow
+                                borderRadius: '8px', // Thêm borderRadius nếu cần
+                            }}>
+                            <Typography sx={{
+                                mb: '5px',
+                                fontWeight: 'bold',
+                                ...textConfigs.style.headerText
+                            }}>
+                                Upload Image Shipping
+                            </Typography>
+                            <Grid
+                                container
+                                spacing={2}
+                                alignItems="center"
+                                justifyContent="flex-start"
+                                width="100%"
+                                my={2}
+                            >
+                                {order.images?.length > 0 ? (
+                                    order.images.map((image, index) => (
+                                        <Grid  item xs={6} sm={4} md={3}>
+                                            <Box
+                                                sx={{
+                                                    position: "relative",
+                                                    width: "100%",
+                                                    height: "400px",
+                                                    display: "flex",
+                                                    alignItems: "center",
+                                                    justifyContent: "center",
+                                                    m: 1,
+                                                }}
+                                            >
+                                                <img
+                                                    style={{
+                                                        borderRadius: "5px",
+                                                        width: "100%",
+                                                        height: "100%",
+                                                        objectFit: "cover",
+                                                        boxShadow: "2px 2px 5px rgba(255,255,255, 0.6)",
+                                                        overflow: "hidden",
+                                                    }}
+                                                    src={image.url}
+                                                    alt="PhotoItem"
+                                                />
+                                                <IconButton
+                                                    sx={{
+                                                        cursor: "pointer",
+                                                        color: "#fff",
+                                                        borderRadius: "50%",
+                                                        padding: "5px",
+                                                        position: "absolute",
+                                                        top: "8px",
+                                                        right: "8px",
+                                                        backgroundColor: "rgba(0, 0, 0, 0.5)",
+                                                        "&:hover": {
+                                                            backgroundColor: "rgba(0, 0, 0, 0.7)",
+                                                        },
+                                                    }}
+                                                    
+                                                >
+                                                    <CloseIcon
+                                                        sx={{
+                                                            fontSize: "1rem",
+                                                            color: "#fff",
+                                                        }}
+                                                    />
+                                                </IconButton>
+                                            </Box>
+                                        </Grid>
+                                    ))
+                                ) : (
+                                    <Grid item xs={12} md={12}>
+                                        <Typography
+                                            variant="body1"
+                                            color="textSecondary"
+                                            align="center"
+                                            my={2}
+                                        >
+                                            There are no images for this order.
+                                        </Typography>
+                                    </Grid>
+                                )}
+                            </Grid>
+                            <ImageUploader />
+                        </Box>
                     </Stack>
                     <Stack direction='column'
                         spacing={1}

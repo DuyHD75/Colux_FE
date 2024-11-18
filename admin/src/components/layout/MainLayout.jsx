@@ -25,44 +25,26 @@ const MainLayout = () => {
   );
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+    <>
       {showHeaderFooter && <Navbar />}
       <GlobalLoading />
-      
-      <Box sx={{ display: 'flex', flex: 1 }}>
-        {showHeaderFooter && (
-          <Box
-            component="nav"
-            sx={{
-              width: 240,
-              flexShrink: 0,
-              position: 'fixed',
-              height: '100vh',
-              borderRight: '1px solid #eee',
-              bgcolor: 'background.paper',
-              zIndex: 1000
-            }}
-          >
-            <SlideSBar />
-          </Box>
-        )}
-        
-        <Box
-          component="main"
-          sx={{
-            bgcolor:'#F8F9FA',
-            flexGrow: 1,
-            p: 3,
-            ml: showHeaderFooter ? '240px' : 0,
-            mt: showHeaderFooter ? '64px' : 0
-          }}
-        >
-          <Outlet />
-        </Box>
+
+      <Box
+        component="main"
+        sx={{
+          bgcolor: '#F8F9FA',
+          flexGrow: 1,
+          p: 3,
+          ml: showHeaderFooter ? '240px' : 0,
+          mt: showHeaderFooter ? '64px' : 0
+        }}
+      >
+        {showHeaderFooter && <SlideSBar />}
+        <Outlet />
       </Box>
 
       {showHeaderFooter && <Footer />}
-    </Box>
+    </>
   );
 };
 

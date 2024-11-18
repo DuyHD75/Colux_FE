@@ -7,6 +7,7 @@ import ManageProduct from "../page/ManageProduct";
 import Login from "../page/Auth"
 import ManageOrder from "../page/ManageOrder";
 import OrderDetails from "../page/OrderDetails";
+import CreateOrder from "../page/CreateOrder";
 
 export const routesGen = {
   manageUser: "/manageUser",
@@ -16,6 +17,7 @@ export const routesGen = {
   managePaint: "/manage-paint",
   manageOrder: "/manage-orders",
   orderDetails: "/orderDetails/:id",
+  createOrder: "/create-order",
 };
 const routes = [
   {
@@ -61,6 +63,11 @@ const routes = [
     path: routesGen.orderDetails,
     element: <OrderDetails />,
     state: "orderDetails",
+  },
+  {
+    path: routesGen.createOrder,
+    element: <CreateOrder />,
+    state: "createOrder",
   },
 ]
 export default routes;
