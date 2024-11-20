@@ -963,7 +963,7 @@ export const Header = () => {
               <Box
                 sx={{
                   position: "absolute",
-                  top: "50%", // Điều chỉnh vị trí dọc của Box
+                  top: "100%", // Điều chỉnh vị trí dọc của Box
                   left: 0,
                   right: 0,
                   minHeight: "400px", // Đặt chiều cao tối thiểu cho Box ngoài
