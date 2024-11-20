@@ -467,7 +467,7 @@ const CalculatePrice = () => {
 
   return (
     <Fragment>
-      <Box sx={{ marginTop: { xs: "56px", md: "128px" } }}></Box>
+      <Box sx={{ marginTop: { xs: "56px", md: "152px" } }}></Box>
       <Navigate></Navigate>
       <Container maxWidth="lg" className="py-2">
         <Box my={4}>

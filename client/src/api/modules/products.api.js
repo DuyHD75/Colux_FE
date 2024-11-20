@@ -16,6 +16,8 @@ const productEndpoints = {
     `product-service/api/v1/products/filter?${params}`,
   getProductByProductId: ({ productId }) =>
     `product-service/api/v1/products/${productId}`,
+  getProductByColorId: ({ colorId, pageIndex, size }) =>
+    `product-service/api/v1/products/paints/product/${colorId}?page=${pageIndex}&size=${size}`,
 };
 
 const prodcutsApi = {
@@ -102,6 +104,16 @@ const prodcutsApi = {
         })
       );
 
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getProductByColorId: async (colorId, pageIndex, size) => {
+    try {
+      const response = await proxyClient.get(
+        productEndpoints.getProductByColorId({ colorId, pageIndex, size })
+      );
       return { response };
     } catch (err) {
       return { err };

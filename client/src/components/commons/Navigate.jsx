@@ -168,6 +168,15 @@ const Navigate = () => {
             />
           )}
 
+          {appState === "calculate-price" && (
+            <StyledBreadcrumb
+            component="a"
+            href="/calculate-price"
+            label={t("calculate.price")}
+            sx={{ fontSize: "1rem" }}
+          />
+          )}
+
           {section === "blog" && categoryName && (
             <StyledBreadcrumb
               component="a"

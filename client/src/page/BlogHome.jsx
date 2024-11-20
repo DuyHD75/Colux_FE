@@ -15,7 +15,7 @@ const BlogHome = () => {
     <Fragment>
       <div 
         style={{ 
-          marginTop: "128px", 
+          marginTop: "152px", 
           '@media (max-width: 600px)': {
             marginTop: "72px",
           }

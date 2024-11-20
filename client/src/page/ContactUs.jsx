@@ -35,7 +35,7 @@ const ContactUs = () => {
     });
 
     return (
-        <Box p={{ xs: '56px 0 16px 0', md: '96px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
+        <Box p={{ xs: '56px 0 16px 0', md: '152px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
             {/* <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', mb: '2rem', mt: '2rem' }}>
                 <Typography sx={{ ...textConfigs.style.headerText, fontWeight: 'bold', textAlign: 'center' }} variant='h2'>Contact our team</Typography>
                 <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '16px', mt: '5px', textAlign: 'center' }}>Got any questions about the product or scaling on our platform? We're here to help.</Typography>

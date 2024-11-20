@@ -6,7 +6,7 @@ const BlogDetail = () => {
 
   return (
     <Fragment>
-      <div style={{ marginTop: "128px" }}></div>
+      <div style={{ marginTop: "152px" }}></div>
       <Navigate />
       <BlogPost />
     </Fragment>

@@ -72,7 +72,7 @@ const Checkout = () => {
 
     return (
         <>
-            <Box bgcolor='#EAEAEA' p={{ xs: '72px 0 16px 0', md: '112px 0 16px 0' }} minHeight='inherit'>
+            <Box bgcolor='#EAEAEA' p={{ xs: '72px 0 16px 0', md: '152px 0 16px 0' }} minHeight='inherit'>
                 <Stack direction='row' sx={{ width: { lg: '1152px' }, mx: { lg: 'auto' } }}>
                     <Button
                         component={Link}

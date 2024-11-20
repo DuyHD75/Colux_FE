@@ -29,7 +29,6 @@ const Cart = () => {
           dispatch(setGlobalLoading(true));
           const { response, err } = await cartApi.getCart(user.userId);
           if (response) {
-            dispatch(setGlobalLoading(false));
             setProducts(response.data.carts.cartItems);
             setCart(response.data.carts);
           }
@@ -38,6 +37,8 @@ const Cart = () => {
           }
         } catch (error) {
           toast.error('An error occurred while fetching cart data');
+        } finally {
+          dispatch(setGlobalLoading(false));
         }
       }
     };
@@ -190,7 +191,7 @@ const Cart = () => {
 
   return (
     <>
-      <Box p={{ xs: '73px 0 1rem 0', md: '75px 0 1rem 0' }} bgcolor='#EAEAEA' >
+      <Box p={{ xs: '73px 0 1rem 0', md: '152px 0 1rem 0' }} bgcolor='#EAEAEA' >
         <Container>
           <Box sx={{
             padding: { xs: '0px', md: '40px 32px 40px 0' },
