@@ -2,11 +2,10 @@ import React from "react";
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
-import Header from "../header/Header";
+import Navbar from "../Navbar";
 import { useSelector } from "react-redux";
 import GlobalLoading from "../common/GlobalLoading";
-import SlideBar from "../common/SlideBar";
-
+import SlideSBar from "../common/SlideBar";
 
 const actionState = {
   login: "login",
@@ -26,28 +25,26 @@ const MainLayout = () => {
   );
 
   return (
-    <div>
-      {/* header */}
-      {showHeaderFooter && <Header />}
-      {/* header */}
-      {/* global loading */}
+    <>
+      {showHeaderFooter && <Navbar />}
       <GlobalLoading />
-      {/* global loading */}
-      <Box className="flex min-h-screen">
-        {/* main */}
-        <Box
-          className="flex-grow overflow-hidden min-h-screen"
-          component="main"
-        >
-          <SlideBar></SlideBar>
-          <Outlet />
-        </Box>
-        {/* main */}
+
+      <Box
+        component="main"
+        sx={{
+          bgcolor: '#F8F9FA',
+          flexGrow: 1,
+          p: 3,
+          ml: showHeaderFooter ? '240px' : 0,
+          mt: showHeaderFooter ? '64px' : 0
+        }}
+      >
+        {showHeaderFooter && <SlideSBar />}
+        <Outlet />
       </Box>
-      {/* footer */}
+
       {showHeaderFooter && <Footer />}
-      {/* footer */}
-    </div>
+    </>
   );
 };
 
