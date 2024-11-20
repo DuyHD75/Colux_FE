@@ -51,7 +51,7 @@ const MainLayout = () => {
           component="main"
           sx={{
             flexGrow: 1,
-            p: 3,
+            p: showHeaderFooter ? 3 : 0,
             ml: showHeaderFooter ? '240px' : 0,
             mt: showHeaderFooter ? '64px' : 0
           }}
