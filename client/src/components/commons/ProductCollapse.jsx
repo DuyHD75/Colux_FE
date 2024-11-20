@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import data from "../../data/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
@@ -24,6 +24,8 @@ const ProductCollapse = ({ product }) => {
   const { t } = useTranslation();
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
+
 
   const filteredReviews = reviews.filter(
     (review) => review.productId === product.productId
@@ -48,7 +50,10 @@ const ProductCollapse = ({ product }) => {
   }, []);
 
   const handleProductSelect = (productType) => {
-    setSelectedProduct(productType);
+    navigate(
+      `/colors/color-family/${productType.color.colorFamily.name}/${productType.color.colorFamily.id}/${productType.color.name}/${productType.color.id}`
+    );
+    // setSelectedProduct(productType);
   };
 
   return (

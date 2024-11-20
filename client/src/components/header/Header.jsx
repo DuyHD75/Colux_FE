@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   AppBar,
@@ -13,10 +13,12 @@ import {
   Tooltip,
   MenuItem,
   Grid,
+  TextField,
   Badge,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
+import SearchIcon from "@mui/icons-material/Search";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import menuConfigs from "../../config/menu.config";
 import { Link, useNavigate } from "react-router-dom";
@@ -26,10 +28,13 @@ import BackgroundColor from "../../config/background.config";
 import userApi from "../../api/modules/user.api";
 import { setUser } from "../../redux/reducer/userSlice";
 import colorsApi from "../../api/modules/colors.api";
+import productApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
 import "../../i18n";
 import { useTranslation } from "react-i18next";
 import productsApi from "../../api/modules/products.api";
+import textConfigs from "../../config/text.config";
+import { BsFillHexagonFill } from "react-icons/bs";
 import cartApi from "../../api/modules/cart.api";
 
 export const Header = ({itemCart}) => {
@@ -48,10 +53,91 @@ export const Header = ({itemCart}) => {
   const [anchorElColors, setAnchorElColors] = useState(false);
   const [anchorElCategories, setAnchorElCategories] = useState(false);
   const [anchorElAbout, setAnchorElAbout] = useState(false);
+  const [hoveredColor, setHoveredColor] = useState(null);
+  const [searchResults, setSearchResults] = useState(null);
+  const [searchResultsMobile, setSearchResultsMobile] = useState(null);
+  const searchInputRef = useRef(null);
+  const searchInputMobileRef = useRef(null);
+  const [searchKey, setSearchKey] = useState(null);
+  const [searchKeyMobile, setSearchKeyMobile] = useState(null);
+
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
 
   const handleChangeLanguage = (language) => {
     i18n.changeLanguage(language);
   };
+
+  const debounce = (handler, delay) => {
+    let timeout = null;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        handler(...args);
+      }, delay);
+    };
+  };
+
+  const HandleSearch = async (e) => {
+    if (e.target.value.trim() === "") {
+      setSearchResults(null);
+      return;
+    }
+
+    try {
+      const { response, err } = await productApi.search(
+        e.target.value.replace(/#/g, "").trim()
+      );
+      if (response) {
+        setSearchResults(response.data.Results);
+      } else if (err) {
+        toast.error(err);
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  const HandleSearchMobile = async (e) => {
+    if (e.target.value.trim() === "") {
+      setSearchResultsMobile(null);
+      return;
+    }
+
+    try {
+      const { response, err } = await productApi.search(
+        e.target.value.replace(/#/g, "").trim()
+      );
+      if (response) {
+        setSearchResultsMobile(response.data.Results);
+      } else if (err) {
+        toast.error(err);
+      }
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  const hideResearchResult = () => {
+    setSearchResults(null);
+    if (searchInputRef.current) {
+      searchInputRef.current.value = "";
+    }
+  };
+
+  const hideResearchResultMobile = () => {
+    setSearchResultsMobile(null);
+    if (searchInputMobileRef.current) {
+      searchInputMobileRef.current.value = "";
+    }
+  };
+
+  // console.log(searchResults);
 
   useEffect(() => {
     const getListColofamily = async () => {
@@ -198,9 +284,185 @@ export const Header = ({itemCart}) => {
               onClose={handleCloseNavMenu}
               sx={{
                 display: { xs: "block", md: "none" },
-                mt: "4px",
+                width: "100%", // Full width for mobile
+                px: 1,
               }}
             >
+              {/* Search Field */}
+              <Box sx={{ p: 1 }}>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  placeholder={t("search")}
+                  fullWidth
+                  // value={searchKeyMobile}
+                  inputRef={searchInputMobileRef}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": { borderColor: "#1c2759" },
+                      "&:hover fieldset": { borderColor: "#1c2759" },
+                      "&.Mui-focused fieldset": { borderColor: "#1c2759" },
+                    },
+                    ...textConfigs.style.basicFont,
+                    mt: 1,
+                  }}
+                  onChange={debounce(HandleSearchMobile, 1500)}
+                />
+              </Box>
+
+              {/* Search Results */}
+              {searchResultsMobile && (
+                <Box
+                  sx={{
+                    p: 1,
+                    maxHeight: "300px",
+                    overflowY: "auto",
+                    background: "#fff", // Ensure results are visible
+                    border: "1px solid #ddd",
+                    borderRadius: "4px",
+                  }}
+                >
+                  {/* Colors Section */}
+                  {searchResultsMobile.colors.length > 0 && (
+                    <>
+                      <Typography
+                        variant="h6"
+                        sx={{ color: "#1c2759", fontWeight: 600, mb: 1 }}
+                      >
+                        {t("Colors")}
+                      </Typography>
+                      <Grid container spacing={1}>
+                        {searchResultsMobile.colors.map((color, index) => (
+                          <Grid item xs={4} key={index}>
+                            <Link
+                              to={`/colors/color-family/${
+                                color.colorFamily[0].name
+                                  ? color.colorFamily[0].name
+                                  : "colorfamilyname"
+                              }/${
+                                color.colorFamily[0].id
+                                  ? color.colorFamily[0].id
+                                  : "colorfamilyid"
+                              }/${color.name}/${color.id}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                marginTop: 2,
+                              }}
+                              onClick={hideResearchResultMobile}
+                            >
+                              <BsFillHexagonFill
+                                size={60}
+                                style={{
+                                  color: color.hex,
+                                  filter: "drop-shadow(0px 0px 4px #ccc)",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  marginTop: "0.5rem",
+                                  ...textConfigs.style.basicFont,
+                                  fontSize: "12px",
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 1, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {color.name}
+                              </span>
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  marginTop: "0.25rem",
+                                  ...textConfigs.style.basicFont,
+                                  fontSize: "12px",
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 1, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {color.hex}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </>
+                  )}
+
+                  {/* Products Section */}
+                  {searchResultsMobile.products.length > 0 && (
+                    <>
+                      <Typography
+                        variant="h6"
+                        sx={{ color: "#1c2759", fontWeight: 600, mt: 2, mb: 1 }}
+                      >
+                        {t("Products")}
+                      </Typography>
+                      <Grid container spacing={1}>
+                        {searchResultsMobile.products.map((product, index) => (
+                          <Grid item xs={4} key={index}>
+                            <Link
+                              to={`/products/${
+                                product.category.name
+                                  ? product.category.name
+                                  : "category-name"
+                              }/${
+                                product.category.categoryId
+                                  ? product.category.categoryId
+                                  : "category-id"
+                              }/${product.productName}/${product.productId}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                textAlign: "center",
+                              }}
+                              onClick={hideResearchResultMobile}
+                            >
+                              <img
+                                src={product.images?.[0]?.url || ""}
+                                alt={product.productName}
+                                style={{
+                                  width: "60px",
+                                  height: "60px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  marginTop: "0.5rem",
+                                  fontSize: "12px",
+                                  ...textConfigs.style.basicFont,
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 2, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {capitalizeWords(product.productName)}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </>
+                  )}
+                </Box>
+              )}
+
               <Grid container spacing={1}>
                 {menuConfigs.navItems.map((item, index) => {
                   return (
@@ -261,14 +523,13 @@ export const Header = ({itemCart}) => {
           </Typography>
           {/* End logo mobile */}
 
-          {/* Start nav items */}
           <NavItemsHeader
             setAnchorElNav={setAnchorElNav}
             setAnchorElCategories={setAnchorElCategories}
             setAnchorElColors={setAnchorElColors}
             setAnchorElAbout={setAnchorElAbout}
+            sx={{ flex: "1 1 100%" }}
           />
-          {/* End nav items */}
 
           {/* Start menu colors */}
           <Menu
@@ -477,7 +738,7 @@ export const Header = ({itemCart}) => {
             </Grid>
           </Menu>
           {/* End menu About */}
-          <Box sx={{ display: "flex", gap: 0 }}>
+          <Box sx={{ display: { xs: "flex", md: "flex" }, gap: 0 }}>
             <Button
               onClick={() => handleChangeLanguage("vi")}
               sx={{ minWidth: 50, padding: 1 }}
@@ -485,7 +746,10 @@ export const Header = ({itemCart}) => {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fviet-nam-flat.png?alt=media&token=ee236707-6f4c-47c4-998f-4ccc2416caf3"
                 alt="Vietnamese"
-                style={{ width: "30px", opacity: i18n.language === "vi" ? 1 : 0.5, }}
+                style={{
+                  width: "30px",
+                  opacity: i18n.language === "vi" ? 1 : 0.5,
+                }}
               />
             </Button>
 
@@ -496,7 +760,10 @@ export const Header = ({itemCart}) => {
               <img
                 src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fenglish-flat.webp?alt=media&token=b0c4d065-3f2b-4605-9be3-670dac602b82"
                 alt="English"
-                style={{ width: "30px", opacity: i18n.language === "en" ? 1 : 0.5, }}
+                style={{
+                  width: "30px",
+                  opacity: i18n.language === "en" ? 1 : 0.5,
+                }}
               />
             </Button>
           </Box>
@@ -505,7 +772,7 @@ export const Header = ({itemCart}) => {
             <Box className="flex justify-between">
               {user ? (
                 <Typography className="flex">
-                  <IconButton
+                  {/* <IconButton
                     type="button"
                     component={Link}
                     to="/favorites"
@@ -519,14 +786,14 @@ export const Header = ({itemCart}) => {
                     }}
                   >
                     <FavoriteIcon />
-                  </IconButton>
+                  </IconButton> */}
                   <IconButton
                     type="button"
                     component={Link}
                     to="/cart"
                     aria-label="ShoppingCart"
                     sx={{
-                      color: "#1c2759",
+                      color: { xs: "#fff", md: "#1c2759" },
                       "&:hover": {
                         color: "#1D4Ed8",
                         backgroundColor: "transparent",
@@ -547,10 +814,7 @@ export const Header = ({itemCart}) => {
                           },
                         }}
                       >
-                        <Avatar
-                          alt={user.firstName}
-                          src={user.imageUrl}
-                        />
+                        <Avatar alt={user.firstName} src={user.imageUrl} />
                       </IconButton>
                     </Link>
                   </Tooltip>
@@ -630,6 +894,342 @@ export const Header = ({itemCart}) => {
           {/* End User Setting */}
         </Toolbar>
       </Container>
+      <Box className="w-full">
+        <Container
+          maxWidth="lg"
+          sx={{
+            display: { xs: "none", md: "flex" },
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginX: "auto",
+            ...textConfigs.style.basicFont,
+          }}
+        >
+          <Box
+            sx={{
+              position: "relative",
+              width: "100%",
+              display: { xs: "none", md: "flex" },
+            }}
+          >
+            {/* Search Field */}
+            <Box
+              sx={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 2,
+                px: 2,
+                justifyContent: "center",
+                width: "100%",
+                mb: 1,
+              }}
+            >
+              <Box sx={{ width: "60%" }}>
+                <TextField
+                  variant="outlined"
+                  size="small"
+                  placeholder={t("search")}
+                  fullWidth
+                  inputRef={searchInputRef}
+                  sx={{
+                    "& .MuiOutlinedInput-root": {
+                      "& fieldset": { borderColor: "#1c2759" },
+                      "&:hover fieldset": { borderColor: "#1c2759" },
+                      "&.Mui-focused fieldset": { borderColor: "#1c2759" },
+                    },
+                    ...textConfigs.style.basicFont,
+                    mt: 1,
+                  }}
+                  onChange={debounce(HandleSearch, 1500)}
+                  InputProps={{
+                    endAdornment: (
+                      <Box
+                        onClick={() => {
+                          console.log("Search icon clicked");
+                        }}
+                        sx={{
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          color: "#1c2759",
+                        }}
+                      >
+                        <SearchIcon />
+                      </Box>
+                    ),
+                  }}
+                />
+              </Box>
+            </Box>
+
+            {/* Search Results */}
+            {searchResults && (
+              <Box
+                sx={{
+                  position: "absolute",
+                  top: "100%", // Điều chỉnh vị trí dọc của Box
+                  left: 0,
+                  right: 0,
+                  minHeight: "400px", // Đặt chiều cao tối thiểu cho Box ngoài
+                  maxHeight: "800px", // Chiều cao tối đa
+                  background: "#fff",
+                  boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.2)",
+                  borderRadius: "8px",
+                  display: "flex", // Sử dụng flexbox để quản lý layout
+                  flexDirection: "column", // Đảm bảo các phần nằm theo chiều dọc
+                  gap: 2,
+                  px: 2,
+                  overflow: "hidden",
+                }}
+              >
+                {/* Colors Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                    pr: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "left",
+                      color: "#1c2759",
+                      borderBottom: "2px solid #1c2759",
+                      pb: 1,
+                      mb: 2,
+                      mt: 1,
+                      ...textConfigs.style.basicFont,
+                    }}
+                  >
+                    Colors
+                  </Typography>
+                  {searchResults.colors.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        overflowY: "auto",
+                        minHeight: "200px", // Đặt chiều cao tối thiểu cho Box ngoài
+                        maxHeight: "400px", // Chiều cao tối đa
+                      }}
+                    >
+                      <style>
+                        {`
+                        ::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}
+                      </style>
+                      <Grid container spacing={2} sx={{ marginTop: 1 }}>
+                        {searchResults.colors.map((color, index) => (
+                          <Grid
+                            item
+                            xs={6}
+                            md={3}
+                            key={index}
+                            sx={{ padding: "0 !important" }}
+                          >
+                            <Link
+                              to={`/colors/color-family/${
+                                color.colorFamily[0].name
+                                  ? color.colorFamily[0].name
+                                  : "colorfamilyname"
+                              }/${
+                                color.colorFamily[0].id
+                                  ? color.colorFamily[0].id
+                                  : "colorfamilyid"
+                              }/${color.name}/${color.id}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                transform:
+                                  hoveredColor === color.hex
+                                    ? "scale(1.1)"
+                                    : "scale(1)",
+                                transition: "transform 0.3s ease",
+                                marginTop: 2,
+                              }}
+                              onMouseEnter={() => setHoveredColor(color.hex)}
+                              onMouseLeave={() => setHoveredColor(null)}
+                              onClick={hideResearchResult}
+                            >
+                              <BsFillHexagonFill
+                                size={60}
+                                style={{
+                                  color: color.hex,
+                                  filter: "drop-shadow(0px 0px 4px #ccc)",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  marginTop: "0.5rem",
+                                  ...textConfigs.style.basicFont,
+                                  fontSize: "14px",
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 1, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {color.name}
+                              </span>
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  textAlign: "center",
+                                  marginTop: "0.25rem",
+                                  ...textConfigs.style.basicFont,
+                                  fontSize: "14px",
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 1, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {color.hex}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "#1c2759",
+                        mb: 2,
+                        ...textConfigs.style.basicFont,
+                      }}
+                    >
+                      No colors found.
+                    </Typography>
+                  )}
+                </Box>
+
+                {/* Products Section */}
+                <Box
+                  sx={{
+                    flex: 1,
+                    display: "flex",
+                    flexDirection: "column",
+                    maxHeight: "100%",
+                    overflowY: "auto",
+                    pr: 2,
+                  }}
+                >
+                  <Typography
+                    variant="h6"
+                    sx={{
+                      textAlign: "left",
+                      color: "#1c2759",
+                      borderBottom: "2px solid #1c2759",
+                      pb: 1,
+                      mb: 2,
+                      ...textConfigs.style.basicFont,
+                    }}
+                  >
+                    Products
+                  </Typography>
+                  {searchResults.products.length > 0 ? (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: "column",
+                        flex: 1,
+                        overflowY: "auto",
+                        minHeight: "200px", // Đặt chiều cao tối thiểu cho Box ngoài
+                        maxHeight: "400px", // Chiều cao tối đa
+                        mb: 2,
+                      }}
+                    >
+                      <style>
+                        {`
+                        ::-webkit-scrollbar {
+                          display: none;
+                        }
+                      `}
+                      </style>
+                      <Grid container spacing={2}>
+                        {searchResults.products.map((product, index) => (
+                          <Grid item xs={6} md={3} key={index}>
+                            <Link
+                              to={`/products/${
+                                product.category.name
+                                  ? product.category.name
+                                  : "category-name"
+                              }/${
+                                product.category.categoryId
+                                  ? product.category.categoryId
+                                  : "category-id"
+                              }/${product.productName}/${product.productId}`}
+                              className="relative flex flex-col items-center justify-center"
+                              style={{
+                                textDecoration: "none",
+                                textAlign: "center",
+                              }}
+                              onClick={hideResearchResult}
+                            >
+                              <img
+                                src={product.images?.[0]?.url || ""}
+                                alt={product.productName}
+                                style={{
+                                  width: "80px",
+                                  height: "80px",
+                                  objectFit: "cover",
+                                  borderRadius: "8px",
+                                }}
+                              />
+                              <span
+                                style={{
+                                  color: "#3b3730",
+                                  fontWeight: "bold",
+                                  fontSize: "14px",
+                                  marginTop: "0.5rem",
+                                  ...textConfigs.style.basicFont,
+                                  display: "-webkit-box",
+                                  WebkitBoxOrient: "vertical",
+                                  overflow: "hidden",
+                                  WebkitLineClamp: 2, // Hiển thị tối đa 2 dòng
+                                  textOverflow: "ellipsis",
+                                }}
+                              >
+                                {capitalizeWords(product.productName)}
+                              </span>
+                            </Link>
+                          </Grid>
+                        ))}
+                      </Grid>
+                    </Box>
+                  ) : (
+                    <Typography
+                      sx={{
+                        textAlign: "center",
+                        color: "#1c2759",
+                        mb: 2,
+                      }}
+                    >
+                      No products found.
+                    </Typography>
+                  )}
+                </Box>
+              </Box>
+            )}
+          </Box>
+        </Container>
+      </Box>
     </AppBar>
   );
 };

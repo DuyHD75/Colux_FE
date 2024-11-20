@@ -115,17 +115,17 @@ const aboutMenu = [
   {
     display: "about.us",
     path: "/about",
-    state: "/about",
+    state: "about",
   },
   {
     display: "constructors",
     path: "/constructors",
-    state: "/constructors",
+    state: "constructors",
   },
   {
     display: "advisory",
     path: "/advisory",
-    state: "/advisory",
+    state: "advisory",
   },
 ];
 
@@ -170,12 +170,12 @@ const user = [
     icon: <IoMdStarOutline style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
     state: "product.reviews",
   },
-  {
-    display: "Favorites",
-    path: "/favorites",
-    icon: <FiHeart style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
-    state: "favorites",
-  },
+  // {
+  //   display: "Favorites",
+  //   path: "/favorites",
+  //   icon: <FiHeart style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
+  //   state: "favorites",
+  // },
   {
     display: "Points",
     path: "/points",

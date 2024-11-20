@@ -36,7 +36,7 @@ const contractorsData = [
 // Styled component cho Banner
 const Banner = styled(Box)(({ theme }) => ({
   height: 300,
-  backgroundImage: 'url(/images/contractors-banner.jpg)', // Đảm bảo bạn có hình ảnh này trong thư mục public/images
+  backgroundImage: 'url(/images/contractors-banner.jpg)', 
   backgroundSize: 'cover',
   backgroundPosition: 'center',
   display: 'flex',

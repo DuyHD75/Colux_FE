@@ -49,7 +49,7 @@ const AdvisoryPage = () => {
 
   return (
     <Fragment>
-      <Box sx={{ marginTop: { xs: "56px", md: "96px" } }}></Box>
+      <Box sx={{ marginTop: { xs: "56px", md: "152px" } }}></Box>
       <Navigate />
       <Box
         sx={{

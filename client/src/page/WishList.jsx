@@ -44,7 +44,7 @@ const WishList = () => {
 
     return (
         <>
-            <Box p={{ xs: '73px 0 16px 0', md: '75px 0 16px 0' }} bgcolor='#EAEAEA'  >
+            <Box p={{ xs: '73px 0 16px 0', md: '152px 0 16px 0' }} bgcolor='#EAEAEA'  >
                 <Container>
                     <Box sx={{
                         padding: { xs: '0px', md: '40px 32px 40px 0' },

@@ -71,6 +71,7 @@ const ProductDetailInfo = ({ product }) => {
   const decreaseQuantity = () => {
     Number(quantity) > 1 && setQuantity(Number(quantity) - 1);
   };
+console.log(product);
 
   const getProductOptions = () => {
     if (product.paints) {

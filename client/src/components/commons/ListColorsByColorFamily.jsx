@@ -80,39 +80,38 @@ const ListColorsByColorFamily = () => {
         toast.error("An error occurred while fetching color family.");
       }
     };
+    console.log(collectionId);
 
     fetchData();
   }, [dispatch, collectionId]);
 
   useEffect(() => {
     const getListColors = async () => {
-      if (selectedCollection) {
-        dispatch(setGlobalLoading(true));
-        try {
-          const { response } =
-            collection === "All Colors"
-              ? await colorsApi.getAllColors(currentPage - 1, colorsPerPage)
-              : await colorsApi.getColorByColorFamilyAndCollection(
-                  collectionId,
-                  selectedCollection,
-                  currentPage - 1,
-                  colorsPerPage
-                );
-          if (response && response.code === 200) {
-            setColors(response.data.colors.content);
-            setTotalPages(response.data.colors.totalPages);
-          }
-        } catch (error) {
-          console.log("Error", error);
-          toast.error("An error occurred while fetching colors.");
-        } finally {
-          dispatch(setGlobalLoading(false));
+      dispatch(setGlobalLoading(true));
+      try {
+        const { response } =
+          collection === "All Colors" || !collection
+            ? await colorsApi.getAllColors(currentPage - 1, colorsPerPage)
+            : await colorsApi.getColorByColorFamilyAndCollection(
+                collectionId,
+                selectedCollection,
+                currentPage - 1,
+                colorsPerPage
+              );
+        if (response && response.code === 200) {
+          setColors(response.data.colors.content);
+          setTotalPages(response.data.colors.totalPages);
         }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching colors.");
+      } finally {
+        dispatch(setGlobalLoading(false));
       }
     };
 
     getListColors();
-  }, [dispatch, collectionId, selectedCollection, currentPage]);
+  }, [dispatch, collection, collectionId, selectedCollection, currentPage]);
 
   useEffect(() => {
     if (matchedColorFamily) {
@@ -148,7 +147,7 @@ const ListColorsByColorFamily = () => {
         <Grid
           item
           xs={12}
-          md={5}
+          md={8}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -168,104 +167,67 @@ const ListColorsByColorFamily = () => {
               : `${t("paint.colors")} ${collection}`}
           </Typography>
         </Grid>
-        <Grid
-          item
-          xs={12}
-          md={4}
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <TextField
-            variant="outlined"
-            size="small"
-            label={t("search")}
-            fullWidth
+        
+        {collection !== "All Colors" && (
+          <Grid
+            item
+            xs={12}
+            md={8}
             sx={{
-              "& .MuiOutlinedInput-root": {
-                "& fieldset": {
-                  borderColor: "#1c2759",
-                },
-                "&:hover fieldset": {
-                  borderColor: "#1c2759",
-                },
-                "&.Mui-focused fieldset": {
-                  borderColor: "#1c2759",
-                },
-              },
-              ...textConfigs.style.basicFont,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "end",
             }}
-            InputLabelProps={{
-              sx: {
-                color: "#1c2759",
-                "&.Mui-focused": {
-                  color: "#1c2759",
-                },
-                "&:hover": {
-                  color: "#1c2759",
-                },
-              ...textConfigs.style.basicFont,
-              },
-            }}
-            onChange={handleSearchChange}
-          />
-        </Grid>
-        <Grid
-          item
-          xs={12}
-          md={3}
-          sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
-        >
-          <FormControl fullWidth variant="outlined">
-            <InputLabel
-              sx={{
-                color: selectedCollection ? "#1c2759" : "",
-                "&.Mui-focused": {
-                  color: "#1c2759",
-                },
-                ...textConfigs.style.basicFont,
-              }}
-            >
-              {t("collections")}
-            </InputLabel>
-            <Select
-              sx={{
-                ...textConfigs.style.headerText,
-                borderColor: selectedCollection ? "#1c2759" : "",
-                "&.MuiOutlinedInput-root": {
-                  "& fieldset": {
-                    borderColor: selectedCollection ? "#1c2759" : "",
+          >
+            <FormControl fullWidth variant="outlined">
+              <InputLabel
+                sx={{
+                  color: selectedCollection ? "#1c2759" : "",
+                  "&.Mui-focused": {
+                    color: "#1c2759",
                   },
-                  "&:hover fieldset": {
-                    borderColor: "#1c2759",
+                  ...textConfigs.style.basicFont,
+                }}
+              >
+                {t("collections")}
+              </InputLabel>
+              <Select
+                sx={{
+                  ...textConfigs.style.headerText,
+                  borderColor: selectedCollection ? "#1c2759" : "",
+                  "&.MuiOutlinedInput-root": {
+                    "& fieldset": {
+                      borderColor: selectedCollection ? "#1c2759" : "",
+                    },
+                    "&:hover fieldset": {
+                      borderColor: "#1c2759",
+                    },
+                    "&.Mui-focused fieldset": {
+                      borderColor: "#1c2759",
+                    },
                   },
-                  "&.Mui-focused fieldset": {
-                    borderColor: "#1c2759",
-                  },
-                },
-              }}
-              value={selectedCollection || `All Colors ${collection}`}
-              onChange={handleChange}
-              label={t("collections")}
-              size="small"
-            >
-              {colorFamily
-                .filter((color) => color.id === collectionId)
-                .flatMap((color) =>
-                  color.collections.map((collection, index) => (
-                    <MenuItem key={index} value={collection.id}>
-                      {collection.name}
-                    </MenuItem>
-                  ))
-                )}
-              {/* <MenuItem value={`All Colors ${collection}`}>
+                }}
+                value={selectedCollection || `All Colors ${collection}`}
+                onChange={handleChange}
+                label={t("collections")}
+                size="small"
+              >
+                {colorFamily
+                  .filter((color) => color.id === collectionId)
+                  .flatMap((color) =>
+                    color.collections.map((collection, index) => (
+                      <MenuItem key={index} value={collection.id}>
+                        {collection.name}
+                      </MenuItem>
+                    ))
+                  )}
+                {/* <MenuItem value={`All Colors ${collection}`}>
                 All Colors {collection}
               </MenuItem> */}
-            </Select>
-          </FormControl>
-        </Grid>
+              </Select>
+            </FormControl>
+          </Grid>
+        )}
       </Grid>
       <Grid container spacing={3}>
         {paginatedColors.map((color, index) => {

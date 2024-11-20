@@ -61,12 +61,12 @@ const routes = [
   {
     path: "/colors/:section",
     element: <Colors />,
-    state: "colorsSection",
+    state: "colors",
   },
   {
     path: "/colors/:section/:collection/:collectionId",
     element: <Colors />,
-    state: "colorsSectionCollection",
+    state: "colors",
   },
   {
     path: "/colors/:section/:collection/:collectionId/:colorName/:colorId",
