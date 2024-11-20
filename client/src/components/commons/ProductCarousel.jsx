@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -7,25 +7,49 @@ import {
   Grid,
   Typography,
   Container,
+  CardMedia,
 } from "@mui/material";
 import { KeyboardArrowLeft, KeyboardArrowRight } from "@mui/icons-material";
 import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Navigation } from "swiper/modules";
-import { useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import productsApi from "../../api/modules/products.api";
+import { toast } from "react-toastify";
 
 const ProductCarousel = () => {
-  const { products } = useSelector((state) => state.products);
-  const { productCategory } = useParams();
+  const [products, setProducts] = useState([]);
+  const productsPerPage = 10;
+
   const theme = useTheme();
   const { t } = useTranslation();
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    const getTopProducts = async (page, size) => {
+      try {
+        const { response, err } = await productsApi.getTopProducts(
+          page - 1,
+          size
+        );
+        if (response) {
+          setProducts([...response.data.products.content]);
+        } else if (err) {
+          toast.error(err);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching products.");
+      }
+    };
+    getTopProducts(1, productsPerPage);
+  }, [dispatch, 1, productsPerPage]);
 
   const [activeStep, setActiveStep] = useState(0);
   const maxSteps = Math.ceil(products.length / 3);
@@ -46,6 +70,10 @@ const ProductCarousel = () => {
       .join(" ");
   };
 
+  if (products.length === 0) {
+    return null;
+  }
+
   return (
     <Box sx={{ ...backgroundConfigs.style.backgroundPrimary }}>
       <Container
@@ -60,10 +88,10 @@ const ProductCarousel = () => {
             color: "#fff",
             paddingBottom: "20px",
             fontSize: "30px",
-            fontWeight: "bold"
+            fontWeight: "bold",
           }}
         >
-          {capitalizeWords(t('home.products.title'))}
+          {capitalizeWords(t("home.products.title"))}
         </Typography>
         <Grid
           container
@@ -122,108 +150,148 @@ const ProductCarousel = () => {
                 <SwiperSlide key={product.id}>
                   <Card
                     sx={{
-                      borderRadius: 0,
-                      minHeight: "400px",
+                      m: 1,
+                      maxWidth: 345,
+                      height: 400,
+                      display: "flex",
+                      flexDirection: "column",
+                      position: "relative",
                     }}
                   >
+                    <Button
+                      href={`/products/${product.categoryName}/${product.categoryId}/${product.name}/${product.productId}`}
+                    >
+                      <Box
+                        sx={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                          height: 140,
+                          width: "100%",
+                        }}
+                      >
+                        <CardMedia
+                          component="img"
+                          sx={{
+                            marginTop: "10px",
+                            width: "45%",
+                            height: 120,
+                            objectFit: "cover",
+                          }}
+                          image={product.image && product.image}
+                          alt={product.name}
+                        />
+                      </Box>
+                    </Button>
                     <CardContent
                       sx={{
-                        padding: 0,
-                        "&:last-child": {
-                          padding: 0,
-                        },
+                        flexGrow: 1,
+                        display: "flex",
+                        flexDirection: "column",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        textAlign: "center",
+                        paddingBottom: "16px",
                       }}
                     >
-                      <Grid container spacing={2}>
-                        <Grid
-                          item
-                          xs={12}
-                          md={12}
-                          style={{ textAlign: "center", padding: 0 }}
-                        >
-                          <div
-                            style={{
-                              width: "50%",
-                              height: "200px",
-                              overflow: "inherit",
-                              position: "relative",
-                            }}
-                          >
-                            <img
-                              src={product.image}
-                              alt={product.name}
-                              style={{
-                                width: "100%",
-                                height: "auto",
-                                position: "absolute",
-                                left: "50%",
-                                bottom: "-15%",
-                              }}
-                            />
-                          </div>
-                        </Grid>
-                        <Grid
-                          item
-                          xs={12}
-                          md={12}
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          gutterBottom
+                          variant="h6"
+                          component="div"
                           sx={{
-                            ...backgroundConfigs.style.backgroundContext,
-                            padding: "20px",
-                            marginLeft: "10px",
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "center",
-                            justifyContent: "center",
+                            fontSize: "14px",
+                            display: "-webkit-box",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                            WebkitBoxOrient: "vertical",
+                            WebkitLineClamp: 2,
+                            fontWeight: "bold",
+                            ...textConfigs.style.basicFont,
                           }}
                         >
-                          <Typography
-                            variant="h5"
-                            gutterBottom
-                            sx={{
-                              marginTop: "20px",
+                          {capitalizeWords(product.name)}
+                        </Typography>
 
-                              ...textConfigs.style.headerText,
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              textOverflow: "ellipsis",
-                              width: "100%",
-                              textAlign: "center",
-                            }}
-                          >
-                            {capitalizeWords(product.name)}
-                          </Typography>
-                          <Typography
-                            variant="body1"
-                            gutterBottom
-                            sx={{
-                              ...textConfigs.style.subText,
-                              overflow: "hidden",
-                              display: "-webkit-box",
-                              WebkitLineClamp: 3,
-                              WebkitBoxOrient: "vertical",
-                              textOverflow: "ellipsis",
-                              width: "100%",
-                              textAlign: "center",
-                              minHeight: "60px",
-                            }}
-                          >
-                            {product.description}
-                          </Typography>
-                          <Button
-                            variant="contained"
-                            href={`/products/${productCategory}/${product.name}`}
-                            sx={{
-                              ...backgroundConfigs.style.backgroundPrimary,
-                              marginTop: "16px",
-                              ":hover": {
-                                ...backgroundConfigs.style.backgroundSecondary,
-                              },
-                            }}
-                          >
-                            View Detail
-                          </Button>
-                        </Grid>
-                      </Grid>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: "12px",
+                            color: "gray",
+                            marginTop: "4px",
+                            ...textConfigs.style.basicFont,
+                          }}
+                        >
+                          {t("sold")}: {product.sold} {t("products")}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          marginTop: "16px",
+                          padding: "8px",
+                          backgroundColor: "#f8f9fa",
+                          borderRadius: "8px",
+                          width: "100%",
+                        }}
+                      >
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: "12px",
+                            color: "gray",
+                            ...textConfigs.style.basicFont,
+                          }}
+                        >
+                          🚀 {t("free.ship")}
+                        </Typography>
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: "12px",
+                            color: "gray",
+                            ...textConfigs.style.basicFont,
+                          }}
+                        >
+                          🌟 {t("return")}
+                        </Typography>
+                      </Box>
+
+                      <Box
+                        sx={{
+                          width: "100%",
+                          borderTop: "1px solid #e0e0e0",
+                          marginTop: "16px",
+                          paddingTop: "8px",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FGHN.png?alt=media&token=bebc7279-0aba-4000-a430-da857cd9ee57" // Thay bằng đường dẫn logo GHN
+                          alt="GHN Logo"
+                          style={{ height: "24px" }}
+                        />
+                        <Typography
+                          variant="body2"
+                          sx={{
+                            fontSize: "12px",
+                            fontWeight: "bold",
+                            color: "#4caf50",
+                            ...textConfigs.style.basicFont,
+                          }}
+                        >
+                          GHN Express
+                        </Typography>
+                      </Box>
                     </CardContent>
                   </Card>
                 </SwiperSlide>

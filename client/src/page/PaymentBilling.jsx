@@ -140,7 +140,7 @@ const PaymentBilling = () => {
 
   return (
     <>
-      <Box p={{ xs: '72px 0 16px 0', md: '112px 0 16px 0' }} bgcolor='#EAEAEA' minHeight='inherit' >
+      <Box p={{ xs: '72px 0 16px 0', md: '152px 0 16px 0' }} bgcolor='#EAEAEA' minHeight='inherit' >
         <Stack direction='row' sx={{ width: { lg: '1152px' }, mx: { lg: 'auto' } }}>
           <Button component={Link}
             to='/cart'
