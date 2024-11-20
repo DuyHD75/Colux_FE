@@ -329,7 +329,7 @@ const CalculatePrice = () => {
     if (!product) return 0;
 
     let estimatedPrice = 0;
-
+    console.log(product);
     switch (type) {
       case "floor": {
         const numbers = sizeName.split(" x ").map(Number);
@@ -354,13 +354,13 @@ const CalculatePrice = () => {
           (prop) => prop.property.name === "Layer"
         )?.value;
 
-        if (coverage && layers) {
-          estimatedPrice =
-            Math.ceil(
-              (Number(areaToUse) * Number(layers) * Number(coverage)) /
-                Number(sizeName)
-            ) * price;
-        }
+        estimatedPrice =
+          Math.ceil(
+            ((Number(areaToUse) / coverage ? Number(coverage) : 10) * layers
+              ? Number(layers)
+              : 1) / Number(sizeName)
+          ) * price;
+
         break;
       }
       default:
@@ -404,11 +404,12 @@ const CalculatePrice = () => {
           (prop) => prop.property.name === "Layer"
         )?.value;
 
-        if (coverage && layers) {
-          require = Math.ceil(
-            Number(areaToUse) * Number(layers) * Number(coverage)
-          ); // bao nhiêu lít sơn
-        }
+        require = Math.ceil(
+          (Number(areaToUse) / coverage ? Number(coverage) : 10) * layers
+            ? Number(layers)
+            : 1
+        ); // bao nhiêu lít sơn
+
         break;
       }
       default:
