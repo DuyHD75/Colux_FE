@@ -48,7 +48,7 @@ const Banner = () => {
 
       <Button
         component={Link}
-        to="/colors"
+        to="https://colux-tool.vercel.app/"
         variant="contained"
         color="primary"
         sx={{
