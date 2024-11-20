@@ -14,6 +14,7 @@ import {
   MenuItem,
   Grid,
   TextField,
+  Badge,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -34,8 +35,11 @@ import { useTranslation } from "react-i18next";
 import productsApi from "../../api/modules/products.api";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
+import cartApi from "../../api/modules/cart.api";
 
-export const Header = () => {
+export const Header = ({itemCart}) => {
+  console.log("itemCart", itemCart);
+  
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
@@ -44,7 +48,6 @@ export const Header = () => {
 
   const [colorFamlily, setColorFamily] = useState([]);
   const [collections, setCollection] = useState([]);
-
   const [anchorElNav, setAnchorElNav] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
@@ -163,7 +166,7 @@ export const Header = () => {
         toast.error("An error occurred while fetching collections.");
       }
     };
-
+    
     getCollections();
     getListColofamily();
   }, []);
@@ -797,7 +800,9 @@ export const Header = () => {
                       },
                     }}
                   >
-                    <ShoppingCartIcon />
+                    <Badge badgeContent={itemCart} color="primary">
+                      <ShoppingCartIcon />
+                    </Badge>
                   </IconButton>
                   <Tooltip title={`${user.firstName} ${user.lastName}`}>
                     <Link to="/profile" style={{ textDecoration: "none" }}>

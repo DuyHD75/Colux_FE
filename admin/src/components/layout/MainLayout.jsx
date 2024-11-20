@@ -2,11 +2,10 @@ import React from "react";
 import { Box } from "@mui/material";
 import { Outlet } from "react-router-dom";
 import Footer from "../footer/Footer";
-import Header from "../header/Header";
+import Navbar from "../Navbar";
 import { useSelector } from "react-redux";
 import GlobalLoading from "../common/GlobalLoading";
-import SlideBar from "../common/SlideBar";
-
+import SlideSBar from "../common/SlideBar";
 
 const actionState = {
   login: "login",
@@ -26,28 +25,43 @@ const MainLayout = () => {
   );
 
   return (
-    <div>
-      {/* header */}
-      {showHeaderFooter && <Header />}
-      {/* header */}
-      {/* global loading */}
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {showHeaderFooter && <Navbar />}
       <GlobalLoading />
-      {/* global loading */}
-      <Box className="flex min-h-screen">
-        {/* main */}
+      
+      <Box sx={{ display: 'flex', flex: 1 }}>
+        {showHeaderFooter && (
+          <Box
+            component="nav"
+            sx={{
+              width: 240,
+              flexShrink: 0,
+              position: 'fixed',
+              height: '100vh',
+              borderRight: '1px solid #eee',
+              bgcolor: 'background.paper',
+              zIndex: 1000
+            }}
+          >
+            <SlideSBar />
+          </Box>
+        )}
+        
         <Box
-          className="flex-grow overflow-hidden min-h-screen"
           component="main"
+          sx={{
+            flexGrow: 1,
+            p: 3,
+            ml: showHeaderFooter ? '240px' : 0,
+            mt: showHeaderFooter ? '64px' : 0
+          }}
         >
-          <SlideBar></SlideBar>
           <Outlet />
         </Box>
-        {/* main */}
       </Box>
-      {/* footer */}
+
       {showHeaderFooter && <Footer />}
-      {/* footer */}
-    </div>
+    </Box>
   );
 };
 
