@@ -12,13 +12,13 @@ const ListProducts = () => {
   const [categories, setCategories] = useState([]);
 
   const [products, setProducts] = useState([]);
-  const { productCategoryId } = useParams();
+  const { productCategory, productCategoryId } = useParams();
 
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
   const [totalPages, setTotalPages] = useState(0);
 
-  const [selectedRating, setSelectedRating] = useState([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
@@ -44,7 +44,7 @@ const ListProducts = () => {
 
         if (response) {
           setProducts([...response.data.products.content]);
-          setTotalPages(response.data.products.totalPages)
+          setTotalPages(response.data.products.totalPages);
         } else if (err) {
           toast.error(err);
         }
@@ -78,56 +78,88 @@ const ListProducts = () => {
     getAllcategory();
   }, [dispatch]);
 
-
   useEffect(() => {
-    const newFilteredProducts = products.filter((product) => {
-      const matchesCategory = productCategoryId
-        ? product.category.categoryId === productCategoryId
-        : true;
-      const matchesRating =
-        selectedRating.length > 0
-          ? selectedRating.includes(product.ratingAverage)
-          : true;
-      const matchesProperty =
-        selectedProperty.length > 0
-          ? selectedProperty.every((selectedId) =>
-              product.properties.some(
-                (propertyItem) =>
-                  propertyItem.property.propertyId === selectedId
-              )
-            )
-          : true;
+    console.log("run useeffect");
+    
+    const fetchFilteredProducts = async () => {
+      try {
+        if (
+          !selectedPriceRange &&
+          selectedProperty.length === 0 &&
+          selectedFeatures.length === 0
+        ) {
+          setFilteredProducts(products);
+          return;
+        }
 
-      const matchesFeatures =
-        selectedFeatures.length > 0
-          ? selectedFeatures.every((selectedId) =>
-              product.features.some(
-                (featureItem) => featureItem.feature.featureId === selectedId
-              )
-            )
-          : true;
+        const params = [];
 
-      return (
-        matchesCategory && matchesRating && matchesProperty && matchesFeatures
-      );
-    });
+        if (productCategory) {
+          params.push(
+            `type=${encodeURIComponent(productCategory.toLowerCase())}`
+          );
+        }
+        if (selectedFeatures.length > 0) {
+          params.push(`features=${selectedFeatures.join(",")}`);
+        }
+        if (selectedProperty.length > 0) {
+          params.push(`properties=${selectedProperty.join(",")}`);
+        }
 
-    setFilteredProducts(newFilteredProducts);
+        if (selectedPriceRange) {
+          let minPrice, maxPrice;
+          console.log(selectedPriceRange);
+          
+          
+          if (selectedPriceRange.includes("+")) {
+            minPrice = selectedPriceRange.split("+")[0]; 
+            maxPrice = ""; 
+          } else {
+            
+            [minPrice, maxPrice] = selectedPriceRange.split("-");
+          }
+
+          if (minPrice) {
+            params.push(`minPrice=${minPrice}`);
+          }
+
+          if (maxPrice && maxPrice !== "") {
+            params.push(`maxPrice=${maxPrice}`);
+          }
+        }
+        params.push(`page=0`);
+        params.push(`size=16`);
+        const queryString = params.join("&");
+        console.log(queryString);
+
+          const { response, err } = await productsApi.filterProducts(queryString);
+          if (response) {
+            setFilteredProducts(response.data.products.content);
+          } else if (err) {
+            toast.error(err);
+          }
+
+      } catch (error) {
+        console.error("Error fetching filtered products:", error);
+      }
+    };
+
+    fetchFilteredProducts();
   }, [
-    selectedRating,
+    selectedPriceRange,
     selectedProperty,
     selectedFeatures,
-    productCategoryId,
+    productCategory,
     products,
   ]);
-
+  
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
 
   const handleFiltersChange = (filterType, values) => {
-    if (filterType === "rating") {
-      setSelectedRating(values);
+    if (filterType === "priceRange") {
+      setSelectedPriceRange(values);
     } else if (filterType === "property") {
       setSelectedProperty(values);
     } else if (filterType === "features") {
@@ -145,6 +177,7 @@ const ListProducts = () => {
             categories={categories}
             category={productCategoryId}
             onChange={handleFiltersChange}
+            categoryName={productCategory}
           />
         </Grid>
 
@@ -152,10 +185,7 @@ const ListProducts = () => {
           <Grid container spacing={3}>
             {hasProducts ? (
               filteredProducts
-                .slice(
-                  0 * productsPerPage,
-                  1 * productsPerPage
-                )
+                .slice(0 * productsPerPage, 1 * productsPerPage)
                 .map((product, index) => (
                   <Grid item xs={6} sm={4} md={3} key={index}>
                     <ProductCard product={product} />

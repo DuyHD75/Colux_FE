@@ -48,7 +48,7 @@ const ProductsRelated = ({ products }) => {
   };
 
   return (
-    <Box mt={5}>
+    <Box my={5}>
       <Typography
         variant="h4"
         align="center"
@@ -132,7 +132,7 @@ const ProductsRelated = ({ products }) => {
                     }}
                   >
                     <Button
-                      href={`/products/${productCategory}/${productCategoryId}/${relatedProduct.productName}/${relatedProduct.productId}`}
+                      href={`/products/${productCategory ? productCategory : relatedProduct.category.name}/${productCategoryId ? productCategoryId : relatedProduct.category.categoryId}/${relatedProduct.productName}/${relatedProduct.productId}`}
                       onClick={handleClick(relatedProduct)} 
                     >
                       <Box
@@ -148,8 +148,8 @@ const ProductsRelated = ({ products }) => {
                           component="img"
                           sx={{
                             marginTop: "10px",
-                            width: "45%",
-                            height: 120,
+                            width: "50%",
+                            // height: 120,
                             objectFit: "cover",
                           }}
                           image={

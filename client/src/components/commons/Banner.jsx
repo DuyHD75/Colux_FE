@@ -21,7 +21,7 @@ const Banner = () => {
         backgroundPosition: "center",
         padding: "20px",
         textAlign: "center",
-        marginTop: { xs: "56px", md: "96px" },
+        marginTop: { xs: "56px", md: "152px" },
         minHeight: "600px",
       }}
     >
@@ -48,7 +48,9 @@ const Banner = () => {
 
       <Button
         component={Link}
-        to="/colors"
+        to="https://colux-tool.vercel.app/"
+        target="_blank"
+        rel="noopener noreferrer"
         variant="contained"
         color="primary"
         sx={{

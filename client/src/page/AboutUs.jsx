@@ -5,7 +5,7 @@ import ImageComponent from '../components/commons/ImageComponent'
 
 const AboutUs = () => {
     return (
-        <Box p={{ xs: '56px 0 16px 0', md: '94px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
+        <Box p={{ xs: '56px 0 16px 0', md: '152px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
             <Box sx={{
                 bgcolor: '#476C9A',
                 height: 'auto'

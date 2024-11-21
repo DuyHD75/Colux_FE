@@ -30,7 +30,7 @@ const OrderHistory = () => {
                     dispatch(setGlobalLoading(true));
                     const { response, err } = await cartApi.getOrdersbyCustomerId(user.userId);
                     if (response) {
-                        dispatch(setGlobalLoading(false));
+                        
                         setOrders(response.data.orders);
                     }
                     if (err) {
@@ -38,6 +38,8 @@ const OrderHistory = () => {
                     }
                 } catch (error) {
                     toast.error('An error occurred while fetching order data');
+                } finally {
+                    dispatch(setGlobalLoading(false));
                 }
             }
         };

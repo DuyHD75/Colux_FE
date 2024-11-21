@@ -30,15 +30,19 @@ const UserSidebar = ({ children }) => {
 
   return (
     <>
-      <Box pt={{ xs: "56px", md: "96px" }}>
+      {/* Phần header điều hướng */}
+      <Box pt={{ xs: "56px", md: "128px" }}>
         <Navigate />
       </Box>
-      {/* 375.5 */}
-      {/* <Box p={{ xs: '56px 0 1rem 0', md: '96px 121.96px 1rem 121.96px' }} bgcolor='#EAEAEA' minHeight='inherit'> */}
+
+      {/* Nội dung chính */}
       <Box
-        p={{ xs: "0 0 1rem 0", md: "0 121.96px 1rem 121.96px" }}
+        p={{ xs: "0 0 1rem 0", md: "0 152px 1rem 152px" }}
         bgcolor="#EAEAEA"
         minHeight="inherit"
+        sx={{
+          position: "relative",
+        }}
       >
         <Stack
           spacing={{ xs: 0, md: 4 }}
@@ -47,65 +51,76 @@ const UserSidebar = ({ children }) => {
           justifyContent="space-between"
           pt="27px"
         >
+          {/* Hiển thị menu */}
           <Stack
-            width={{ xs: "0%", md: "20%" }}
-            display={{ xs: "none", md: "flex" }}
+            width={{ xs: "100%", md: "20%" }}
+            position={{ xs: "absolute", md: "relative" }}
+            zIndex={{ xs: 2, md: "auto" }}
+            top={{ xs: 0, md: "auto" }}
+            bgcolor={{ xs: "white", md: "transparent" }}
+            display={{ xs: "flex", md: "flex" }}
             direction="column"
             spacing={2}
             alignItems="center"
           >
-            {menuConfigs.user.map((item, index) => {
-              return (
-                <Button
-                  component={Link}
-                  to={item.state === "logout" ? undefined : item.path}
-                  onClick={item.state === "logout" ? handleLogout : undefined}
-                  key={index}
+            {menuConfigs.user.map((item, index) => (
+              <Button
+                component={Link}
+                to={item.state === "logout" ? undefined : item.path}
+                onClick={item.state === "logout" ? handleLogout : undefined}
+                key={index}
+                sx={{
+                  mr: 2,
+                  fontFamily: '"Nunito", sans-serif',
+                  fontSize: "0.9rem",
+                  fontWeight: "600",
+                  color: "secondary.contrastText",
+                  textTransform: "normal",
+                  display: "flex",
+                  alignItems: "center",
+                  flexDirection: "row",
+                  justifyContent: "flex-start",
+                  padding: "0.6rem 10px",
+                  width: "100%",
+                  bgcolor: appState.includes(item.state)
+                    ? "white"
+                    : "transparent",
+                  borderRadius: appState.includes(item.state)
+                    ? "0 8px 8px 0"
+                    : "0px",
+                  borderLeft: appState.includes(item.state)
+                    ? "2px solid #1C2759"
+                    : "none",
+                  "&:hover": {
+                    color: "secondary.colorText",
+                    bgColor: "rgba(0,0,0,0.5)",
+                  },
+                }}
+              >
+                <Box sx={{ marginRight: "1rem" }}> {item.icon}</Box>
+                <Typography
+                  variant="p"
                   sx={{
-                    mr: 2,
-                    fontFamily: '"Nunito", sans-serif',
-                    fontSize: "0.9rem",
-                    fontWeight: "600",
-                    color: "secondary.contrastText",
-                    textTransform: "normal",
-                    display: "flex",
-                    alignItems: "center",
-                    flexDirection: "row",
-                    justifyContent: "flex-start",
-
-                    padding: "0.6rem 10px",
-                    width: "100%",
-                    bgcolor: appState.includes(item.state)
-                      ? "white"
-                      : "transparent",
-                    borderRadius: appState.includes(item.state)
-                      ? "0 8px 8px 0"
-                      : "0px",
-                    borderLeft: appState.includes(item.state)
-                      ? "2px solid #1C2759"
-                      : "none",
-                    "&:hover": {
-                      color: "secondary.colorText",
-                      bgColor: "rgba(0,0,0,0.5)",
-                    },
+                    ...textConfigs.style.headerText,
+                    fontSize: "1rem",
+                    textTransform: "none",
                   }}
                 >
-                  <Box sx={{ marginRight: "1rem" }}> {item.icon}</Box>
-                  <Typography
-                    variant="p"
-                    sx={{
-                      ...textConfigs.style.headerText,
-                      fontSize: "1rem",
-                      textTransform: "none",
-                    }}
-                  >
-                    {item.display}
-                  </Typography>
-                </Button>
-              );
-            })}
+                  {item.display}
+                </Typography>
+              </Button>
+            ))}
           </Stack>
-          {children}
+
+          {/* Nội dung children */}
+          <Box
+            sx={{
+              marginTop: { xs: "480px !important", md: "0 !important" }, 
+              width: "100%",
+            }}
+          >
+            {children}
+          </Box>
         </Stack>
       </Box>
     </>
@@ -113,3 +128,4 @@ const UserSidebar = ({ children }) => {
 };
 
 export default UserSidebar;
+
