@@ -28,7 +28,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import textConfig from "../config/text.config";
 import backgroundConfig from "../config/background.config";
 import { FaPlus } from "react-icons/fa6";
@@ -84,6 +84,29 @@ const ManageProduct = () => {
   const [showAddVariantRow, setShowAddVariantRow] = useState(null);
   const [showAddFloorRow, setShowAddFloorRow] = useState(false);
   const [filteredVariants, setFilteredVariants] = useState([]);
+  const [showAddVariantRows, setShowAddVariantRows] = useState(false);
+
+  const [selectedPaints, setSelectedPaints] = useState([]);
+
+  const [searchText, setSearchText] = useState("");
+
+  const handleSelectPaint = (paintId) => {
+    setSelectedPaints((prevSelected) =>
+      prevSelected.includes(paintId)
+        ? prevSelected.filter((id) => id !== paintId)
+        : [...prevSelected, paintId]
+    );
+  };
+
+  const handleSelectAll = (event) => {
+    if (event.target.checked) {
+      setSelectedPaints(
+        editRow.paints.map((paint) => paint.id || paint.paintId)
+      );
+    } else {
+      setSelectedPaints([]);
+    }
+  };
 
   const handleAddColorDialogOpen = () => {
     setOpenAddColorDialog(true);
@@ -149,6 +172,56 @@ const ManageProduct = () => {
     setSelectedVariantId("");
   };
 
+  const handleSaveVariantForMultiplePaints = () => {
+    if (!selectedVariantId) {
+      alert("Please select a variant.");
+      return;
+    }
+    if (!newVariant.quantity) {
+      alert("Please enter quantity.");
+      return;
+    }
+    if (!newVariant.price) {
+      alert("Please enter price.");
+      return;
+    }
+
+    const updatedPaints = editRow.paints.map((paint) => {
+      if (selectedPaints.includes(paint.id || paint.paintId)) {
+        const existingVariantIndex = paint.variants.findIndex(
+          (variant) => variant.variantId === selectedVariantId
+        );
+
+        if (existingVariantIndex !== -1) {
+          // Update quantity and price if variant already exists
+          paint.variants[existingVariantIndex].quantity =
+            Number(paint.variants[existingVariantIndex].quantity) +
+            Number(newVariant.quantity);
+          paint.variants[existingVariantIndex].price = Number(newVariant.price);
+          setShowAddVariantRows(false);
+        } else {
+          // Add new variant if it doesn’t exist
+          const selectedVariant = variantAvailable.find(
+            (variant) => variant.variantId === selectedVariantId
+          );
+          paint.variants.push({
+            ...selectedVariant,
+            quantity: Number(newVariant.quantity),
+            price: Number(newVariant.price),
+          });
+          setShowAddVariantRows(false);
+        }
+      }
+      return paint;
+    });
+
+    setEditRow({ ...editRow, paints: updatedPaints });
+    setShowAddVariantRow(null);
+    setNewVariant({ quantity: 1, price: 0 });
+    setSelectedPaints([]); // Reset selected paints
+    setSelectedVariantId("");
+  };
+
   console.log(editRow);
 
   const handleSaveVariantFloor = (id, floorId) => {
@@ -199,6 +272,10 @@ const ManageProduct = () => {
     setShowAddVariantRow(null);
     setNewVariant({ quantity: 1, price: 0 });
     setSelectedVariantId("");
+  };
+
+  const handleAddVariantRowsToggle = () => {
+    setShowAddVariantRows(!showAddVariantRows);
   };
 
   const handleSaveVariantWallpaper = (id, wallpaperId) => {
@@ -962,13 +1039,24 @@ const ManageProduct = () => {
   ];
 
   const paginationModel = { page: 0, pageSize: 10 };
+  const filteredRows = useRef([]);
 
+useEffect(() => {
+  if (searchText === "") {
+    filteredRows.current = products;
+  } else {
+    console.log(searchText);
+    console.log(products);
+    
+    
+    filteredRows.current = products.filter((product) =>
+      product.productName.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }
+  setRows(filteredRows.current); // Cập nhật rows với kết quả lọc
+}, [searchText, products]);
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      my={1}
-    >
+    <Stack direction="row" spacing={1} my={1}>
       {/* <SlideBar></SlideBar> */}
       <Box
         sx={{
@@ -1011,36 +1099,37 @@ const ManageProduct = () => {
           </Button>
         </Stack>
         <TextField
-          label="Search"
-          variant="outlined"
-          size="small"
+        label="Search"
+        variant="outlined"
+        size="small"
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)} // Cập nhật giá trị tìm kiếm
+        sx={{
+          width: "40%",
+          mb: "1rem",
+        }}
+      />
+
+      {/* DataGrid */}
+      <Paper
+        sx={{
+          height: 600,
+          width: "100%",
+          overflowX: "auto",
+        }}
+      >
+        <DataGrid
+          rows={rows} // Hiển thị rows đã lọc
+          columns={columns}
+          initialState={{ pagination: { paginationModel } }}
+          pageSizeOptions={[2]}
+          checkboxSelection
+          getRowId={(row) => row.productId}
           sx={{
-            width: "40%",
-            mb: "1rem",
+            fontSize: "14px",
           }}
         />
-        <Paper
-          sx={{
-            height: 600,
-            width: "100%",
-            overflowX: "auto",
-          }}
-        >
-          <DataGrid
-            rows={rows}
-            columns={columns}
-            initialState={{ pagination: { paginationModel } }}
-            pageSizeOptions={[2]}
-            checkboxSelection
-            getRowId={(row) => row.productId}
-            sx={{
-              ...textConfig.style.basicFont,
-              "& .MuiDataGrid-root": {
-                fontSize: "14px",
-              },
-            }}
-          />
-        </Paper>
+      </Paper>
         <Dialog
           maxWidth="lg"
           fullWidth
@@ -1183,10 +1272,11 @@ const ManageProduct = () => {
                       },
                     }}
                   >
-                    <MenuItem value="Viet Nam">Viet Nam</MenuItem>
-                    <MenuItem value="Korean">Korean</MenuItem>
-                    <MenuItem value="America">America</MenuItem>
                     <MenuItem value="Japan">Japan</MenuItem>
+                    <MenuItem value="Korean">Korean</MenuItem>
+                    <MenuItem value="Nauy">Nauy</MenuItem>
+                    <MenuItem value="Netherlands">Netherlands</MenuItem>
+                    <MenuItem value="Viet Nam">Viet Nam</MenuItem>
                   </Select>
                 </FormControl>
                 <FormControl fullWidth margin="dense">
@@ -1276,11 +1366,21 @@ const ManageProduct = () => {
                       },
                     }}
                   >
-                    {brands.map((brand, i) => (
-                      <MenuItem key={i} value={brand.brandId}>
-                        {brand.name}
-                      </MenuItem>
-                    ))}
+                    {brands
+                      .slice()
+                      .sort((a, b) => {
+                        const numA =
+                          parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                        const numB =
+                          parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                        if (numA !== numB) return numA - numB;
+                        return a.name.localeCompare(b.name);
+                      })
+                      .map((brand, i) => (
+                        <MenuItem key={i} value={brand.brandId}>
+                          {brand.name}
+                        </MenuItem>
+                      ))}
                   </Select>
                 </FormControl>
               </Stack>
@@ -1325,7 +1425,11 @@ const ManageProduct = () => {
                   </Stack>
                 </div>
 
-                <Button variant="contained" onClick={handleAddClickProperties}>
+                <Button
+                  variant="contained"
+                  onClick={handleAddClickProperties}
+                  sx={{ textTransform: "none" }}
+                >
                   Add Properties
                 </Button>
               </Stack>
@@ -1368,7 +1472,11 @@ const ManageProduct = () => {
                   </Stack>
                 </div>
 
-                <Button variant="contained" onClick={handleAddClickFeature}>
+                <Button
+                  variant="contained"
+                  onClick={handleAddClickFeature}
+                  sx={{ textTransform: "none" }}
+                >
                   Add Features
                 </Button>
               </Stack>
@@ -1386,9 +1494,88 @@ const ManageProduct = () => {
                   <Typography variant="h6" component="div" gutterBottom>
                     Variant
                   </Typography>
-                  <Button variant="outlined" onClick={handleAddColorDialogOpen}>
-                    Add Paint
-                  </Button>
+                  {showAddVariantRows === true && (
+                    <Box align="center" sx={{ p: 1 }}>
+                      <TextField
+                        select
+                        label="Select Variant"
+                        value={selectedVariantId}
+                        onChange={(e) => setSelectedVariantId(e.target.value)}
+                        variant="outlined"
+                        size="small"
+                        sx={{ width: 200, mr: 1 }}
+                      >
+                        {filteredVariants.map((variant) => (
+                          <MenuItem
+                            key={variant.variantId}
+                            value={variant.variantId}
+                          >
+                            {variant.sizeName}{" "}
+                            {variant.categoryName === "Paint" ? "L" : "m"} -{" "}
+                            {variant.packageType} - {variant.categoryName}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+
+                      <TextField
+                        label="Quantity"
+                        type="number"
+                        value={newVariant.quantity}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            quantity: e.target.value,
+                          })
+                        }
+                        variant="outlined"
+                        size="small"
+                        sx={{ width: 100, mr: 1 }}
+                      />
+
+                      <TextField
+                        label="Price"
+                        type="number"
+                        value={newVariant.price}
+                        onChange={(e) =>
+                          setNewVariant({
+                            ...newVariant,
+                            price: e.target.value,
+                          })
+                        }
+                        variant="outlined"
+                        size="small"
+                        sx={{ width: 120, mr: 1 }}
+                      />
+
+                      <Button
+                        variant="outlined"
+                        size="small"
+                        onClick={handleSaveVariantForMultiplePaints}
+                        sx={{ minWidth: 60, height: "36px" }}
+                      >
+                        Save
+                      </Button>
+                    </Box>
+                  )}
+                  <Box display="flex" gap={2}>
+                    <Button
+                      sx={{ textTransform: 'none' }}
+                      variant="outlined"
+                      onClick={handleAddVariantRowsToggle}
+                      disabled={selectedPaints.length === 0} // Disable nếu không có paint nào được chọn
+                    >
+                      {showAddVariantRows === true
+                        ? "Cancel"
+                        : "Add Variant to Selected Paints "}
+                    </Button>
+                    <Button
+                      sx={{ textTransform: 'none' }}
+                      variant="outlined"
+                      onClick={handleAddColorDialogOpen}
+                    >
+                      Add Paint
+                    </Button>
+                  </Box>
                 </Stack>
                 <TableContainer
                   sx={{
@@ -1418,6 +1605,20 @@ const ManageProduct = () => {
                     <Table size="small" stickyHeader>
                       <TableHead>
                         <TableRow>
+                          <TableCell align="center">
+                            <Checkbox
+                              indeterminate={
+                                selectedPaints.length > 0 &&
+                                selectedPaints.length < editRow.paints.length
+                              }
+                              checked={
+                                selectedPaints.length ===
+                                (editRow.paints?.length || 0)
+                              }
+                              onChange={handleSelectAll}
+                              inputProps={{ "aria-label": "select all paints" }}
+                            />
+                          </TableCell>
                           <TableCell align="center">Color</TableCell>
                           <TableCell align="center">Code</TableCell>
                           <TableCell align="center">Size</TableCell>
@@ -1447,7 +1648,29 @@ const ManageProduct = () => {
                                       : 1
                                   }
                                   align="center"
-                                  sx={{ p: 1 }}
+                                >
+                                  <Checkbox
+                                    checked={selectedPaints.includes(
+                                      paint.id || paint.paintId
+                                    )}
+                                    onChange={() =>
+                                      handleSelectPaint(
+                                        paint.id || paint.paintId
+                                      )
+                                    }
+                                    inputProps={{
+                                      "aria-label": `select paint ${paint.color.name}`,
+                                    }}
+                                  />
+                                </TableCell>
+                                <TableCell
+                                  rowSpan={
+                                    paint.variants.length > 0
+                                      ? paint.variants.length
+                                      : 1
+                                  }
+                                  align="center"
+                                  sx={{ p: 1, verticalAlign: "middle", width: "80px", height: "80px" }}
                                 >
                                   <div
                                     style={{
@@ -1563,7 +1786,7 @@ const ManageProduct = () => {
                                   }}
                                 >
                                   <TableCell
-                                    colSpan={7}
+                                    colSpan={8}
                                     align="center"
                                     sx={{ p: 1 }}
                                   >
@@ -1648,7 +1871,7 @@ const ManageProduct = () => {
                                       : "#ffffff", // Thay đổi màu nền cho hàng màu
                                 }}
                               >
-                                <TableCell colSpan={7} align="center">
+                                <TableCell colSpan={8} align="center">
                                   <Button
                                     variant="outlined"
                                     onClick={() =>
@@ -1680,7 +1903,7 @@ const ManageProduct = () => {
                           ))
                         ) : (
                           <TableRow>
-                            <TableCell colSpan={7} align="center">
+                            <TableCell colSpan={8} align="center">
                               No paints available.
                             </TableCell>
                           </TableRow>
@@ -2454,40 +2677,60 @@ const ManageProduct = () => {
           <DialogTitle>Select Properties</DialogTitle>
           <DialogContent>
             <FormGroup>
-              {availableProperties.map((property, i) => (
-                <div key={i}>
-                  <Typography variant="subtitle1">{property.name}</Typography>
-                  {property.propertyValues.map((value, i) => (
-                    <FormControlLabel
-                      key={i}
-                      control={
-                        <Checkbox
-                          checked={selectedProperties.some(
-                            (p) =>
-                              p.propertyId === property.propertyId &&
-                              p.value === value.value
-                          )}
-                          onChange={(e) =>
-                            handlePropertiesChange(
-                              property.propertyId,
-                              value.value,
-                              value.id
-                            )
+              {availableProperties
+                .slice()
+                .sort((a, b) => {
+                  const numA =
+                    parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                  const numB =
+                    parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                  if (numA !== numB) return numA - numB;
+                  return a.name.localeCompare(b.name);
+                })
+                .map((property, i) => (
+                  <div key={i}>
+                    <Typography variant="subtitle1">{property.name}</Typography>
+                    {property.propertyValues
+                      .slice()
+                      .sort((a, b) => {
+                        const numA =
+                          parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                        const numB =
+                          parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+                        if (numA !== numB) return numA - numB;
+                        return a.value.localeCompare(b.value);
+                      })
+                      .map((value, i) => (
+                        <FormControlLabel
+                          key={i}
+                          control={
+                            <Checkbox
+                              checked={selectedProperties.some(
+                                (p) =>
+                                  p.propertyId === property.propertyId &&
+                                  p.value === value.value
+                              )}
+                              onChange={(e) =>
+                                handlePropertiesChange(
+                                  property.propertyId,
+                                  value.value,
+                                  value.id
+                                )
+                              }
+                            />
                           }
+                          label={value.value}
                         />
-                      }
-                      label={value.value}
-                    />
-                  ))}
-                </div>
-              ))}
+                      ))}
+                  </div>
+                ))}
             </FormGroup>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseProperties} color="primary">
+            <Button onClick={handleCloseProperties} color="primary" sx={{ textTransform: 'none' }}>
               Cancel
             </Button>
-            <Button onClick={handleAddProperties} color="primary">
+            <Button onClick={handleAddProperties} color="primary" sx={{ textTransform: 'none' }}>
               Add Selected Properties
             </Button>
           </DialogActions>
@@ -2497,40 +2740,60 @@ const ManageProduct = () => {
           <DialogTitle>Select Features</DialogTitle>
           <DialogContent>
             <FormGroup>
-              {availableFeatures.map((feature, i) => (
-                <div key={i}>
-                  <Typography variant="subtitle1">{feature.name}</Typography>
-                  {feature.featureValues.map((value, i) => (
-                    <FormControlLabel
-                      key={i}
-                      control={
-                        <Checkbox
-                          checked={selectedFeatures.some(
-                            (f) =>
-                              f.featureId === feature.featureId &&
-                              f.value === value.value
-                          )}
-                          onChange={(e) =>
-                            handleFeatureChange(
-                              feature.featureId,
-                              value.value,
-                              value.id
-                            )
+              {availableFeatures
+                .slice()
+                .sort((a, b) => {
+                  const numA =
+                    parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                  const numB =
+                    parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                  if (numA !== numB) return numA - numB;
+                  return a.name.localeCompare(b.name);
+                })
+                .map((feature, i) => (
+                  <div key={i}>
+                    <Typography variant="subtitle1">{feature.name}</Typography>
+                    {feature.featureValues
+                      .slice()
+                      .sort((a, b) => {
+                        const numA =
+                          parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                        const numB =
+                          parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+                        if (numA !== numB) return numA - numB;
+                        return a.value.localeCompare(b.value);
+                      })
+                      .map((value, i) => (
+                        <FormControlLabel
+                          key={i}
+                          control={
+                            <Checkbox
+                              checked={selectedFeatures.some(
+                                (f) =>
+                                  f.featureId === feature.featureId &&
+                                  f.value === value.value
+                              )}
+                              onChange={(e) =>
+                                handleFeatureChange(
+                                  feature.featureId,
+                                  value.value,
+                                  value.id
+                                )
+                              }
+                            />
                           }
+                          label={value.value}
                         />
-                      }
-                      label={value.value}
-                    />
-                  ))}
-                </div>
-              ))}
+                      ))}
+                  </div>
+                ))}
             </FormGroup>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseFeature} color="primary">
+            <Button onClick={handleCloseFeature} color="primary" sx={{ textTransform: 'none' }}>
               Cancel
             </Button>
-            <Button onClick={handleAddFeatures} color="primary">
+            <Button onClick={handleAddFeatures} color="primary" sx={{ textTransform: 'none' }}>
               Add Selected Features
             </Button>
           </DialogActions>
@@ -2622,10 +2885,10 @@ const ManageProduct = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleAddColorDialogClose} color="primary">
+            <Button onClick={handleAddColorDialogClose} color="primary" sx={{ textTransform: 'none' }}>
               Cancel
             </Button>
-            <Button onClick={handleAddColorsToProduct} color="primary">
+            <Button onClick={handleAddColorsToProduct} color="primary" sx={{ textTransform: 'none',  }}>
               Save
             </Button>
           </DialogActions>

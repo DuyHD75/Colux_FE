@@ -1,31 +1,31 @@
 import proxyClient from "../client/proxy.client";
 
 const colorEndpoints = {
-  getColorFamily: "product-service/api/v1/products/colorFamilies",
-  getRooms: "product-service/api/v1/products/rooms",
+  getColorFamily: "product-service/api/v1/colorFamilies/public",
+  getRooms: "product-service/api/v1/rooms/public",
   getCollections:
-    "product-service/api/v1/products/collections/no-colorFamily-room",
+    "product-service/api/v1/collections/public/no-colorFamily-room",
   getColorByColorFamily: ({ colorFamilyId }) =>
-    `product-service/api/v1/products/colorFamilies/${colorFamilyId}/colors/`,
+    `product-service/api/v1/colorFamilies/public/colorFamilyId/${colorFamilyId}/colors/`,
   getColorByColorFamilyAndCollection: ({
     colorFamilyId,
     collectionId,
     pageIndex,
     size,
   }) =>
-    `product-service/api/v1/products/colors/color-family/${colorFamilyId}/collection/${collectionId}?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/colors/public/color-family/${colorFamilyId}/collection/${collectionId}?page=${pageIndex}&size=${size}`,
   getColorByRoomId: ({ roomId, pageIndex, size }) =>
-    `product-service/api/v1/products/colorFamilies/${roomId}/colors?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/rooms/public/roomId/${roomId}/colors?page=${pageIndex}&size=${size}`,
   getColorByRoomAndCollection: ({ roomId, collectionId, pageIndex, size }) =>
-    `product-service/api/v1/products/colors/collection/${collectionId}/room/${roomId}?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/colors/public/collection/${collectionId}/room/${roomId}?page=${pageIndex}&size=${size}`,
   getColorByCollectionId: ({ collectionId, pageIndex, size }) =>
-    `product-service/api/v1/products/collections/${collectionId}/colors?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/collections/public/collectionId/${collectionId}/colors?page=${pageIndex}&size=${size}`,
   getColorByExteriorAndInterior: ({ interior, exterior, pageIndex, size }) =>
-    `product-service/api/v1/products/colors/getColor?interior=${interior}&exterior=${exterior}&page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/colors/public/getColor?interior=${interior}&exterior=${exterior}&page=${pageIndex}&size=${size}`,
   getAllColors: ({ pageIndex, size }) =>
-    `product-service/api/v1/products/colors?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/colors/public?page=${pageIndex}&size=${size}`,
   getColorByColorId: ({ colorId }) =>
-    `product-service/api/v1/products/colors/${colorId}`,
+    `product-service/api/v1/colors/public/colorId/${colorId}`,
 };
 
 const colorsApi = {

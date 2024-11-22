@@ -17,15 +17,36 @@ import {
   ExpandLess,
   ExpandMore,
   ExitToApp,
+
 } from "@mui/icons-material";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import textConfigs from "../../config/text.config";
+import { useDispatch } from "react-redux";
+import { setAdmin } from "../../redux/reducer/adminSlice";
+import adminApi from "../../api/modules/admin.api";
+import { toast } from "react-toastify";
 
 const Sidebar = () => {
   const [openEcommerce, setOpenEcommerce] = React.useState(false);
 
   const handleClick = () => {
     setOpenEcommerce(!openEcommerce);
+  };
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    const { response, err } = await adminApi.logout();
+    if (response) {
+      dispatch(setAdmin(null));
+      localStorage.removeItem('admin')
+      navigate("/");
+      toast.success("Logout Success.");
+    }
+    if (err) {
+      toast.error(err);
+    }
   };
 
   return (
@@ -83,7 +104,7 @@ const Sidebar = () => {
               <ListItemText primary="Billing" sx={{ ...textConfigs.style.basicFont }}/>
             </ListItem>
             <ListItem component={Link} to="/manage-orders" sx={{ pl: 4 }}>
-              <ListItemText primary="Invoice" sx={{ ...textConfigs.style.basicFont }}/>
+              <ListItemText primary="Orders" sx={{ ...textConfigs.style.basicFont }}/>
             </ListItem>
           </List>
         </Collapse>
@@ -103,7 +124,7 @@ const Sidebar = () => {
           </ListItemIcon>
           <ListItemText primary="Users" sx={{ ...textConfigs.style.basicFont }}/>
         </ListItem>
-        <ListItem component={Link} to="#">
+        <ListItem component={Link} to="#" onClick={handleLogout}>
           <ListItemIcon>
             <ExitToApp style={{ color: "#666" }} />
           </ListItemIcon>

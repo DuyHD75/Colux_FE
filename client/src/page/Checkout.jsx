@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const Checkout = () => {
 
-    const { user } = useSelector((state) => state.user);
+    const user = JSON.parse(localStorage.getItem("user"));
     const [checkoutData, setCheckoutData] = useState(localStorage.getItem('checkoutData') ? JSON.parse(localStorage.getItem('checkoutData')) : { products: [], totalAmount: 0, shippingFee: 0, billing: {} });
     const [paymentMethod, setPaymentMethod] = useState('');
     const [isChecked, setIsChecked] = useState(false);

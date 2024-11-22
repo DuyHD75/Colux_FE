@@ -25,7 +25,7 @@ const colorEndpoints = {
   getAllColors: ({ pageIndex, size }) =>
     `product-service/api/v1/products/colors?page=${pageIndex}&size=${size}`,
   getColorByColorId: ({ colorId }) =>
-    `product-service/api/v1/products/colors/${colorId}`,
+    `product-service/api/v1/colors/public/${colorId}`,
 };
 
 const colorsApi = {

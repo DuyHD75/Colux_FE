@@ -102,7 +102,7 @@ const OrderDetails = () => {
             orderCode: order.code||'',
             orderStatus: order.status||'',
             phoneNumber: order.toPhone||'',
-            province: selectedProvince.ProvinceID||'',
+            province: '', //selectedProvince.ProvinceID||
             district: order.toDistrictName||'',
             ward: order.toWardName||'',
             address: order.toAddress||'',

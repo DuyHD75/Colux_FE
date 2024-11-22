@@ -39,7 +39,7 @@ export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const { user } = useSelector((state) => state.user);
+  const user = JSON.parse(localStorage.getItem("user"));
   const { t, i18n } = useTranslation();
 
   const [colorFamlily, setColorFamily] = useState([]);
@@ -172,7 +172,7 @@ export const Header = () => {
     const getAllCategory = async () => {
       try {
         const { response, err } = await productsApi.getAllCategory();
-        if (response && response.code === 200) {
+        if (response) {
           setCategories([...response.data.categories]);
         } else if (err) {
           toast.error(err);

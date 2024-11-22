@@ -39,17 +39,25 @@ const Login = () => {
       setErrorMessage(undefined);
       setIsLoginRequest(true);
       dispatch(setGlobalLoading(true));
-      
+
       const { response, err } = await adminApi.login(values);
-      
+
       setIsLoginRequest(false);
       dispatch(setGlobalLoading(false));
       console.log(response);
-      if (response) {
+      if (
+        response &&
+        (response.data.user.role === "EMPLOYEE" ||
+          response.data.user.role === "ADMIN")
+      ) {
         loginForm.resetForm();
+        localStorage.setItem("admin", JSON.stringify(response.data));
         dispatch(setAdmin(response.data));
         navigate("/dashboard");
       } else {
+        setErrorMessage("Your account does not have permission to access this page.");
+      }
+      if(err) {
         setErrorMessage(err.exception);
       }
     },
@@ -63,7 +71,10 @@ const Login = () => {
         </h1>
         <form className="space-y-4" onSubmit={loginForm.handleSubmit}>
           <div>
-            <label htmlFor="email" className="block mb-2 text-sm font-medium text-white">
+            <label
+              htmlFor="email"
+              className="block mb-2 text-sm font-medium text-white"
+            >
               Email
             </label>
             <input
@@ -125,7 +136,7 @@ const Login = () => {
             variant="contained"
             sx={{
               width: "100%",
-              color: "white", 
+              color: "white",
               bgcolor: "primary.main",
               "&:hover": {
                 bgcolor: "primary.dark",

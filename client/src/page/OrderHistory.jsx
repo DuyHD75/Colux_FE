@@ -16,7 +16,7 @@ import { toast } from 'react-toastify'
 
 const OrderHistory = () => {
     const { appState } = useSelector((state) => state.appState);
-    const { user } = useSelector((state) => state.user);
+    const user = JSON.parse(localStorage.getItem("user"));
     const dispatch = useDispatch();
     const [orders, setOrders] = useState([]);
     const capitalizeFirstLetter = (string) => {

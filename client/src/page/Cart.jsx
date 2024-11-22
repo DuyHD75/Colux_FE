@@ -17,7 +17,7 @@ import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const user = JSON.parse(localStorage.getItem("user"));
   const [products, setProducts] = useState();
   const [cart, setCart] = useState();
   const [checkedProducts, setCheckedProducts] = useState({});

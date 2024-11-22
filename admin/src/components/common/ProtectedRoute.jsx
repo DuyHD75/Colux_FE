@@ -4,8 +4,8 @@ import { useSelector } from 'react-redux';
 
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
-  const { admin } = useSelector((state) => state.admin);
-
+  const admin  = localStorage.getItem("admin");
+  console.log(admin);
   useEffect(() => {
     if (!admin) {
       navigate('/login');

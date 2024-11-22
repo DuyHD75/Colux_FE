@@ -19,7 +19,7 @@ const UserSidebar = ({ children }) => {
     const { response, err } = await userApi.logout();
     if (response) {
       dispatch(setUser(null));
-      localStorage.clear();
+      localStorage.removeItem('user')
       navigate("/");
       toast.success("Logout Success.");
     }
@@ -31,7 +31,7 @@ const UserSidebar = ({ children }) => {
   return (
     <>
       {/* Phần header điều hướng */}
-      <Box pt={{ xs: "56px", md: "128px" }}>
+      <Box pt={{ xs: "56px", md: "152px" }}>
         <Navigate />
       </Box>
 

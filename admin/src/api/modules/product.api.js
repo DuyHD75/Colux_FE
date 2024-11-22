@@ -1,21 +1,21 @@
 import proxyClient from "../client/proxy.client";
 
 const productEndpoints = {
-  getAllProduct: "product-service/api/v1/products/product",
-  getAllCategory: "product-service/api/v1/products/categories",
-  getAllBrands: "product-service/api/v1/products/brands",
-  getAllSuppliers: "product-service/api/v1/products/suppliers",
-  getAllVariants: "product-service/api/v1/products/variants",
-  getAllProperties: "product-service/api/v1/products/properties",
-  getAllFeatures: "product-service/api/v1/products/features",
+  getAllProduct: "product-service/api/v1/products/public",
+  getAllCategory: "product-service/api/v1/categories/public",
+  getAllBrands: "product-service/api/v1/brands/public",
+  getAllSuppliers: "product-service/api/v1/suppliers/public",
+  getAllVariants: "product-service/api/v1/variants/public",
+  getAllProperties: "product-service/api/v1/properties/public",
+  getAllFeatures: "product-service/api/v1/features/public",
   getProductByCategory: ({ categoryId, pageIndex, size }) =>
-    `product-service/api/v1/products/categories/${categoryId}/products?page=${pageIndex}&size=${size}`,
-  updateProduct: "product-service/api/v1/products/product",
-  createproduct: "product-service/api/v1/products/product",
-  addBrand: "product-service/api/v1/products/brands",
-  addSupplier: "product-service/api/v1/products/suppliers",
-  addProperties: "product-service/api/v1/products/properties",
-  addFeatures: "product-service/api/v1/products/features"
+    `product-service/api/v1/categories/public/categoryId/${categoryId}/products?page=${pageIndex}&size=${size}`,
+  updateProduct: "product-service/api/v1/products",
+  createproduct: "product-service/api/v1/products",
+  addBrand: "product-service/api/v1/brands",
+  addSupplier: "product-service/api/v1/suppliers",
+  addProperties: "product-service/api/v1/properties",
+  addFeatures: "product-service/api/v1/features"
 };
 
 const prodcutsApi = {

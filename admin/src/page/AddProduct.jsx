@@ -164,6 +164,7 @@ const AddProduct = () => {
           setSelectedProperties([]);
           setSelectedFeatures([]);
           setSelectedImage(null);
+          setImageUrl([]);
           toast.success(response.message);
         } else {
           toast.error(err.exception);
@@ -401,6 +402,11 @@ const AddProduct = () => {
       newImages.splice(index, 1);
       return { ...prevState, images: newImages };
     });
+    setImageUrl((prev) => {
+      const newUrl = [...prev];
+      newUrl.splice(index, 1);
+      return newUrl;
+    });
   };
 
   const handleBack = () => {
@@ -408,11 +414,7 @@ const AddProduct = () => {
   };
 
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      my={1}
-    >
+    <Stack direction="row" spacing={1} my={1}>
       {/* <SlideBar></SlideBar> */}
 
       <Box
@@ -529,10 +531,11 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                <MenuItem value="Viet Nam">Viet Nam</MenuItem>
-                <MenuItem value="Korean">Korean</MenuItem>
-                <MenuItem value="America">America</MenuItem>
                 <MenuItem value="Japan">Japan</MenuItem>
+                <MenuItem value="Korean">Korean</MenuItem>
+                <MenuItem value="Nauy">Nauy</MenuItem>
+                <MenuItem value="Netherlands">Netherlands</MenuItem>
+                <MenuItem value="Viet Nam">Viet Nam</MenuItem>
               </Select>
               {formikProductInfo.touched.placeOfOrigin &&
               formikProductInfo.errors.placeOfOrigin ? (
@@ -666,14 +669,24 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {categories.map((category) => (
-                  <MenuItem
-                    key={category.categoryId}
-                    value={category.categoryId}
-                  >
-                    {category.name}
-                  </MenuItem>
-                ))}
+                {categories
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((category) => (
+                    <MenuItem
+                      key={category.categoryId}
+                      value={category.categoryId}
+                    >
+                      {category.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.categoryId &&
               formikProductInfo.errors.categoryId ? (
@@ -701,11 +714,21 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {brands.map((brand) => (
-                  <MenuItem key={brand.brandId} value={brand.brandId}>
-                    {brand.name}
-                  </MenuItem>
-                ))}
+                {brands
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((brand) => (
+                    <MenuItem key={brand.brandId} value={brand.brandId}>
+                      {brand.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.brandId &&
               formikProductInfo.errors.brandId ? (
@@ -733,11 +756,21 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {suppliers.map((supplier, index) => (
-                  <MenuItem key={index} value={supplier.id}>
-                    {supplier.name}
-                  </MenuItem>
-                ))}
+                {suppliers
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((supplier, index) => (
+                    <MenuItem key={index} value={supplier.id}>
+                      {supplier.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.supplierId &&
               formikProductInfo.errors.supplierId ? (
@@ -1693,34 +1726,59 @@ const AddProduct = () => {
           }}
         >
           <FormGroup>
-            {availableProperties.map((property) => (
-              <div key={property.propertyId}>
-                <Typography variant="subtitle1">{property.name}</Typography>
-                {property.propertyValues.map((value) => (
-                  <FormControlLabel
-                    key={value.id}
-                    control={
-                      <Checkbox
-                        checked={selectedProperties.some(
-                          (p) =>
-                            p.property.propertyId === property.propertyId &&
-                            p.value === value.value
-                        )}
-                        onChange={(e) =>
-                          handlePropertiesChange(
-                            property.propertyId,
-                            value.value,
-                            value.id,
-                            property.name
-                          )
+            {availableProperties
+              .slice()
+              .sort((a, b) => {
+                const numA =
+                  parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                const numB =
+                  parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                if (numA !== numB) return numA - numB;
+                return a.name.localeCompare(b.name);
+              })
+              .map((property) => (
+                <div key={property.propertyId}>
+                  <Typography variant="subtitle1">{property.name}</Typography>
+                  {property.propertyValues
+                    .slice()
+                    .sort((a, b) => {
+                      // Trích xuất số từ chuỗi (nếu có)
+                      const numA =
+                        parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                      const numB =
+                        parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+
+                      // Nếu có số, sắp xếp theo số
+                      if (numA !== numB) return numA - numB;
+
+                      // Nếu không có số, so sánh phần chữ
+                      return a.value.localeCompare(b.value);
+                    })
+                    .map((value) => (
+                      <FormControlLabel
+                        key={value.id}
+                        control={
+                          <Checkbox
+                            checked={selectedProperties.some(
+                              (p) =>
+                                p.property.propertyId === property.propertyId &&
+                                p.value === value.value
+                            )}
+                            onChange={(e) =>
+                              handlePropertiesChange(
+                                property.propertyId,
+                                value.value,
+                                value.id,
+                                property.name
+                              )
+                            }
+                          />
                         }
+                        label={value.value}
                       />
-                    }
-                    label={value.value}
-                  />
-                ))}
-              </div>
-            ))}
+                    ))}
+                </div>
+              ))}
           </FormGroup>
         </DialogContent>
         <DialogActions>
@@ -1754,29 +1812,44 @@ const AddProduct = () => {
             {availableFeatures.map((feature) => (
               <div key={feature.featureId}>
                 <Typography variant="subtitle1">{feature.name}</Typography>
-                {feature.featureValues.map((value) => (
-                  <FormControlLabel
-                    key={value.id}
-                    control={
-                      <Checkbox
-                        checked={selectedFeatures.some(
-                          (f) =>
-                            f.feature.featureId === feature.featureId &&
-                            f.value === value.value
-                        )}
-                        onChange={(e) =>
-                          handleFeatureChange(
-                            feature.featureId,
-                            value.value,
-                            value.id,
-                            feature.name
-                          )
-                        }
-                      />
-                    }
-                    label={value.value}
-                  />
-                ))}
+                {feature.featureValues
+                  .slice()
+                  .sort((a, b) => {
+                    // Trích xuất số từ chuỗi (nếu có)
+                    const numA =
+                      parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+
+                    // Nếu có số, sắp xếp theo số
+                    if (numA !== numB) return numA - numB;
+
+                    // Nếu không có số, so sánh phần chữ
+                    return a.value.localeCompare(b.value);
+                  })
+                  .map((value) => (
+                    <FormControlLabel
+                      key={value.id}
+                      control={
+                        <Checkbox
+                          checked={selectedFeatures.some(
+                            (f) =>
+                              f.feature.featureId === feature.featureId &&
+                              f.value === value.value
+                          )}
+                          onChange={(e) =>
+                            handleFeatureChange(
+                              feature.featureId,
+                              value.value,
+                              value.id,
+                              feature.name
+                            )
+                          }
+                        />
+                      }
+                      label={value.value}
+                    />
+                  ))}
               </div>
             ))}
           </FormGroup>
