@@ -14,6 +14,7 @@ import {
   MenuItem,
   Grid,
   TextField,
+  Badge,
 } from "@mui/material/";
 import MenuIcon from "@mui/icons-material/Menu";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -34,6 +35,7 @@ import { useTranslation } from "react-i18next";
 import productsApi from "../../api/modules/products.api";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
+import cartApi from "../../api/modules/cart.api";
 
 export const Header = () => {
   const dispatch = useDispatch();
@@ -963,7 +965,7 @@ export const Header = () => {
               <Box
                 sx={{
                   position: "absolute",
-                  top: "50%", // Điều chỉnh vị trí dọc của Box
+                  top: "100%", // Điều chỉnh vị trí dọc của Box
                   left: 0,
                   right: 0,
                   minHeight: "400px", // Đặt chiều cao tối thiểu cho Box ngoài

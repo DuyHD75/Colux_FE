@@ -43,7 +43,7 @@ const ProductDetail = () => {
   
   return (
     <Fragment>
-      <Box sx={{ marginTop: { xs: "56px", md: "128px" } }}>
+      <Box sx={{ marginTop: { xs: "56px", md: "152px" } }}>
         <Navigate></Navigate>
         <ProductDetailInfo product={product}></ProductDetailInfo>
       </Box>
