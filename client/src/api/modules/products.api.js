@@ -11,7 +11,7 @@ const productEndpoints = {
   search: ({ keySearch }) =>
     `product-service/api/v1/searches/public?keyword=${keySearch}`,
   getTopProducts: ({ pageIndex, size }) =>
-    `order-service/api/v1/orders/topProducts?page=${pageIndex}&size=${size}`,
+    `order-service/api/v1/orders/public/topProducts?page=${pageIndex}&size=${size}`,
   filterProducts: ({ params }) =>
     `product-service/api/v1/products/public/filter?${params}`,
   getProductByProductId: ({ productId }) =>
