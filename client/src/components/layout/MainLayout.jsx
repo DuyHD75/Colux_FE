@@ -41,7 +41,7 @@ const MainLayout = () => {
         }
       }
     };
-   
+
     authUser();
   }, []);
 
@@ -52,11 +52,13 @@ const MainLayout = () => {
         if (response) {
           setItemCart(response.data.carts.cartItems.length);
           console.log(itemCart);
-          
+
         }
       }
     };
-    getCart();}, [user]);
+    getCart();
+  },
+    [user,]);
 
 
   const showHeaderFooter = !(
@@ -70,7 +72,7 @@ const MainLayout = () => {
   return (
     <div>
       {/* header */}
-      {showHeaderFooter && <Header itemCart={itemCart}/>}
+      {showHeaderFooter && <Header itemCart={itemCart} />}
       {/* header */}
       {/* global loading */}
       <GlobalLoading />
@@ -78,7 +80,7 @@ const MainLayout = () => {
       {/* <StompSessionProvider url="https://colux.site/ws">
         <ChatPopup />
       </StompSessionProvider> */}
-      <ChatPopup />
+      {/* <ChatPopup   /> */}
       <Box className="flex min-h-screen">
         {/* main */}
         <Box

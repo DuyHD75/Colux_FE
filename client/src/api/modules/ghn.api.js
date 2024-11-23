@@ -5,6 +5,8 @@ const userEndpoints = {
   getDistrict: "/order-service/api/v1/orders/shipping/district",
   getWard: "/order-service/api/v1/orders/shipping/ward",
   calculateShippingFee: "/order-service/api/v1/orders/shipping/calculateFee",
+  getAllShipments: (userId) => `order-service/api/v1/orders/shipment/${userId}`,
+  createShipments: "/order-service/api/v1/orders/shipment",
 };
 
 const ghnApi = {
@@ -61,6 +63,27 @@ const ghnApi = {
           weight,
           length,
         }
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getAllShipments: async (userId) => {
+    try {
+      const response = await proxyClient.get(
+        userEndpoints.getAllShipments(userId)
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  createShipments: async (shipment) => {
+    try {
+      const response = await proxyClient.post(
+        userEndpoints.createShipments,
+        shipment
       );
       return { response };
     } catch (err) {

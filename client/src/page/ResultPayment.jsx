@@ -6,6 +6,7 @@ import { Link, useLocation, useNavigate } from "react-router-dom";
 import textConfigs from "../config/text.config";
 import { Button } from "antd";
 import backgroundConfigs from "../config/background.config";
+import { useSelector } from "react-redux";
 
 const ResultPayment = () => {
   const [loading, setLoading] = useState(false);
@@ -13,6 +14,7 @@ const ResultPayment = () => {
   const [fade, setFade] = useState(1);
   const [redirectMessage, setRedirectMessage] = useState("");
   const [errMessage, setErrMessage] = useState("");
+  const { user } = useSelector((state) => state.user);
 
   const location = useLocation();
   const navigate = useNavigate();
@@ -63,10 +65,10 @@ const ResultPayment = () => {
           <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: 'bold ' }} variant="h6" color={success ? "green" : "red"}>
             {success ? "Payment Success!" : "Payment Failed!"}
           </Typography>
-          <Typography sx={{ ...textConfigs.style.basicFont, mb: '5px' }} variant="body1" marginTop={2} color={success ? "green" : "red"}>
-            {success ? "Thank you for your payment!" : "Please try again!"}
+          <Typography sx={{ ...textConfigs.style.basicFont, mb: '5px', textAlign: 'center' }} variant="body1" marginTop={2} color={success ? "green" : "red"}>
+            {success ? "Thank you for your payment and please check your email!" : "Please try again!"}
           </Typography>
-          <Link to='/orderHistory'>
+          <Link to={user ? '/orderHistory' : '/'}>
             <button style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...textConfigs.style.basicFont, marginTop: '15px' }} className='min-w-fit py-2 px-3 flex justify-center'>Continue to Shopping</button>
           </Link>
           <Typography sx={{ ...textConfigs.style.basicFont }} variant="body1" marginTop={2} color="#1c2759">
