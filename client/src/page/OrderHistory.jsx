@@ -19,7 +19,8 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
 const OrderHistory = () => {
     const { appState } = useSelector((state) => state.appState);
-    const { user } = useSelector((state) => state.user);
+    // const user = JSON.parse(localStorage.getItem("user"));
+    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
     const dispatch = useDispatch();
     const [orders, setOrders] = useState([]);
     const [open, setOpen] = useState(false);
@@ -58,8 +59,8 @@ const OrderHistory = () => {
     useEffect(() => {
         const getOrder = async () => {
             if (user) {
+                dispatch(setGlobalLoading(true));
                 try {
-                    dispatch(setGlobalLoading(true));
                     const { response, err } = await cartApi.getOrdersbyCustomerId(user.userId);
                     dispatch(setGlobalLoading(false));
 

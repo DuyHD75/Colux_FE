@@ -164,6 +164,7 @@ const AddProduct = () => {
           setSelectedProperties([]);
           setSelectedFeatures([]);
           setSelectedImage(null);
+          setImageUrl([]);
           toast.success(response.message);
         } else {
           toast.error(err.exception);
@@ -238,6 +239,7 @@ const AddProduct = () => {
       {
         name: "",
         description: "",
+        category: "",
         propertyValues: [""],
       },
     ],
@@ -245,6 +247,7 @@ const AddProduct = () => {
       Yup.object({
         name: Yup.string().required("Required"),
         description: Yup.string().required("Required"),
+        category: Yup.string().required("Category is required!"),
         propertyValues: Yup.array()
           .of(Yup.string().required("Property value is required"))
           .min(1, "At least one property value is required"),
@@ -271,6 +274,7 @@ const AddProduct = () => {
       {
         name: "",
         description: "",
+        category: "",
         featureValue: [""],
       },
     ],
@@ -278,6 +282,7 @@ const AddProduct = () => {
       Yup.object({
         name: Yup.string().required("Required"),
         description: Yup.string().required("Required"),
+        category: Yup.string().required("Category is required!"),
         featureValue: Yup.array()
           .of(Yup.string().required("Feature value is required"))
           .min(1, "At least one Feature value is required"),
@@ -401,6 +406,11 @@ const AddProduct = () => {
       newImages.splice(index, 1);
       return { ...prevState, images: newImages };
     });
+    setImageUrl((prev) => {
+      const newUrl = [...prev];
+      newUrl.splice(index, 1);
+      return newUrl;
+    });
   };
 
   const handleBack = () => {
@@ -408,11 +418,7 @@ const AddProduct = () => {
   };
 
   return (
-    <Stack
-      direction="row"
-      spacing={1}
-      my={1}
-    >
+    <Stack direction="row" spacing={1} my={1}>
       {/* <SlideBar></SlideBar> */}
 
       <Box
@@ -529,10 +535,11 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                <MenuItem value="Viet Nam">Viet Nam</MenuItem>
-                <MenuItem value="Korean">Korean</MenuItem>
-                <MenuItem value="America">America</MenuItem>
                 <MenuItem value="Japan">Japan</MenuItem>
+                <MenuItem value="Korean">Korean</MenuItem>
+                <MenuItem value="Nauy">Nauy</MenuItem>
+                <MenuItem value="Netherlands">Netherlands</MenuItem>
+                <MenuItem value="Viet Nam">Viet Nam</MenuItem>
               </Select>
               {formikProductInfo.touched.placeOfOrigin &&
               formikProductInfo.errors.placeOfOrigin ? (
@@ -666,14 +673,24 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {categories.map((category) => (
-                  <MenuItem
-                    key={category.categoryId}
-                    value={category.categoryId}
-                  >
-                    {category.name}
-                  </MenuItem>
-                ))}
+                {categories
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((category) => (
+                    <MenuItem
+                      key={category.categoryId}
+                      value={category.categoryId}
+                    >
+                      {category.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.categoryId &&
               formikProductInfo.errors.categoryId ? (
@@ -701,11 +718,21 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {brands.map((brand) => (
-                  <MenuItem key={brand.brandId} value={brand.brandId}>
-                    {brand.name}
-                  </MenuItem>
-                ))}
+                {brands
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((brand) => (
+                    <MenuItem key={brand.brandId} value={brand.brandId}>
+                      {brand.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.brandId &&
               formikProductInfo.errors.brandId ? (
@@ -733,11 +760,21 @@ const AddProduct = () => {
                 size="small"
                 sx={{ width: "100%" }}
               >
-                {suppliers.map((supplier, index) => (
-                  <MenuItem key={index} value={supplier.id}>
-                    {supplier.name}
-                  </MenuItem>
-                ))}
+                {suppliers
+                  .slice()
+                  .sort((a, b) => {
+                    const numA =
+                      parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                    if (numA !== numB) return numA - numB;
+                    return a.name.localeCompare(b.name);
+                  })
+                  .map((supplier, index) => (
+                    <MenuItem key={index} value={supplier.id}>
+                      {supplier.name}
+                    </MenuItem>
+                  ))}
               </Select>
               {formikProductInfo.touched.supplierId &&
               formikProductInfo.errors.supplierId ? (
@@ -1211,40 +1248,84 @@ const AddProduct = () => {
                       size="small"
                       sx={{ width: "100%" }}
                     />
-                    {formikPropertyInfo.touched.name &&
-                    formikPropertyInfo.errors.name ? (
+                    {formikPropertyInfo.touched[index]?.name &&
+                    formikPropertyInfo.errors[index]?.name ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikPropertyInfo.errors.name}
+                        {formikPropertyInfo.errors[index]?.name}
                       </div>
                     ) : null}
                   </Stack>
-                  <Stack direction="column" width="100%">
+                  <Stack direction="column" width="50%">
                     <Typography
                       sx={{
                         ...textConfig.style.headerText,
-                        fontSize: "14px",
                         color: "text.secondary",
+                        fontSize: "14px",
                       }}
                     >
-                      Property Description
+                      Category
                     </Typography>
-                    <TextField
-                      name={`[${index}].description`}
+                    <Select
+                      name={`[${index}]category`}
                       onChange={formikPropertyInfo.handleChange}
                       onBlur={formikPropertyInfo.handleBlur}
-                      value={property.description}
-                      type="text"
-                      placeholder="Property Description"
+                      value={property.category}
                       size="small"
                       sx={{ width: "100%" }}
-                    />
-                    {formikPropertyInfo.touched.description &&
-                    formikPropertyInfo.errors.description ? (
+                    >
+                      {categories
+                        .slice()
+                        .sort((a, b) => {
+                          const numA =
+                            parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                          const numB =
+                            parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                          if (numA !== numB) return numA - numB;
+                          return a.name.localeCompare(b.name);
+                        })
+                        .map((category) => (
+                          <MenuItem
+                            key={category.categoryId}
+                            value={category.name}
+                          >
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {formikPropertyInfo.touched[index]?.category &&
+                    formikPropertyInfo.errors[index]?.category ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikPropertyInfo.errors.description}
+                        {formikPropertyInfo.errors[index].category}
                       </div>
                     ) : null}
                   </Stack>
+                </Stack>
+                <Stack direction="column" width="100%">
+                  <Typography
+                    sx={{
+                      ...textConfig.style.headerText,
+                      fontSize: "14px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    Property Description
+                  </Typography>
+                  <TextField
+                    name={`[${index}].description`}
+                    onChange={formikPropertyInfo.handleChange}
+                    onBlur={formikPropertyInfo.handleBlur}
+                    value={property.description}
+                    type="text"
+                    placeholder="Property Description"
+                    size="small"
+                    sx={{ width: "100%" }}
+                  />
+                  {formikPropertyInfo.touched[index]?.description &&
+                  formikPropertyInfo.errors[index]?.description ? (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formikPropertyInfo.errors[index]?.description}
+                    </div>
+                  ) : null}
                 </Stack>
                 {property.propertyValues.map((val, valIndex) => (
                   <Stack key={valIndex} direction="column" width="100%" mt={2}>
@@ -1465,42 +1546,85 @@ const AddProduct = () => {
                       size="small"
                       sx={{ width: "100%" }}
                     />
-                    {formikFeatureInfo.touched.name &&
-                    formikFeatureInfo.errors.name ? (
+                    {formikFeatureInfo.touched[index]?.name &&
+                    formikFeatureInfo.errors[index]?.name ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikFeatureInfo.errors.name}
+                        {formikFeatureInfo.errors[index]?.name}
                       </div>
                     ) : null}
                   </Stack>
-                  <Stack direction="column" width="100%">
+                  <Stack direction="column" width="50%">
                     <Typography
                       sx={{
                         ...textConfig.style.headerText,
-                        fontSize: "14px",
                         color: "text.secondary",
+                        fontSize: "14px",
                       }}
                     >
-                      Feature Description
+                      Category
                     </Typography>
-                    <TextField
-                      name={`[${index}].description`}
+                    <Select
+                      name={`[${index}]category`}
                       onChange={formikFeatureInfo.handleChange}
                       onBlur={formikFeatureInfo.handleBlur}
-                      value={feature.description}
-                      type="text"
-                      placeholder="Feature Description"
+                      value={feature.category}
                       size="small"
                       sx={{ width: "100%" }}
-                    />
-                    {formikFeatureInfo.touched.description &&
-                    formikFeatureInfo.errors.description ? (
+                    >
+                      {categories
+                        .slice()
+                        .sort((a, b) => {
+                          const numA =
+                            parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                          const numB =
+                            parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                          if (numA !== numB) return numA - numB;
+                          return a.name.localeCompare(b.name);
+                        })
+                        .map((category) => (
+                          <MenuItem
+                            key={category.categoryId}
+                            value={category.name}
+                          >
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {formikFeatureInfo.touched[index]?.category &&
+                    formikFeatureInfo.errors[index]?.category ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikFeatureInfo.errors.description}
+                        {formikFeatureInfo.errors[index]?.category}
                       </div>
                     ) : null}
                   </Stack>
                 </Stack>
-
+                <Stack direction="column" width="100%">
+                  <Typography
+                    sx={{
+                      ...textConfig.style.headerText,
+                      fontSize: "14px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    Feature Description
+                  </Typography>
+                  <TextField
+                    name={`[${index}].description`}
+                    onChange={formikFeatureInfo.handleChange}
+                    onBlur={formikFeatureInfo.handleBlur}
+                    value={feature.description}
+                    type="text"
+                    placeholder="Feature Description"
+                    size="small"
+                    sx={{ width: "100%" }}
+                  />
+                  {formikFeatureInfo.touched[index]?.description &&
+                  formikFeatureInfo.errors[index]?.description ? (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formikFeatureInfo.errors[index]?.description}
+                    </div>
+                  ) : null}
+                </Stack>
                 {feature.featureValue.map((val, valIndex) => (
                   <Stack key={valIndex} direction="column" width="100%" mt={2}>
                     <Typography
@@ -1693,34 +1817,57 @@ const AddProduct = () => {
           }}
         >
           <FormGroup>
-            {availableProperties.map((property) => (
-              <div key={property.propertyId}>
-                <Typography variant="subtitle1">{property.name}</Typography>
-                {property.propertyValues.map((value) => (
-                  <FormControlLabel
-                    key={value.id}
-                    control={
-                      <Checkbox
-                        checked={selectedProperties.some(
-                          (p) =>
-                            p.property.propertyId === property.propertyId &&
-                            p.value === value.value
-                        )}
-                        onChange={(e) =>
-                          handlePropertiesChange(
-                            property.propertyId,
-                            value.value,
-                            value.id,
-                            property.name
-                          )
+            {availableProperties
+              .slice()
+              .sort((a, b) => {
+                const numA = parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                const numB = parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                if (numA !== numB) return numA - numB;
+                return a.name.localeCompare(b.name);
+              })
+              .map((property) => (
+                <div key={property.propertyId}>
+                  <Typography variant="subtitle1">{property.name}</Typography>
+                  {property.propertyValues
+                    .slice()
+                    .sort((a, b) => {
+                      // Trích xuất số từ chuỗi (nếu có)
+                      const numA =
+                        parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                      const numB =
+                        parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+
+                      // Nếu có số, sắp xếp theo số
+                      if (numA !== numB) return numA - numB;
+
+                      // Nếu không có số, so sánh phần chữ
+                      return a.value.localeCompare(b.value);
+                    })
+                    .map((value) => (
+                      <FormControlLabel
+                        key={value.id}
+                        control={
+                          <Checkbox
+                            checked={selectedProperties.some(
+                              (p) =>
+                                p.property.propertyId === property.propertyId &&
+                                p.value === value.value
+                            )}
+                            onChange={(e) =>
+                              handlePropertiesChange(
+                                property.propertyId,
+                                value.value,
+                                value.id,
+                                property.name
+                              )
+                            }
+                          />
                         }
+                        label={value.value}
                       />
-                    }
-                    label={value.value}
-                  />
-                ))}
-              </div>
-            ))}
+                    ))}
+                </div>
+              ))}
           </FormGroup>
         </DialogContent>
         <DialogActions>
@@ -1754,29 +1901,44 @@ const AddProduct = () => {
             {availableFeatures.map((feature) => (
               <div key={feature.featureId}>
                 <Typography variant="subtitle1">{feature.name}</Typography>
-                {feature.featureValues.map((value) => (
-                  <FormControlLabel
-                    key={value.id}
-                    control={
-                      <Checkbox
-                        checked={selectedFeatures.some(
-                          (f) =>
-                            f.feature.featureId === feature.featureId &&
-                            f.value === value.value
-                        )}
-                        onChange={(e) =>
-                          handleFeatureChange(
-                            feature.featureId,
-                            value.value,
-                            value.id,
-                            feature.name
-                          )
-                        }
-                      />
-                    }
-                    label={value.value}
-                  />
-                ))}
+                {feature.featureValues
+                  .slice()
+                  .sort((a, b) => {
+                    // Trích xuất số từ chuỗi (nếu có)
+                    const numA =
+                      parseInt(a.value.match(/\d+/)?.[0], 10) || Infinity;
+                    const numB =
+                      parseInt(b.value.match(/\d+/)?.[0], 10) || Infinity;
+
+                    // Nếu có số, sắp xếp theo số
+                    if (numA !== numB) return numA - numB;
+
+                    // Nếu không có số, so sánh phần chữ
+                    return a.value.localeCompare(b.value);
+                  })
+                  .map((value) => (
+                    <FormControlLabel
+                      key={value.id}
+                      control={
+                        <Checkbox
+                          checked={selectedFeatures.some(
+                            (f) =>
+                              f.feature.featureId === feature.featureId &&
+                              f.value === value.value
+                          )}
+                          onChange={(e) =>
+                            handleFeatureChange(
+                              feature.featureId,
+                              value.value,
+                              value.id,
+                              feature.name
+                            )
+                          }
+                        />
+                      }
+                      label={value.value}
+                    />
+                  ))}
               </div>
             ))}
           </FormGroup>

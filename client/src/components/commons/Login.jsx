@@ -49,13 +49,16 @@ const Login = ({ switchAuthState }) => {
       const { response, err } = await userApi.login(values);
       setIsLoginRequest(false);
 
-      if (response) {
+      if (response && response.data.user.role === "USER") {
         dispatch(setUser(response.data.user));
         loginForm.resetForm();
         dispatch(setUser(response.data.user));
         localStorage.setItem('user', JSON.stringify(response.data.user));
         navigate('/');
       } else {
+        setErrorMessage("Your account does not have permission to access this page.");
+      }
+      if(err) {
         setErrorMessage(err.exception);
       }
     },

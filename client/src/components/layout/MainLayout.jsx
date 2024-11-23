@@ -25,25 +25,26 @@ const actionState = {
 const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const  user  = localStorage.getItem("user");
   const [itemCart, setItemCart] = useState(0);
 
 
-  useEffect(() => {
-    const authUser = async () => {
-      if (!user) {
-        const { response, err } = await userApi.getInfo();
-        if (response) {
-          dispatch(setUser(response.data.user));
-        }
-        if (err) {
-          dispatch(setUser(null));
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const authUser = async () => {
+  //     if (!user) {
+  //       const { response, err } = await userApi.getInfo();
+  //       if (response && response.data.user.role === "USER") {
+  //         dispatch(setUser(response.data.user));
+  //       }
+  //       if (err) {
+  //         dispatch(setUser(null));
+  //       }
+  //     }
+  //   };
+   
+  //   authUser();
+  // }, []);
 
-    authUser();
-  }, []);
 
   useEffect(() => {
     const getCart = async () => {

@@ -8,20 +8,26 @@ import i18n from "./i18n";
 import { ToastContainer } from "react-toastify";
 import { CssBaseline } from "@mui/material";
 import { I18nextProvider } from "react-i18next";
+import store from './redux/store';
+import { useDispatch, Provider } from 'react-redux';
+import { useEffect } from "react";
+import { setAdmin } from "./redux/reducer/adminSlice";
 
 function App() {
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const storedAdmin = localStorage.getItem("admin");
+    if (storedAdmin) {
+      dispatch(setAdmin(JSON.parse(storedAdmin))); // Khôi phục thông tin admin
+    }
+  }, [dispatch]);
+
   return (
-    <I18nextProvider i18n={i18n}>
-      <ToastContainer
-        position="bottom-right"
-        autoClose={3000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        pauseOnFocusLoss
-        pauseOnHover
-      />
-      <CssBaseline />
+    <Provider store={store}>
+      <ToastContainer />
+      <BrowserRouter>
         <Routes>
           <Route path="/" element={<MainLayout />}>
             {routes.map((route, index) =>
@@ -57,7 +63,8 @@ function App() {
             )}
           </Route>
         </Routes>
-    </I18nextProvider>
+      </BrowserRouter>
+    </Provider>
   );
 }
 

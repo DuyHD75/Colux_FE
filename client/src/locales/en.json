@@ -129,5 +129,6 @@
   "price.range.400-500": "400 - 500$",
   "price.range.500+": "500$ +",
   "free.ship": "Free shipping for orders over $500",
-  "return": "Return within 7 days"
+  "return": "Return within 7 days",
+  "value.cannot.be.negative": "Value cannot be negative."
 }
