@@ -200,7 +200,7 @@ const ChatPopup = () => {
                         </Stack>
                         <IoMdClose onClick={() => setIsVisible(false)} />
                     </Stack>
-                    <Box height='30vh' overflow='auto' bgcolor='#FFFFFF' padding='16px' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
+                    <Box height='356px' overflow='auto' bgcolor='#FFFFFF' padding='16px' display='flex' flexDirection='column' justifyContent='center' alignItems='center'>
                         <Typography sx={{
                             ...textConfigs.style.basicFont,
                         }} variant="body1" >

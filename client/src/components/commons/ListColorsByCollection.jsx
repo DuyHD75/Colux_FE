@@ -83,7 +83,7 @@ const ListColorsByCollection = () => {
               : `${t("paint.colors")} ${collection}`}
           </Typography>
         </Grid>
-        <Grid
+{/*         <Grid
           item
           xs={12}
           md={4}
@@ -126,7 +126,7 @@ const ListColorsByCollection = () => {
             }}
             onChange={handleSearchChange}
           />
-        </Grid>
+        </Grid> */}
       </Grid>
 
       <Grid container spacing={3}>

@@ -19,7 +19,7 @@ const UserSidebar = ({ children }) => {
     const { response, err } = await userApi.logout();
     if (response) {
       dispatch(setUser(null));
-      localStorage.clear();
+      localStorage.removeItem('user')
       navigate("/");
       toast.success("Logout Success.");
     }
@@ -31,7 +31,7 @@ const UserSidebar = ({ children }) => {
   return (
     <>
       {/* Phần header điều hướng */}
-      <Box pt={{ xs: "56px", md: "128px" }}>
+      <Box pt={{ xs: "56px", md: "152px" }}>
         <Navigate />
       </Box>
 
@@ -55,10 +55,10 @@ const UserSidebar = ({ children }) => {
           <Stack
             width={{ xs: "100%", md: "20%" }}
             position={{ xs: "absolute", md: "relative" }}
-            zIndex={{ xs: 2, md: "auto" }}
+            zIndex={{ xs: 0, md: "auto" }}
             top={{ xs: 0, md: "auto" }}
             bgcolor={{ xs: "white", md: "transparent" }}
-            display={{ xs: "flex", md: "flex" }}
+            display={{ xs: "none", md: "flex" }}
             direction="column"
             spacing={2}
             alignItems="center"
@@ -115,7 +115,7 @@ const UserSidebar = ({ children }) => {
           {/* Nội dung children */}
           <Box
             sx={{
-              marginTop: { xs: "480px !important", md: "0 !important" }, 
+              marginTop: { xs: "-20px !important", md: "0 !important" }, 
               width: "100%",
             }}
           >

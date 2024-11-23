@@ -155,7 +155,7 @@ const ListColorsByRoom = () => {
   return (
     <Container maxWidth="lg" className="my-10">
       <Grid container spacing={2} marginBottom={2}>
-        <Grid item xs={12} md={5}>
+        <Grid item xs={12} md={8}>
           <Typography variant="h3" sx={{ ...textConfigs.style.headerText, fontSize: "30px",
               fontWeight: "bold", }}>
           {i18n.language === "en"
@@ -163,7 +163,7 @@ const ListColorsByRoom = () => {
               : `${t("paint.colors")} ${collection}`}
           </Typography>
         </Grid>
-        <Grid
+{/*         <Grid
           item
           xs={12}
           md={4}
@@ -206,11 +206,11 @@ const ListColorsByRoom = () => {
             }}
             onChange={handleSearchChange}
           />
-        </Grid>
+        </Grid> */}
         <Grid
           item
           xs={12}
-          md={3}
+          md={4}
           sx={{ display: "flex", alignItems: "center", justifyContent: "end" }}
         >
           <FormControl fullWidth variant="outlined" >

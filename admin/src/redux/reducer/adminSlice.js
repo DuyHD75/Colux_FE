@@ -7,13 +7,6 @@ const adminSlice = createSlice({
   },
   reducers: {
     setAdmin: (state, action) => {
-      if (action.payload === null) {
-        localStorage.removeItem('admin');
-      } else {
-        if (typeof window !== "undefined") {
-          localStorage.setItem('admin', JSON.stringify(action.payload));
-        }
-      }
       state.admin = action.payload;
     }
   }

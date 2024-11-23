@@ -37,17 +37,16 @@ import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
 import cartApi from "../../api/modules/cart.api";
 
-export const Header = ({itemCart}) => {
-  console.log("itemCart", itemCart);
-  
+export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const { user } = useSelector((state) => state.user);
+  const user = JSON.parse(localStorage.getItem("user"));
   const { t, i18n } = useTranslation();
 
   const [colorFamlily, setColorFamily] = useState([]);
   const [collections, setCollection] = useState([]);
+
   const [anchorElNav, setAnchorElNav] = useState(false);
   const [anchorElUser, setAnchorElUser] = useState(false);
   const [anchorElColors, setAnchorElColors] = useState(false);
@@ -166,7 +165,7 @@ export const Header = ({itemCart}) => {
         toast.error("An error occurred while fetching collections.");
       }
     };
-    
+
     getCollections();
     getListColofamily();
   }, []);
@@ -175,7 +174,7 @@ export const Header = ({itemCart}) => {
     const getAllCategory = async () => {
       try {
         const { response, err } = await productsApi.getAllCategory();
-        if (response && response.code === 200) {
+        if (response) {
           setCategories([...response.data.categories]);
         } else if (err) {
           toast.error(err);
@@ -235,7 +234,7 @@ export const Header = ({itemCart}) => {
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           {/* Start logo */}
-          <Typography
+          <Box
             variant="h6"
             noWrap
             component="a"
@@ -245,15 +244,25 @@ export const Header = ({itemCart}) => {
               display: { xs: "none", md: "flex" },
               fontFamily: "Nunito",
               fontWeight: 700,
-              letterSpacing: ".6rem",
+              letterSpacing: "0",
               color: "#000",
               textDecoration: "none",
-              fontSize: "2rem",
+              fontSize: "1.8rem",
               overflow: "inherit",
+              alignItems: "end", // Căn giữa logo và text theo chiều dọc
             }}
           >
-            KOLUX
-          </Typography>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Flogo-icon.svg?alt=media&token=039706dc-1908-40c7-b42f-755ed24a70f5" 
+              alt="Colux Logo"
+              style={{
+                width: "45px", 
+                height: "45px",
+                marginRight: "0px", 
+              }}
+            />
+            LUX.
+          </Box>
           {/* End logo */}
 
           {/* Start menu mobile */}
@@ -501,7 +510,7 @@ export const Header = ({itemCart}) => {
           {/* End menu mobile */}
 
           {/* Start logo mobile */}
-          <Typography
+          <Box
             variant="h5"
             noWrap
             component="a"
@@ -513,14 +522,23 @@ export const Header = ({itemCart}) => {
               flexGrow: 1,
               fontFamily: "Nunito",
               fontWeight: 700,
-              letterSpacing: ".8rem",
+              letterSpacing: ".6rem",
               color: "inherit",
               textDecoration: "none",
               fontSize: "1.4rem",
             }}
           >
-            KOLUX
-          </Typography>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fgooglecolab-svgrepo-com.svg?alt=media&token=8c73424a-2f2d-47dd-a4c5-960063e52e40"
+              alt="Colux Logo"
+              style={{
+                width: "40px", // Kích thước logo
+                height: "40px",
+                marginRight: "8px", // Khoảng cách giữa logo và chữ
+              }}
+            />
+            LUX
+          </Box>
           {/* End logo mobile */}
 
           <NavItemsHeader
@@ -800,9 +818,7 @@ export const Header = ({itemCart}) => {
                       },
                     }}
                   >
-                    <Badge badgeContent={itemCart} color="primary">
-                      <ShoppingCartIcon />
-                    </Badge>
+                    <ShoppingCartIcon />
                   </IconButton>
                   <Tooltip title={`${user.firstName} ${user.lastName}`}>
                     <Link to="/profile" style={{ textDecoration: "none" }}>

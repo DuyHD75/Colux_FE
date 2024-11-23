@@ -14,7 +14,7 @@ const Profile = () => {
 
     const [editInfo, setEditInfo] = useState(false);
     const [editAddress, setEditAddress] = useState(false);
-    const { user } = useSelector((state) => state.user);
+    const user = JSON.parse(localStorage.getItem("user"));
 
     const updateProfile = async (values) => {
         const profile={
@@ -67,12 +67,18 @@ const Profile = () => {
     });
 
     useEffect(() => {
-        if (user) {
+        const { firstName, lastName, email, phone } = user;
+        if (
+            formikInfo.values.firstName !== firstName ||
+            formikInfo.values.lastName !== lastName ||
+            formikInfo.values.email !== email ||
+            formikInfo.values.phone !== phone
+        ) {
             formikInfo.setValues({
-                firstName: user.firstName || '',
-                lastName: user.lastName || '',
-                email: user.email || '',
-                phone: user.phone || '',
+                firstName: firstName || '',
+                lastName: lastName || '',
+                email: email || '',
+                phone: phone || '',
             });
         }
     }, [user]);

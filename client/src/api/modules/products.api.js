@@ -2,22 +2,22 @@ import proxyClient from "../client/proxy.client";
 
 const productEndpoints = {
   getAllProductPageAble: ({ pageIndex, size }) =>
-    `product-service/api/v1/products/product/pageable?page=${pageIndex}&size=${size}`,
-  getAllCategory: "product-service/api/v1/products/categories/getAll",
-  getAllProperties: "product-service/api/v1/products/properties",
-  getAllFeatures: "product-service/api/v1/products/features",
+    `product-service/api/v1/products/public/pageable?page=${pageIndex}&size=${size}`,
+  getAllCategory: "product-service/api/v1/categories/public",
+  getAllProperties: "product-service/api/v1/properties/public",
+  getAllFeatures: "product-service/api/v1/features/public",
   getProductByCategory: ({ categoryId, pageIndex, size }) =>
-    `product-service/api/v1/products/categories/${categoryId}/products?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/categories/public/categoryId/${categoryId}/products?page=${pageIndex}&size=${size}`,
   search: ({ keySearch }) =>
-    `product-service/api/v1/products/search?keyword=${keySearch}`,
+    `product-service/api/v1/searches/public?keyword=${keySearch}`,
   getTopProducts: ({ pageIndex, size }) =>
-    `order-service/api/v1/orders/topProducts?page=${pageIndex}&size=${size}`,
+    `order-service/api/v1/orders/public/topProducts?page=${pageIndex}&size=${size}`,
   filterProducts: ({ params }) =>
-    `product-service/api/v1/products/filter?${params}`,
+    `product-service/api/v1/products/public/filter?${params}`,
   getProductByProductId: ({ productId }) =>
-    `product-service/api/v1/products/${productId}`,
+    `product-service/api/v1/products/public/productId/${productId}`,
   getProductByColorId: ({ colorId, pageIndex, size }) =>
-    `product-service/api/v1/products/paints/product/${colorId}?page=${pageIndex}&size=${size}`,
+    `product-service/api/v1/paints/public/colorId/${colorId}?page=${pageIndex}&size=${size}`,
 };
 
 const prodcutsApi = {
