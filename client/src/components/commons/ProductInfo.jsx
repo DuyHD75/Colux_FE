@@ -3,7 +3,7 @@ import React from 'react'
 import ImageComponent from './ImageComponent'
 import TextConfig from '../../config/text.config'
 
-const ProductInfo = ({ product, padding }) => {
+const ProductInfo = ({ product, padding, checkout }) => {
     return (
         <Stack direction='row' flex={4} padding={padding} >
             <div style={{ width: '97.14px', paddingRight: '13.6875px' }}>
@@ -15,7 +15,7 @@ const ProductInfo = ({ product, padding }) => {
                     overflow: 'hidden',
                     textOverflow: 'ellipsis',
                 }}>{product.cartItemVariant.productDetails.productName}</Typography>
-                <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Inventory : <span style={{ marginLeft: '18px' }}>{product.cartItemVariant.variantInventory}</span></Typography>
+                {!checkout&&<Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Inventory : <span style={{ marginLeft: '18px' }}>{product.cartItemVariant.variantInventory}</span></Typography>}
                 <Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Product #: <span style={{ marginLeft: '20px' }}> {product.cartItemVariant.productDetails.code}</span></Typography>
                 { product.cartItemVariant.categoryName==="Paint"&&<Typography marginBottom='9.1px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Color Code : <span style={{ marginLeft: '8px' }}>{product.cartItemVariant.productDetails.paintDetails.hex}</span></Typography>}
                 <Typography marginBottom='5.2px' variant='h4' fontSize='13px' sx={{ ...TextConfig.style.basicFont }}>Package Type: <span style={{ marginLeft: '26px' }}>{product.cartItemVariant.packageType} </span></Typography>
