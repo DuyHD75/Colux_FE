@@ -239,6 +239,7 @@ const AddProduct = () => {
       {
         name: "",
         description: "",
+        category: "",
         propertyValues: [""],
       },
     ],
@@ -246,6 +247,7 @@ const AddProduct = () => {
       Yup.object({
         name: Yup.string().required("Required"),
         description: Yup.string().required("Required"),
+        category: Yup.string().required("Category is required!"),
         propertyValues: Yup.array()
           .of(Yup.string().required("Property value is required"))
           .min(1, "At least one property value is required"),
@@ -272,6 +274,7 @@ const AddProduct = () => {
       {
         name: "",
         description: "",
+        category: "",
         featureValue: [""],
       },
     ],
@@ -279,6 +282,7 @@ const AddProduct = () => {
       Yup.object({
         name: Yup.string().required("Required"),
         description: Yup.string().required("Required"),
+        category: Yup.string().required("Category is required!"),
         featureValue: Yup.array()
           .of(Yup.string().required("Feature value is required"))
           .min(1, "At least one Feature value is required"),
@@ -1244,40 +1248,84 @@ const AddProduct = () => {
                       size="small"
                       sx={{ width: "100%" }}
                     />
-                    {formikPropertyInfo.touched.name &&
-                    formikPropertyInfo.errors.name ? (
+                    {formikPropertyInfo.touched[index]?.name &&
+                    formikPropertyInfo.errors[index]?.name ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikPropertyInfo.errors.name}
+                        {formikPropertyInfo.errors[index]?.name}
                       </div>
                     ) : null}
                   </Stack>
-                  <Stack direction="column" width="100%">
+                  <Stack direction="column" width="50%">
                     <Typography
                       sx={{
                         ...textConfig.style.headerText,
-                        fontSize: "14px",
                         color: "text.secondary",
+                        fontSize: "14px",
                       }}
                     >
-                      Property Description
+                      Category
                     </Typography>
-                    <TextField
-                      name={`[${index}].description`}
+                    <Select
+                      name={`[${index}]category`}
                       onChange={formikPropertyInfo.handleChange}
                       onBlur={formikPropertyInfo.handleBlur}
-                      value={property.description}
-                      type="text"
-                      placeholder="Property Description"
+                      value={property.category}
                       size="small"
                       sx={{ width: "100%" }}
-                    />
-                    {formikPropertyInfo.touched.description &&
-                    formikPropertyInfo.errors.description ? (
+                    >
+                      {categories
+                        .slice()
+                        .sort((a, b) => {
+                          const numA =
+                            parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                          const numB =
+                            parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                          if (numA !== numB) return numA - numB;
+                          return a.name.localeCompare(b.name);
+                        })
+                        .map((category) => (
+                          <MenuItem
+                            key={category.categoryId}
+                            value={category.name}
+                          >
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {formikPropertyInfo.touched[index]?.category &&
+                    formikPropertyInfo.errors[index]?.category ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikPropertyInfo.errors.description}
+                        {formikPropertyInfo.errors[index].category}
                       </div>
                     ) : null}
                   </Stack>
+                </Stack>
+                <Stack direction="column" width="100%">
+                  <Typography
+                    sx={{
+                      ...textConfig.style.headerText,
+                      fontSize: "14px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    Property Description
+                  </Typography>
+                  <TextField
+                    name={`[${index}].description`}
+                    onChange={formikPropertyInfo.handleChange}
+                    onBlur={formikPropertyInfo.handleBlur}
+                    value={property.description}
+                    type="text"
+                    placeholder="Property Description"
+                    size="small"
+                    sx={{ width: "100%" }}
+                  />
+                  {formikPropertyInfo.touched[index]?.description &&
+                  formikPropertyInfo.errors[index]?.description ? (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formikPropertyInfo.errors[index]?.description}
+                    </div>
+                  ) : null}
                 </Stack>
                 {property.propertyValues.map((val, valIndex) => (
                   <Stack key={valIndex} direction="column" width="100%" mt={2}>
@@ -1498,42 +1546,85 @@ const AddProduct = () => {
                       size="small"
                       sx={{ width: "100%" }}
                     />
-                    {formikFeatureInfo.touched.name &&
-                    formikFeatureInfo.errors.name ? (
+                    {formikFeatureInfo.touched[index]?.name &&
+                    formikFeatureInfo.errors[index]?.name ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikFeatureInfo.errors.name}
+                        {formikFeatureInfo.errors[index]?.name}
                       </div>
                     ) : null}
                   </Stack>
-                  <Stack direction="column" width="100%">
+                  <Stack direction="column" width="50%">
                     <Typography
                       sx={{
                         ...textConfig.style.headerText,
-                        fontSize: "14px",
                         color: "text.secondary",
+                        fontSize: "14px",
                       }}
                     >
-                      Feature Description
+                      Category
                     </Typography>
-                    <TextField
-                      name={`[${index}].description`}
+                    <Select
+                      name={`[${index}]category`}
                       onChange={formikFeatureInfo.handleChange}
                       onBlur={formikFeatureInfo.handleBlur}
-                      value={feature.description}
-                      type="text"
-                      placeholder="Feature Description"
+                      value={feature.category}
                       size="small"
                       sx={{ width: "100%" }}
-                    />
-                    {formikFeatureInfo.touched.description &&
-                    formikFeatureInfo.errors.description ? (
+                    >
+                      {categories
+                        .slice()
+                        .sort((a, b) => {
+                          const numA =
+                            parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                          const numB =
+                            parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                          if (numA !== numB) return numA - numB;
+                          return a.name.localeCompare(b.name);
+                        })
+                        .map((category) => (
+                          <MenuItem
+                            key={category.categoryId}
+                            value={category.name}
+                          >
+                            {category.name}
+                          </MenuItem>
+                        ))}
+                    </Select>
+                    {formikFeatureInfo.touched[index]?.category &&
+                    formikFeatureInfo.errors[index]?.category ? (
                       <div className="text-red-500 text-sm mt-1">
-                        {formikFeatureInfo.errors.description}
+                        {formikFeatureInfo.errors[index]?.category}
                       </div>
                     ) : null}
                   </Stack>
                 </Stack>
-
+                <Stack direction="column" width="100%">
+                  <Typography
+                    sx={{
+                      ...textConfig.style.headerText,
+                      fontSize: "14px",
+                      color: "text.secondary",
+                    }}
+                  >
+                    Feature Description
+                  </Typography>
+                  <TextField
+                    name={`[${index}].description`}
+                    onChange={formikFeatureInfo.handleChange}
+                    onBlur={formikFeatureInfo.handleBlur}
+                    value={feature.description}
+                    type="text"
+                    placeholder="Feature Description"
+                    size="small"
+                    sx={{ width: "100%" }}
+                  />
+                  {formikFeatureInfo.touched[index]?.description &&
+                  formikFeatureInfo.errors[index]?.description ? (
+                    <div className="text-red-500 text-sm mt-1">
+                      {formikFeatureInfo.errors[index]?.description}
+                    </div>
+                  ) : null}
+                </Stack>
                 {feature.featureValue.map((val, valIndex) => (
                   <Stack key={valIndex} direction="column" width="100%" mt={2}>
                     <Typography
@@ -1729,10 +1820,8 @@ const AddProduct = () => {
             {availableProperties
               .slice()
               .sort((a, b) => {
-                const numA =
-                  parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
-                const numB =
-                  parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
+                const numA = parseInt(a.name.match(/\d+/)?.[0], 10) || Infinity;
+                const numB = parseInt(b.name.match(/\d+/)?.[0], 10) || Infinity;
                 if (numA !== numB) return numA - numB;
                 return a.name.localeCompare(b.name);
               })

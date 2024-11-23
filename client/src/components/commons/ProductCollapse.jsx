@@ -51,7 +51,7 @@ const ProductCollapse = ({ product }) => {
 
   const handleProductSelect = (productType) => {
     navigate(
-      `/colors/color-family/${productType.color.colorFamily.name}/${productType.color.colorFamily.id}/${productType.color.name}/${productType.color.id}`
+      `/colors/color-family/${productType.color.colorFamily[0].name}/${productType.color.colorFamily[0].id}/${productType.color.name}/${productType.color.id}`
     );
     // setSelectedProduct(productType);
   };

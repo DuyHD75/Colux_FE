@@ -46,10 +46,14 @@ const Login = () => {
       dispatch(setGlobalLoading(false));
       console.log(response);
       if (
-        response &&
-        (response.data.user.role === "EMPLOYEE" ||
-          response.data.user.role === "ADMIN")
+        response && response.data.user.role === "EMPLOYEE" 
+         
       ) {
+        loginForm.resetForm();
+        localStorage.setItem("employee", JSON.stringify(response.data));
+        dispatch(setAdmin(response.data));
+        navigate("/manage-products");
+      } else if (response &&  response.data.user.role === "ADMIN") {
         loginForm.resetForm();
         localStorage.setItem("admin", JSON.stringify(response.data));
         dispatch(setAdmin(response.data));

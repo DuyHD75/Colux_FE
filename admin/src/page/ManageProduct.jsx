@@ -1041,26 +1041,26 @@ const ManageProduct = () => {
   const paginationModel = { page: 0, pageSize: 10 };
   const filteredRows = useRef([]);
 
-useEffect(() => {
-  if (searchText === "") {
-    filteredRows.current = products;
-  } else {
-    console.log(searchText);
-    console.log(products);
-    
-    
-    filteredRows.current = products.filter((product) =>
-      product.productName.toLowerCase().includes(searchText.toLowerCase())
-    );
-  }
-  setRows(filteredRows.current); // Cập nhật rows với kết quả lọc
-}, [searchText, products]);
+  useEffect(() => {
+    if (searchText === "") {
+      filteredRows.current = products;
+    } else {
+      console.log(searchText);
+      console.log(products);
+
+      filteredRows.current = products.filter((product) =>
+        product.productName.toLowerCase().includes(searchText.toLowerCase())
+      );
+    }
+    setRows(filteredRows.current); // Cập nhật rows với kết quả lọc
+  }, [searchText, products]);
   return (
     <Stack direction="row" spacing={1} my={1}>
       {/* <SlideBar></SlideBar> */}
       <Box
         sx={{
           width: { xs: "100%", md: "100%" },
+          height: "100%",
           justifyContent: "end",
           border: "1px solid #ccc",
           borderRadius: "12px",
@@ -1099,37 +1099,37 @@ useEffect(() => {
           </Button>
         </Stack>
         <TextField
-        label="Search"
-        variant="outlined"
-        size="small"
-        value={searchText}
-        onChange={(e) => setSearchText(e.target.value)} // Cập nhật giá trị tìm kiếm
-        sx={{
-          width: "40%",
-          mb: "1rem",
-        }}
-      />
-
-      {/* DataGrid */}
-      <Paper
-        sx={{
-          height: 600,
-          width: "100%",
-          overflowX: "auto",
-        }}
-      >
-        <DataGrid
-          rows={rows} // Hiển thị rows đã lọc
-          columns={columns}
-          initialState={{ pagination: { paginationModel } }}
-          pageSizeOptions={[2]}
-          checkboxSelection
-          getRowId={(row) => row.productId}
+          label="Search"
+          variant="outlined"
+          size="small"
+          value={searchText}
+          onChange={(e) => setSearchText(e.target.value)} // Cập nhật giá trị tìm kiếm
           sx={{
-            fontSize: "14px",
+            width: "40%",
+            mb: "1rem",
           }}
         />
-      </Paper>
+
+        {/* DataGrid */}
+        <Paper
+          sx={{
+            height: "90%",
+            width: "100%",
+            overflowX: "auto",
+          }}
+        >
+          <DataGrid
+            rows={rows} // Hiển thị rows đã lọc
+            columns={columns}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[2]}
+            checkboxSelection
+            getRowId={(row) => row.productId}
+            sx={{
+              fontSize: "14px",
+            }}
+          />
+        </Paper>
         <Dialog
           maxWidth="lg"
           fullWidth
@@ -1559,7 +1559,7 @@ useEffect(() => {
                   )}
                   <Box display="flex" gap={2}>
                     <Button
-                      sx={{ textTransform: 'none' }}
+                      sx={{ textTransform: "none" }}
                       variant="outlined"
                       onClick={handleAddVariantRowsToggle}
                       disabled={selectedPaints.length === 0} // Disable nếu không có paint nào được chọn
@@ -1569,7 +1569,7 @@ useEffect(() => {
                         : "Add Variant to Selected Paints "}
                     </Button>
                     <Button
-                      sx={{ textTransform: 'none' }}
+                      sx={{ textTransform: "none" }}
                       variant="outlined"
                       onClick={handleAddColorDialogOpen}
                     >
@@ -1670,7 +1670,12 @@ useEffect(() => {
                                       : 1
                                   }
                                   align="center"
-                                  sx={{ p: 1, verticalAlign: "middle", width: "80px", height: "80px" }}
+                                  sx={{
+                                    p: 1,
+                                    verticalAlign: "middle",
+                                    width: "80px",
+                                    height: "80px",
+                                  }}
                                 >
                                   <div
                                     style={{
@@ -2678,6 +2683,11 @@ useEffect(() => {
           <DialogContent>
             <FormGroup>
               {availableProperties
+                .filter(
+                  (property) =>
+                    property.category &&
+                    property.category === editRow?.category?.name
+                )
                 .slice()
                 .sort((a, b) => {
                   const numA =
@@ -2727,10 +2737,18 @@ useEffect(() => {
             </FormGroup>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseProperties} color="primary" sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleCloseProperties}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleAddProperties} color="primary" sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleAddProperties}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Add Selected Properties
             </Button>
           </DialogActions>
@@ -2741,6 +2759,11 @@ useEffect(() => {
           <DialogContent>
             <FormGroup>
               {availableFeatures
+                .filter(
+                  (feature) =>
+                    feature.category &&
+                    feature.category === editRow?.category?.name
+                )
                 .slice()
                 .sort((a, b) => {
                   const numA =
@@ -2790,10 +2813,18 @@ useEffect(() => {
             </FormGroup>
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleCloseFeature} color="primary" sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleCloseFeature}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleAddFeatures} color="primary" sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleAddFeatures}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Add Selected Features
             </Button>
           </DialogActions>
@@ -2885,10 +2916,18 @@ useEffect(() => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={handleAddColorDialogClose} color="primary" sx={{ textTransform: 'none' }}>
+            <Button
+              onClick={handleAddColorDialogClose}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Cancel
             </Button>
-            <Button onClick={handleAddColorsToProduct} color="primary" sx={{ textTransform: 'none',  }}>
+            <Button
+              onClick={handleAddColorsToProduct}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
               Save
             </Button>
           </DialogActions>

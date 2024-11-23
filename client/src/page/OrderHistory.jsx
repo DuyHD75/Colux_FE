@@ -16,7 +16,8 @@ import { toast } from 'react-toastify'
 
 const OrderHistory = () => {
     const { appState } = useSelector((state) => state.appState);
-    const user = JSON.parse(localStorage.getItem("user"));
+    // const user = JSON.parse(localStorage.getItem("user"));
+    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
     const dispatch = useDispatch();
     const [orders, setOrders] = useState([]);
     const capitalizeFirstLetter = (string) => {
@@ -26,8 +27,8 @@ const OrderHistory = () => {
     useEffect(() => {
         const getOrder = async () => {
             if (user) {
+                dispatch(setGlobalLoading(true));
                 try {
-                    dispatch(setGlobalLoading(true));
                     const { response, err } = await cartApi.getOrdersbyCustomerId(user.userId);
                     if (response) {
                         

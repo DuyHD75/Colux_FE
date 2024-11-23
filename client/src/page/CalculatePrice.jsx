@@ -49,7 +49,9 @@ const CalculatePrice = () => {
 
   const [length, setLength] = useState("");
   const [width, setWidth] = useState("");
-  const [walls, setWalls] = useState([{ length: "", width: "" }]);
+  const [walls, setWalls] = useState([
+    { length: "", width: "", errors: { length: false, width: false } },
+  ]);
   const [selectedPaints, setSelectedPaints] = useState([]);
   const [selectedWallpaper, setSelectedWallpaper] = useState(null);
   const [selectedFloor, setSelectedFloor] = useState(null);
@@ -64,6 +66,28 @@ const CalculatePrice = () => {
 
   const [isSticky, setIsSticky] = useState(false);
   const boxRef = useRef(null);
+  const [isNegativeL, setIsNegativeL] = useState(false);
+  const [isNegativeW, setIsNegativeW] = useState(false);
+
+  const handleChangeL = (e) => {
+    const value = e.target.value;
+    if (value === "" || Number(value) >= 0) {
+      setLength(value);
+      setIsNegativeL(false); // Không hiển thị cảnh báo
+    } else {
+      setIsNegativeL(true); // Hiển thị cảnh báo
+    }
+  };
+
+  const handleChangeW = (e) => {
+    const value = e.target.value;
+    if (value === "" || Number(value) >= 0) {
+      setWidth(value);
+      setIsNegativeW(false); // Không hiển thị cảnh báo
+    } else {
+      setIsNegativeW(true); // Hiển thị cảnh báo
+    }
+  };
 
   const capitalizeWords = (str) => {
     return str
@@ -112,9 +136,7 @@ const CalculatePrice = () => {
                   setTotalFloor(productResponse.data.products.totalElements);
                 }
               } else if (productError) {
-                toast.error(
-                  `An error occurred while retrieving products for the ${categoryName}: ${productError}`
-                );
+                toast.error(productError.message);
               }
             } catch (error) {
               console.error(
@@ -181,11 +203,21 @@ const CalculatePrice = () => {
   const handleWallChange = (index, field, value) => {
     const newWalls = [...walls];
     newWalls[index][field] = value;
+
+    // Kiểm tra lỗi cho trường cụ thể
+    if (field === "length" || field === "width") {
+      newWalls[index].errors[field] = Number(value) < 0;
+      newWalls[index][field] = Number(value) >= 0 ? value : "";
+    }
+
     setWalls(newWalls);
   };
 
   const addWall = () => {
-    setWalls([...walls, { length: "", width: "" }]);
+    setWalls([
+      ...walls,
+      { length: "", width: "", errors: { length: false, width: false } },
+    ]);
   };
 
   const deleteWall = (index) => {
@@ -199,12 +231,24 @@ const CalculatePrice = () => {
     0
   );
 
+  const [errorState, setErrorState] = useState({});
+
   const handleEditableAreaChange = (uniqueKey, value) => {
-    setUserIsEditing(true);
-    setUserInputValue((prev) => ({
-      ...prev,
-      [uniqueKey]: value,
-    }));
+    if (value === "" || Number(value) >= 0) {
+      setErrorState((prev) => ({
+        ...prev,
+        [uniqueKey]: false, // Không lỗi
+      }));
+      setUserInputValue((prev) => ({
+        ...prev,
+        [uniqueKey]: value,
+      }));
+    } else {
+      setErrorState((prev) => ({
+        ...prev,
+        [uniqueKey]: true, // Có lỗi
+      }));
+    }
   };
 
   const handleInputBlur = (uniqueKey) => {
@@ -354,11 +398,25 @@ const CalculatePrice = () => {
           (prop) => prop.property.name === "Layer"
         )?.value;
 
+        let coverageAvailable = 0;
+        let layersAvailable = 0;
+
+        if (coverage) {
+          coverageAvailable = Number(coverage);
+        } else {
+          coverageAvailable = 6;
+        }
+
+        if (layers) {
+          layersAvailable = Number(layers);
+        } else {
+          layersAvailable = 2;
+        }
+
         estimatedPrice =
           Math.ceil(
-            ((Number(areaToUse) / coverage ? Number(coverage) : 10) * layers
-              ? Number(layers)
-              : 1) / Number(sizeName)
+            ((Number(areaToUse) / coverageAvailable) * layersAvailable) /
+              Number(sizeName)
           ) * price;
 
         break;
@@ -404,10 +462,23 @@ const CalculatePrice = () => {
           (prop) => prop.property.name === "Layer"
         )?.value;
 
+        let coverageAvailable = 0;
+        let layersAvailable = 0;
+
+        if (coverage) {
+          coverageAvailable = Number(coverage);
+        } else {
+          coverageAvailable = 6;
+        }
+
+        if (layers) {
+          layersAvailable = Number(layers);
+        } else {
+          layersAvailable = 2;
+        }
+
         require = Math.ceil(
-          (Number(areaToUse) / coverage ? Number(coverage) : 10) * layers
-            ? Number(layers)
-            : 1
+          (Number(areaToUse) / coverageAvailable) * layersAvailable
         ); // bao nhiêu lít sơn
 
         break;
@@ -492,20 +563,31 @@ const CalculatePrice = () => {
                 <Grid container spacing={1}>
                   <Grid item xs={6} sm={6}>
                     <TextField
-                      label={`${t("length")} (m)`}
+                      label="Length (m)"
                       variant="outlined"
                       type="number"
                       value={length}
-                      onChange={(e) => setLength(e.target.value)}
+                      onChange={handleChangeL}
                       fullWidth
                       margin="normal"
                       size="small"
                       sx={{
                         "& .MuiInputLabel-root": {
-                          ...textConfigs.style.basicFont,
+                          fontSize: "14px",
                         },
                       }}
                     />
+                    {isNegativeL && (
+                      <span
+                        style={{
+                          color: "red",
+                          fontSize: "12px",
+                          ...textConfigs.style.basicFont,
+                        }}
+                      >
+                        {t("value.cannot.be.negative")}
+                      </span>
+                    )}
                   </Grid>
                   <Grid item xs={6} sm={6}>
                     <TextField
@@ -513,7 +595,7 @@ const CalculatePrice = () => {
                       variant="outlined"
                       type="number"
                       value={width}
-                      onChange={(e) => setWidth(e.target.value)}
+                      onChange={handleChangeW}
                       fullWidth
                       margin="normal"
                       size="small"
@@ -523,6 +605,17 @@ const CalculatePrice = () => {
                         },
                       }}
                     />
+                    {isNegativeW && (
+                      <span
+                        style={{
+                          color: "red",
+                          fontSize: "12px",
+                          ...textConfigs.style.basicFont,
+                        }}
+                      >
+                        {t("value.cannot.be.negative")}
+                      </span>
+                    )}
                   </Grid>
                   <Grid item xs={6} sm={3}>
                     <Typography
@@ -564,7 +657,7 @@ const CalculatePrice = () => {
                 <Grid container spacing={2} alignItems="center">
                   <Grid item xs={12} sx={{ paddingTop: "0px !important" }}>
                     <Box mb={2}>
-                      <Grid container spacing={1} alignItems="center">
+                      <Grid container spacing={1} alignItems="start">
                         {walls.map((wall, index) => (
                           <Fragment key={index}>
                             <Grid item xs={6} sm={5}>
@@ -583,7 +676,6 @@ const CalculatePrice = () => {
                                   )
                                 }
                                 fullWidth
-                                margin="normal"
                                 size="small"
                                 sx={{
                                   "& .MuiInputLabel-root": {
@@ -591,6 +683,17 @@ const CalculatePrice = () => {
                                   },
                                 }}
                               />
+                              {wall.errors.length && (
+                                <span
+                                  style={{
+                                    color: "red",
+                                    fontSize: "12px",
+                                    ...textConfigs.style.basicFont,
+                                  }}
+                                >
+                                  {t("value.cannot.be.negative")}
+                                </span>
+                              )}
                             </Grid>
                             <Grid item xs={6} sm={5}>
                               <TextField
@@ -606,7 +709,6 @@ const CalculatePrice = () => {
                                   )
                                 }
                                 fullWidth
-                                margin="normal"
                                 size="small"
                                 sx={{
                                   "& .MuiInputLabel-root": {
@@ -614,6 +716,17 @@ const CalculatePrice = () => {
                                   },
                                 }}
                               />
+                              {wall.errors.width && (
+                                <span
+                                  style={{
+                                    color: "red",
+                                    fontSize: "12px",
+                                    ...textConfigs.style.basicFont,
+                                  }}
+                                >
+                                  {t("value.cannot.be.negative")}
+                                </span>
+                              )}
                             </Grid>
                             <Grid item xs={12} sm={2}>
                               <Button
@@ -971,6 +1084,13 @@ const CalculatePrice = () => {
                                   }}
                                   InputLabelProps={{ shrink: true }}
                                 />
+                                {errorState[uniqueKey] && (
+                                  <span
+                                    style={{ color: "red", fontSize: "12px" }}
+                                  >
+                                    {t("value.cannot.be.negative")}
+                                  </span>
+                                )}
                               </Box>
                               {selectedVariants[index]
                                 ?.selectedVariantValue && (
@@ -1169,7 +1289,7 @@ const CalculatePrice = () => {
                                           variant.variantId
                                             ? "#f0f0f0"
                                             : "#fff",
-                                        width: "80px",
+                                        width: "120px",
                                       }}
                                       onClick={() =>
                                         setSelectedWallpaperVariant(variant)
@@ -1428,7 +1548,7 @@ const CalculatePrice = () => {
                                               variant.variantId
                                                 ? "#f0f0f0"
                                                 : "#fff",
-                                            width: "80px",
+                                            width: "120px",
                                           }}
                                           onClick={() =>
                                             setSelectedFloorValue(variant)

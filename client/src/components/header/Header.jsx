@@ -234,7 +234,7 @@ export const Header = () => {
       <Container maxWidth="lg">
         <Toolbar disableGutters>
           {/* Start logo */}
-          <Typography
+          <Box
             variant="h6"
             noWrap
             component="a"
@@ -244,15 +244,25 @@ export const Header = () => {
               display: { xs: "none", md: "flex" },
               fontFamily: "Nunito",
               fontWeight: 700,
-              letterSpacing: ".6rem",
+              letterSpacing: "0",
               color: "#000",
               textDecoration: "none",
-              fontSize: "2rem",
+              fontSize: "1.8rem",
               overflow: "inherit",
+              alignItems: "end", // Căn giữa logo và text theo chiều dọc
             }}
           >
-            KOLUX
-          </Typography>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Flogo-icon.svg?alt=media&token=039706dc-1908-40c7-b42f-755ed24a70f5" 
+              alt="Colux Logo"
+              style={{
+                width: "45px", 
+                height: "45px",
+                marginRight: "0px", 
+              }}
+            />
+            LUX.
+          </Box>
           {/* End logo */}
 
           {/* Start menu mobile */}
@@ -500,7 +510,7 @@ export const Header = () => {
           {/* End menu mobile */}
 
           {/* Start logo mobile */}
-          <Typography
+          <Box
             variant="h5"
             noWrap
             component="a"
@@ -512,14 +522,23 @@ export const Header = () => {
               flexGrow: 1,
               fontFamily: "Nunito",
               fontWeight: 700,
-              letterSpacing: ".8rem",
+              letterSpacing: ".6rem",
               color: "inherit",
               textDecoration: "none",
               fontSize: "1.4rem",
             }}
           >
-            KOLUX
-          </Typography>
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fgooglecolab-svgrepo-com.svg?alt=media&token=8c73424a-2f2d-47dd-a4c5-960063e52e40"
+              alt="Colux Logo"
+              style={{
+                width: "40px", // Kích thước logo
+                height: "40px",
+                marginRight: "8px", // Khoảng cách giữa logo và chữ
+              }}
+            />
+            LUX
+          </Box>
           {/* End logo mobile */}
 
           <NavItemsHeader

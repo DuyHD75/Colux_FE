@@ -51,7 +51,8 @@ const ColorDetail = () => {
           page,
           size
         );
-
+        console.log(response);
+        
         if (response) {
           setProducts([...response.data.paints.content]);
         } else if (err) {
@@ -67,12 +68,15 @@ const ColorDetail = () => {
     getProductByColorId(pageIndex, productsPerPage);
   }, [dispatch, pageIndex, productsPerPage, colorId]);
 
+  console.log(products);
+  
+
   return (
     <Fragment>
       <Box sx={{ marginTop: { xs: "56px", md: "152px" } }}>
         <Navigate />
         {color && <ColorDetailIfno color={color} products={products} />}
-        {products.lenght > 0 && (
+        {products.length > 0 && (
           <Container maxWidth="lg" sx={{ padding: "0px !important"}}>
             <ProductsRelated products={products} />{" "}
           </Container>

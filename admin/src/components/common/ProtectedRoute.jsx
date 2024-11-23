@@ -5,12 +5,17 @@ import { useSelector } from 'react-redux';
 const ProtectedRoute = ({ children }) => {
   const navigate = useNavigate();
   const admin  = localStorage.getItem("admin");
-  console.log(admin);
+  const employee  = localStorage.getItem("employee");
   useEffect(() => {
     if (!admin) {
-      navigate('/login');
+      if(!employee) {
+        navigate('/login');
+      } else {
+        navigate('/manage-products');
+      }
+      
     }
-  }, [admin, navigate]);
+  }, []);
 
   return admin ? children : null;
 };

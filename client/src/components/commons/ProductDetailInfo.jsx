@@ -332,16 +332,6 @@ console.log(product);
                     {t("colors")}:
                   </Typography>
                 )}
-                {product.wallpapers && (
-                  <Typography
-                    variant="body2"
-                    color="#000"
-                    fontWeight="bold"
-                    sx={{ ...textConfigs.style.basicFont }}
-                  >
-                    {t("type")}:
-                  </Typography>
-                )}
                 {product.floors && (
                   <Typography
                     variant="body2"
@@ -393,34 +383,7 @@ console.log(product);
                             )}
                           </Box>
                         )}
-                        {product.area && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              padding: 1,
-                              border: "1px solid #ddd",
-                              borderRadius: "4px",
-                              marginBottom: 1,
-                              cursor: "pointer",
-                              backgroundColor:
-                                selectedProduct === product
-                                  ? "#f0f0f0"
-                                  : "#fff",
-                              width: "100px",
-                            }}
-                            onClick={() => handleProductSelect(product)}
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{ ...textConfigs.style.basicFont }}
-                            >
-                              {product.area} m2
-                            </Typography>
-                          </Box>
-                        )}
+        
                         {product.numberOfPiecesPerBox && (
                           <Box
                             sx={{
@@ -487,7 +450,7 @@ console.log(product);
                               selectedVariant?.variantId === variant.variantId
                                 ? "#f0f0f0"
                                 : "#fff",
-                            width: "100px",
+                            width: "120px",
                           }}
                           onClick={() => setSelectedVariant(variant)}
                         >
@@ -495,7 +458,7 @@ console.log(product);
                             variant="body2"
                             sx={{ ...textConfigs.style.basicFont }}
                           >
-                            {variant.sizeName} L
+                            {variant.sizeName} {selectedProduct.color ? "L" : "m"}
                           </Typography>
                         </Box>
                       ))}
