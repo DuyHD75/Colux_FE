@@ -1,7 +1,6 @@
 import proxyClient from "../client/proxy.client";
 
 const productEndpoints = {
-  getAllProduct: "product-service/api/v1/products/public",
   getAllCategory: "product-service/api/v1/categories/public",
   getAllBrands: "product-service/api/v1/brands/public",
   getAllSuppliers: "product-service/api/v1/suppliers/public",
