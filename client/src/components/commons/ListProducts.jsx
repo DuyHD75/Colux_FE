@@ -46,7 +46,10 @@ const ListProducts = () => {
           setProducts([...response.data.products.content]);
           setTotalPages(response.data.products.totalPages);
         } else if (err) {
+          setProducts([]);
           toast.error(err);
+        } else {
+          setProducts([]);
         }
       } catch (error) {
         console.log("Error", error);
@@ -77,6 +80,10 @@ const ListProducts = () => {
     };
     getAllcategory();
   }, [dispatch]);
+
+  useEffect(() => {
+    setFilteredProducts(products);
+  }, [products])
 
   useEffect(() => {
     console.log("run useeffect");

@@ -17,7 +17,8 @@ import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
 const Cart = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  // const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
   const [products, setProducts] = useState();
   const [cart, setCart] = useState();
   const [checkedProducts, setCheckedProducts] = useState({});
@@ -28,12 +29,13 @@ const Cart = () => {
         try {
           dispatch(setGlobalLoading(true));
           const { response, err } = await cartApi.getCart(user.userId);
+          dispatch(setGlobalLoading(false));
           if (response) {
             setProducts(response.data.carts.cartItems);
             setCart(response.data.carts);
           }
           if (err) {
-            toast.error('Failed to fetch cart data');
+            toast.error(err);
           }
         } catch (error) {
           toast.error('An error occurred while fetching cart data');
@@ -57,15 +59,25 @@ const Cart = () => {
     navigate('/billing');
   };
 
-  const handleCheckboxChange = (variantId, isChecked) => {
+  const handleCheckboxChange = (variantId, paintId, isChecked) => {
     setCheckedProducts(prevCheckedProducts => ({
       ...prevCheckedProducts,
-      [variantId]: isChecked,
+      [variantId]: {
+        ...prevCheckedProducts[variantId],
+        [paintId]: isChecked,
+      },
     }));
   };
 
   const getCheckedProducts = () => {
-    return products && products.filter(product => checkedProducts[product.cartItemVariant.variantId]);
+    return (
+      products &&
+      products.filter(product => {
+        const variantId = product.cartItemVariant.variantId;
+        const paintId = product.cartItemVariant.productDetails.paintDetails.paintId;
+        return checkedProducts[variantId]?.[paintId];
+      })
+    );
   };
 
   const areAllProductsUnchecked = () => {
@@ -179,11 +191,15 @@ const Cart = () => {
     let totalAmount = 0;
     if (products) {
       totalAmount = products
-        .filter(product => checkedProducts[product.cartItemVariant.variantId])
+        .filter(product => {
+          const variantId = product.cartItemVariant.variantId;
+          const paintId = product.cartItemVariant.productDetails.paintDetails.paintId;
+          return checkedProducts[variantId]?.[paintId];
+        })
         .reduce((acc, product) => {
           const quantity = product.cartItemQuantity;
           const price = product.cartItemVariant.priceSell;
-          return acc + (quantity * price);
+          return acc + quantity * price;
         }, 0);
     }
     return totalAmount;
@@ -259,7 +275,7 @@ const Cart = () => {
                 {products && products.map((product, index) => (
                   <Stack key={product.id} marginY={1} sx={{ p: '1rem' }}>
                     <Stack direction={{ xs: 'column', sm: 'row' }} flex borderBottom={1} borderColor='#e0e0e0' paddingBottom='1rem'>
-                      <ProductInfo product={product} />
+                      <ProductInfo product={product} checkout={'checkout'} />
                       <Stack direction='row' spacing={{ xs: 0, md: 6 }} flex={1} sx={{ alignItems: 'center', mt: { xs: "1rem", md: 0 } }} >
                         <Stack direction='column' justifyContent='flex-start' alignItems={{ xs: 'center', sm: 'normal' }} flex={1}>
                           <Stack direction='column' spacing={1} alignItems='center'>
@@ -289,11 +305,20 @@ const Cart = () => {
                         <Stack direction='column' justifyContent='flex-end' alignItems='center' flex={1} borderLeft={{ xs: '1px solid #E5E5E5', md: 0 }}>
                           <Typography variant='h4' sx={{ ...TextConfig.style.basicFont, fontSize: '1rem', color: 'green', fontWeight: 'bold', width: 'max-content' }}>In Stock</Typography>
                           <Checkbox
-                            sx={{ width: '20px', height: '20px', flex: { xs: 1, md: 0 } }}
-                            key={product.cartItemVariant.variantId}
-                            checked={checkedProducts[product.cartItemVariant.variantId] || false}
-                            onChange={(e) => handleCheckboxChange(product.cartItemVariant.variantId, e.target.checked)}
+                            sx={{ width: '20px', height: '20px' }}
+                            key={`${product.cartItemVariant.variantId}-${product.cartItemVariant.productDetails.paintDetails.paintId}`}
+                            checked={
+                              checkedProducts[product.cartItemVariant.variantId]?.[product.cartItemVariant.productDetails.paintDetails.paintId] || false
+                            }
+                            onChange={(e) =>
+                              handleCheckboxChange(
+                                product.cartItemVariant.variantId,
+                                product.cartItemVariant.productDetails.paintDetails.paintId,
+                                e.target.checked
+                              )
+                            }
                           />
+
                         </Stack>
                       </Stack>
                     </Stack>

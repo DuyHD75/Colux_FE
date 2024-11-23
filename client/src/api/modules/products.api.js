@@ -9,11 +9,11 @@ const productEndpoints = {
   getProductByCategory: ({ categoryId, pageIndex, size }) =>
     `product-service/api/v1/categories/public/categoryId/${categoryId}/products?page=${pageIndex}&size=${size}`,
   search: ({ keySearch }) =>
-    `product-service/api/v1/search/public?keyword=${keySearch}`,
+    `product-service/api/v1/searches/public?keyword=${keySearch}`,
   getTopProducts: ({ pageIndex, size }) =>
     `order-service/api/v1/orders/topProducts?page=${pageIndex}&size=${size}`,
   filterProducts: ({ params }) =>
-    `product-service/api/v1/products/filter?${params}`,
+    `product-service/api/v1/products/public/filter?${params}`,
   getProductByProductId: ({ productId }) =>
     `product-service/api/v1/products/public/productId/${productId}`,
   getProductByColorId: ({ colorId, pageIndex, size }) =>

@@ -25,25 +25,26 @@ const actionState = {
 const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
   const dispatch = useDispatch();
-  const { user } = useSelector((state) => state.user);
+  const  user  = localStorage.getItem("user");
   const [itemCart, setItemCart] = useState(0);
 
 
-  useEffect(() => {
-    const authUser = async () => {
-      if (!user) {
-        const { response, err } = await userApi.getInfo();
-        if (response) {
-          dispatch(setUser(response.data.user));
-        }
-        if (err) {
-          dispatch(setUser(null));
-        }
-      }
-    };
+  // useEffect(() => {
+  //   const authUser = async () => {
+  //     if (!user) {
+  //       const { response, err } = await userApi.getInfo();
+  //       if (response && response.data.user.role === "USER") {
+  //         dispatch(setUser(response.data.user));
+  //       }
+  //       if (err) {
+  //         dispatch(setUser(null));
+  //       }
+  //     }
+  //   };
    
-    authUser();
-  }, []);
+  //   authUser();
+  // }, []);
+
 
   useEffect(() => {
     const getCart = async () => {
@@ -52,11 +53,13 @@ const MainLayout = () => {
         if (response) {
           setItemCart(response.data.carts.cartItems.length);
           console.log(itemCart);
-          
+
         }
       }
     };
-    getCart();}, [user]);
+    getCart();
+  },
+    [user,]);
 
 
   const showHeaderFooter = !(
@@ -70,7 +73,7 @@ const MainLayout = () => {
   return (
     <div>
       {/* header */}
-      {showHeaderFooter && <Header itemCart={itemCart}/>}
+      {showHeaderFooter && <Header itemCart={itemCart} />}
       {/* header */}
       {/* global loading */}
       <GlobalLoading />
@@ -78,7 +81,7 @@ const MainLayout = () => {
       {/* <StompSessionProvider url="https://colux.site/ws">
         <ChatPopup />
       </StompSessionProvider> */}
-      <ChatPopup />
+      {/* <ChatPopup   /> */}
       <Box className="flex min-h-screen">
         {/* main */}
         <Box

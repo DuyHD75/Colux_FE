@@ -6,7 +6,6 @@ import menuConfigs from "../../config/menu.config";
 import { useTranslation } from "react-i18next";
 
 const Footer = () => {
-
   const { t } = useTranslation();
 
   return (
@@ -25,7 +24,7 @@ const Footer = () => {
               className="text-white"
               sx={{ paddingRight: "32px", mb: 3, mx: { xs: 1, md: 0 } }}
             >
-              <Typography
+              <Box
                 className="font-bold no-underline"
                 variant="h6"
                 noWrap
@@ -34,15 +33,24 @@ const Footer = () => {
                 sx={{
                   mr: 2,
                   display: { xs: "none", md: "flex" },
-                  letterSpacing: "1rem",
-                  fontSize: "2rem",
+                  letterSpacing: ".8rem",
+                  fontSize: "1.8rem",
                   overflow: "inherit",
                   fontFamily: "Nunito",
                   fontWeight: 700,
                 }}
               >
-                KOLUX
-              </Typography>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fgooglecolab-svgrepo-com.svg?alt=media&token=8c73424a-2f2d-47dd-a4c5-960063e52e40"
+                  alt="Colux Logo"
+                  style={{
+                    width: "40px",
+                    height: "40px",
+                    marginRight: "8px",
+                  }}
+                />
+                LUX
+              </Box>
               <Typography variant="h5" sx={{ fontFamily: "Nunito" }}>
                 {t("footer.title")}
               </Typography>
@@ -62,7 +70,7 @@ const Footer = () => {
                 {t("footer.btn")}
               </Link>
             </Grid>
-            <Grid container item  xs={12} md={8}>
+            <Grid container item xs={12} md={8}>
               <Grid
                 item
                 xs={12}

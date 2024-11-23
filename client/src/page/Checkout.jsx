@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Checkbox, FormControl, Input, InputLabel, Stack, TextField, Typography } from '@mui/material';
+import { Alert, AlertTitle, Box, Button, Checkbox, FormControl, Input, InputLabel, Stack, TextField, Typography } from '@mui/material';
 import TextConfig from '../config/text.config';
 import backgroundConfigs from '../config/background.config';
 import { Link } from 'react-router-dom';
@@ -11,7 +11,7 @@ import { toast } from 'react-toastify';
 
 const Checkout = () => {
 
-    const { user } = useSelector((state) => state.user);
+    const user = JSON.parse(localStorage.getItem("user"));
     const [checkoutData, setCheckoutData] = useState(localStorage.getItem('checkoutData') ? JSON.parse(localStorage.getItem('checkoutData')) : { products: [], totalAmount: 0, shippingFee: 0, billing: {} });
     const [paymentMethod, setPaymentMethod] = useState('');
     const [isChecked, setIsChecked] = useState(false);
@@ -36,13 +36,13 @@ const Checkout = () => {
                 status: 1,
                 toName: checkoutData.billing.fullName,
                 toPhone: checkoutData.billing.phoneNumber,
-                toEmail: user.email,
+                toEmail: user?user.email:checkoutData.billing.email,
                 toAddress: checkoutData.billing.address,
                 toWardName: checkoutData.billing.ward,
                 toDistrictName: checkoutData.billing.district,
                 toProvinceName: checkoutData.billing.province,
                 note: note,
-                customerId: user.userId,
+                customerId: user?user.userId:null,
                 purchaseProducts: checkoutData.products.map(product => ({
                     productId: product.cartItemVariant.productDetails.productId,
                     variantId: product.cartItemVariant.variantId,
@@ -54,7 +54,7 @@ const Checkout = () => {
                 totalAmount: checkoutData.totalAmount,
                 tax: 10.00,
                 shippingCost: 4,
-                totalPay: checkoutData.totalAmount + 10.00 + 4,
+                totalPay: checkoutData.totalAmount + 10.00,
                 paymentMethod: paymentMethod,
                 paymentStatus: 1,
             }
@@ -182,25 +182,38 @@ const Checkout = () => {
                                 }}>
                                     {/* <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '14px', marginBottom: '16px' }}>Credit Card ************2905</Typography> */}
                                     <Stack direction='row' spacing={2} alignItems='center' >
-                                        <Stack direction='row' justifyContent='center' alignItems='center'>
-                                            <input type="radio" name="paymentMethod" value="CASH" className="border-indigo-500"
-                                                onChange={handlePaymentMethodChange} />
+                                        <label htmlFor="paymentMethodCOD" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                            <input
+                                                type="radio"
+                                                id="paymentMethodCOD"
+                                                name="paymentMethod"
+                                                value="COD"
+                                                className="border-indigo-500"
+                                                onChange={handlePaymentMethodChange}
+                                            />
                                             <img src='https://cdn.iconscout.com/icon/free/png-512/free-cod-icon-download-in-svg-png-gif-file-formats--credit-debit-bank-payment-methods-vol-2-pack-business-icons-32290.png?f=webp&w=256' style={{ width: '4rem', height: '4rem' }} />
                                             <Typography sx={{ ...TextConfig.style.basicFont, fontWeight: 'bold', fontSize: '16px', }}>Cash on Delivery</Typography>
-                                        </Stack>
-                                        <Stack direction='row' spacing={1} alignItems='center'>
-                                            <input type="radio" name="paymentMethod" value="PAYPAL" className="border-indigo-500"
+                                        </label>
+                                        {/*  */}
+
+                                        <label htmlFor="paymentMethodPaypal" style={{ display: 'flex', alignItems: 'center', cursor: 'pointer' }}>
+                                            <input
+                                                type="radio"
+                                                id="paymentMethodPaypal"
+                                                name="paymentMethod" value="PAYPAL" className="border-indigo-500"
                                                 onChange={handlePaymentMethodChange} />
-                                            <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' style={{ width: '4rem', height: '2rem' }} />
-                                            <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '16px', marginBottom: '16px' }}>PayPal</Typography>
-                                        </Stack>
-                                        <Stack direction='row' spacing={1} alignItems='center'>
-                                            <input type="radio" name="paymentMethod" value="PAYOS" className="border-indigo-500"
-                                                onChange={handlePaymentMethodChange} />
-                                            <img src='https://payos.vn/wp-content/uploads/sites/13/2023/07/payos-logo.svg' style={{ width: '4rem', height: '2rem' }} />
-                                            <Typography sx={{ ...TextConfig.style.basicFont, mb: '8px', fontWeight: 'bold', fontSize: '16px', marginBottom: '16px' }}>PayOs</Typography>
-                                        </Stack>
+                                            <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' style={{ width: '4rem', height: '2rem', marginLeft:'12px', marginRight:'12px' }} />
+                                            <Typography sx={{ ...TextConfig.style.basicFont, fontWeight: 'bold', fontSize: '16px',mt:'4px' }}>PayPal</Typography>
+                                        </label>
+
+                                       
                                     </Stack>
+                                    {paymentMethod === "COD" &&
+                                        <>  <Alert sx={{ mb: 1 }} severity="info">
+                                            You have selected the COD payment method. To ensure the processing of your order, please pay 25% of the total order value in advance.
+                                        </Alert>
+                                        </>
+                                    }
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px', fontWeight: 'bold' }}>{checkoutData.billing.fullName}</Typography>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}> {checkoutData.billing.ward}, {checkoutData.billing.district}, {checkoutData.billing.province}</Typography>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>{checkoutData.billing.address}</Typography>
@@ -233,7 +246,7 @@ const Checkout = () => {
                                 </Box>
                                 {checkoutData.products && checkoutData.products.map((product, index) => (
                                     <Stack key={index} direction={{ xs: 'column', md: 'row' }} borderBottom={index !== checkoutData.products.length - 1 ? '1px solid #E5E5E5' : 'none'} paddingBottom='20px'>
-                                        <ProductInfo product={product} padding='30px 8px 0px 16px' />
+                                        <ProductInfo product={product} checkout={'checkout'} padding='30px 8px 0px 16px' />
                                         <Stack flex={1.5} direction='row' justifyContent={{ xs: 'center', sm: 'normal' }} spacing={{ xs: 3, sm: 0 }} paddingX='11.35px'>
                                             <Box sx={{
                                                 padding: '30px 8px 0px',
@@ -289,9 +302,14 @@ const Checkout = () => {
                                     </Box>
 
                                 </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Tax (10%):</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', }}>{(checkoutData.totalAmount * 0.1).toFixed(0)}$ </Typography>
+
+                                </Box>
                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{checkoutData.totalAmount}$</Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{(checkoutData.totalAmount + parseFloat((checkoutData.totalAmount * 0.1).toFixed(0)))}$</Typography>
                                 </Box>
                                 <Typography marginTop='12px' sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Product pricing shown reflects applicable sales and discounts
                                 </Typography>
@@ -319,6 +337,7 @@ const Checkout = () => {
                         </Box>
                     </Stack>
                 </Container>
+
             </Box>
         </>
     );

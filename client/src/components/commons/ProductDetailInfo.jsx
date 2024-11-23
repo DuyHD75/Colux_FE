@@ -16,7 +16,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import ProductCollapse from "./ProductCollapse";
 import ProductsRelated from "./ProductRelated";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
@@ -47,6 +47,7 @@ const ProductDetailInfo = ({ product }) => {
   const productsPerPage = 20;
   const { user } = useSelector((state) => state.user);
   const [cart, setCart] = useState(null);
+  const navigate = useNavigate();
 
   const capitalizeWords = (str) => {
     return str
@@ -71,7 +72,7 @@ const ProductDetailInfo = ({ product }) => {
   const decreaseQuantity = () => {
     Number(quantity) > 1 && setQuantity(Number(quantity) - 1);
   };
-console.log(product);
+  console.log(product);
 
   const getProductOptions = () => {
     if (product.paints) {
@@ -121,7 +122,9 @@ console.log(product);
   const handleProductSelect = (productType) => {
     setSelectedProduct(productType);
     setSelectedVariant(productType.variants[0]);
+
   };
+  console.log("Variant", selectedVariant);
 
   useEffect(() => {
     const getCart = async () => {
@@ -129,27 +132,26 @@ console.log(product);
         try {
           dispatch(setGlobalLoading(true));
           const { response, err } = await cartApi.getCart(user.userId);
+          dispatch(setGlobalLoading(false));
           if (response) {
-            dispatch(setGlobalLoading(false));
             setCart(response.data.carts);
           }
           if (err) {
-            toast.error("Failed to fetch cart data");
+            toast.error(err);
           }
         } catch (error) {
-          toast.error("An error occurred while fetching cart data");
+          toast.error(error);
         }
       }
     };
     getCart();
   }, [user]);
-  console.log("paintID", selectedProduct?.id);
 
   const handleAddToCart = (quantity) => {
-    const status = 1;
+    if(user){const status = 1;
     const updateQuantityType = "INCREMENTAL";
     const customerId = user.userId;
-    const cartId = cart?cart.cartId:'';
+    const cartId = cart ? cart.cartId : '';
     const cartItems = [{
       ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
       ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
@@ -160,22 +162,71 @@ console.log(product);
       ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
       ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
     }];
-    
-      updateCart(
-        cartId,
-        customerId,
-        status,
-        updateQuantityType,
-        cartItems
-  
-      );
-     
+
+    updateCart(
+      cartId,
+      customerId,
+      status,
+      updateQuantityType,
+      cartItems
+
+    );}
+    else{
+      toast.error("Please login to add to cart");
+    }
+
+  };
+
+  const handleBuyNow = (quantity) => {
+    const checkoutData = {
+      products: [{
+        cartItemQuantity: quantity,
+        cartItemVariant:
+        {
+          categoryName: selectedVariant.categoryName,
+          packageType: selectedVariant.packageType,
+          priceSell: selectedVariant.price,
+          productDetails: {
+            code: product.code,
+            ...(selectedVariant.categoryName === 'Paint' && {
+              paintDetails: {
+                colorId: selectedProduct.color.id,
+                hex: selectedProduct.color.hex,
+                paintId: selectedProduct.id
+              }
+            }),
+            ...(selectedVariant.categoryName === 'Wallpaper' && {
+              wallpaperDetails: {
+                wallpaperId: selectedProduct.id
+              }
+            }),
+            ...(selectedVariant.categoryName === 'Floor' && {
+              floorDetails: {
+                floorId: selectedProduct.id
+              }
+            }),
+            productId: product.productId,
+            productImage: product.images[0].url,
+            productName: product.productName,
+
+          },
+          variantDescription: selectedVariant.sizeName,
+          variantId: selectedVariant.variantId,
+          variantInventory: selectedVariant.quantity,
+        }
+      }],
+      totalAmount: quantity * selectedVariant.price,
+      billing: {},
+      shippingFee: 0,
+    }
+    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
+    navigate('/billing');
   };
 
   const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
     if (!response) {
-      toast.error('Quantity not enough to add');
+      toast.error(err);
     }
     else {
       toast.success('Added to cart successfully');
@@ -332,16 +383,6 @@ console.log(product);
                     {t("colors")}:
                   </Typography>
                 )}
-                {product.wallpapers && (
-                  <Typography
-                    variant="body2"
-                    color="#000"
-                    fontWeight="bold"
-                    sx={{ ...textConfigs.style.basicFont }}
-                  >
-                    {t("type")}:
-                  </Typography>
-                )}
                 {product.floors && (
                   <Typography
                     variant="body2"
@@ -393,34 +434,7 @@ console.log(product);
                             )}
                           </Box>
                         )}
-                        {product.area && (
-                          <Box
-                            sx={{
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                              alignItems: "center",
-                              padding: 1,
-                              border: "1px solid #ddd",
-                              borderRadius: "4px",
-                              marginBottom: 1,
-                              cursor: "pointer",
-                              backgroundColor:
-                                selectedProduct === product
-                                  ? "#f0f0f0"
-                                  : "#fff",
-                              width: "100px",
-                            }}
-                            onClick={() => handleProductSelect(product)}
-                          >
-                            <Typography
-                              variant="body2"
-                              sx={{ ...textConfigs.style.basicFont }}
-                            >
-                              {product.area} m2
-                            </Typography>
-                          </Box>
-                        )}
+        
                         {product.numberOfPiecesPerBox && (
                           <Box
                             sx={{
@@ -487,7 +501,7 @@ console.log(product);
                               selectedVariant?.variantId === variant.variantId
                                 ? "#f0f0f0"
                                 : "#fff",
-                            width: "100px",
+                            width: "120px",
                           }}
                           onClick={() => setSelectedVariant(variant)}
                         >
@@ -495,7 +509,7 @@ console.log(product);
                             variant="body2"
                             sx={{ ...textConfigs.style.basicFont }}
                           >
-                            {variant.sizeName} L
+                            {variant.sizeName} {selectedProduct.color ? "L" : "m"}
                           </Typography>
                         </Box>
                       ))}
@@ -629,9 +643,8 @@ console.log(product);
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${
-                          selectedVariant.quantity
-                        } ${t("products")})`
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -721,6 +734,9 @@ console.log(product);
                     width: "70%",
                     ":hover": { backgroundColor: "#1c2759" },
                     ...textConfigs.style.basicFont,
+                  }}
+                  onClick={() => {
+                    handleBuyNow(quantity);
                   }}
                 >
                   {t("buy.now")}
