@@ -38,53 +38,24 @@ import { Link } from "react-router-dom";
 import prodcutsApi from "../api/modules/products.api";
 
 const OrderHistory = () => {
-  const { appState } = useSelector((state) => state.appState);
-  // const user = JSON.parse(localStorage.getItem("user"));
-  const [user, setUser] = useState(() =>
-    JSON.parse(localStorage.getItem("user"))
-  );
-  const dispatch = useDispatch();
-  const [orders, setOrders] = useState([]);
-  const [open, setOpen] = useState(false);
+    const { appState } = useSelector((state) => state.appState);
+    // const user = JSON.parse(localStorage.getItem("user"));
+    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
+    const dispatch = useDispatch();
+    const [orders, setOrders] = useState([]);
+    const [open, setOpen] = useState(false);
+    const [openShipping, setOpenShipping] = useState(false);
+    const [steps, setSteps] = useState(null);
 
-  const capitalizeFirstLetter = (string) => {
-    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-  };
+    const capitalizeFirstLetter = (string) => {
+        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+    };
+
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [reviews, setReviews] = useState({});
   const [reviewsOfCus, setReviewsOfCus] = useState([]);
-  const steps = [
-    {
-      time: "22:40 12-11-2024",
-      status:
-        "Đơn hàng đã đến kho phân loại Xã Hòa Liên, Huyện Hòa Vang, Đà Nẵng",
-    },
-    {
-      time: "16:09 13-11-2024",
-      status: "Đơn hàng đã rời kho phân loại",
-    },
-    {
-      time: "07:13 14-11-2024",
-      status:
-        "Đơn hàng đã đến trạm giao hàng tại khu vực của bạn Thị Trấn Núi Thành, Huyện Núi Thành, Quảng Nam và sẽ được giao trong vòng 24 giờ tiếp theo",
-    },
-    {
-      time: "08:25 14-11-2024",
-      status: "Đã sắp xếp tài xế giao hàng",
-    },
-    {
-      time: "08:25 14-11-2024",
-      status:
-        "Đang vận chuyển: Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại",
-    },
-    {
-      time: "11:23 14-11-2024",
-      status: "Đã giao: Giao hàng thành công",
-      additionalInfo: "Người nhận hàng: Kiều Hoàng Đạt--",
-    },
-  ];
 
   const handleOpenModal = (order) => {
     setSelectedOrder(order); // Lưu thông tin đơn hàng khi nhấn nút "Write a Review"
@@ -147,11 +118,15 @@ const OrderHistory = () => {
       }
     }
 
+    
+
     console.log("Danh sách đánh giá:", formattedReviews);
 
     // Xử lý logic thêm (gọi API hoặc lưu trữ)
     handleCloseModal();
   };
+
+console.log(orders);
 
   useEffect(() => {
     const getOrder = async () => {
@@ -178,6 +153,28 @@ const OrderHistory = () => {
     };
     getOrder();
   }, [user]);
+
+
+    const handleOpenShippingDialog = async (waybillId) => {
+        console.log(waybillId);
+        try {
+            const { response } = await cartApi.getAWayBill(waybillId);
+            if (response) {
+                console.log(response.data.waybill);
+                setSteps(response.data.waybill);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        setOpenShipping(true);
+    }
+
+    const handleCloseShippingDialog = () => {
+        setOpenShipping(false);
+    }
+
+    console.log(steps);
 
   useEffect(() => {
     const getReviewsByCusId = async () => {
@@ -1093,6 +1090,91 @@ const OrderHistory = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog
+                    sx={{
+                        '& .MuiDialog-paper': {
+                            width: '100%',
+                            maxWidth: '633px',
+                            maxHeight: '100%',
+                            borderRadius: '0px',
+                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
+                        }
+                    }}
+                    open={openShipping} onClose={() => setOpenShipping(false)}
+                >
+                    <DialogTitle sx={{ fontWeight: 400 }}>Tracking Information</DialogTitle>
+                    <DialogContent
+                        sx={{
+                            width: "100%",
+                            borderBottom: "1px solid #ccc",
+                            borderTop: "1px solid #ccc",
+                            overflow: "auto",
+                            maxHeight: '450px',
+                            ...customScrollbarStyle, backgroundColor: "#f9f9f9",
+                        }}
+                    >
+
+                        <Stepper orientation="vertical" sx={{
+                            paddingLeft: 2, paddingTop: '24px',
+                        }}>
+                            {steps && steps.waybillLogs.reverse().map((step, index) => (
+                                <Step
+                                    sx={{ alignItems: "start", justifyContent: "start" }}
+                                    key={index}
+                                    active={true}
+                                    completed={index === steps.length - 1}
+                                >
+                                    <StepLabel
+                                        icon={
+                                            index === 0 ? (
+                                                <CheckCircleIcon color="success" />
+                                            ) : (
+                                                <AccessTimeIcon color="action" />
+                                            )
+                                        }
+                                    >
+                                        <Stack
+                                            direction="row"
+                                            alignItems="center"
+                                            spacing={2}
+                                            sx={{ width: "100%" }}
+                                        >
+                                            {/* Time and Status */}
+                                            <Typography
+                                                variant="subtitle2"
+                                                noWrap
+                                                sx={{
+                                                    flexShrink: 0,
+                                                    color: index === 0 ? "success.main" : "text.secondary",
+                                                    minWidth: "150px",
+                                                }}
+                                            >
+                                                {formatDate(step.createdAt)}
+                                            </Typography>
+
+                                            {/* Status and Additional Info */}
+                                            <Stack direction="column" spacing={0.5}>
+                                                <Typography variant="body2">{step.currentStatus}</Typography>
+                                                {step.additionalInfo && (
+                                                    <Typography variant="caption" color="text.secondary">
+                                                        {step.additionalInfo}
+                                                    </Typography>
+                                                )}
+                                            </Stack>
+                                        </Stack>
+                                    </StepLabel>
+                                </Step>
+                            ))}
+                        </Stepper>
+
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={() => setOpenShipping(false)} color="primary">
+                            Cancel
+                        </Button>
+
+                    </DialogActions>
+                </Dialog>
       </UserSidebar>
     </>
   );

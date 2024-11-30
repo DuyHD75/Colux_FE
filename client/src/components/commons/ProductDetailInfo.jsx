@@ -154,30 +154,33 @@ const ProductDetailInfo = ({ product }) => {
   }, [user]);
 
   const handleAddToCart = (quantity) => {
-    if(user){const status = 1;
-    const updateQuantityType = "INCREMENTAL";
-    const customerId = user.userId;
-    const cartId = cart ? cart.cartId : '';
-    const cartItems = [{
-      ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
-      ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
-      productId: product.productId,
-      quantity: quantity,
-      ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
-      ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
-      ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
-    }];
+    if (user) {
+        const status = 1;
+      const updateQuantityType = "INCREMENTAL";
+      const customerId = user.userId;
+      const cartId = cart ? cart.cartId : '';
+      const cartItems = [{
+        ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
+        ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
+        ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
+        productId: product.productId,
+        quantity: quantity,
+        ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
+        ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
+        ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
+      }];
 
-    updateCart(
-      cartId,
-      customerId,
-      status,
-      updateQuantityType,
-      cartItems
+      updateCart(
+        cartId,
+        customerId,
+        status,
+        updateQuantityType,
+        cartItems
 
-    );}
-    else{
+      );
+    }
+    else {
+      
       toast.error("Please login to add to cart");
     }
 
@@ -233,6 +236,8 @@ const ProductDetailInfo = ({ product }) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
     if (!response) {
       toast.error(err);
+      console.log(err); 
+      
     }
     else {
       toast.success('Added to cart successfully');
@@ -449,7 +454,7 @@ const ProductDetailInfo = ({ product }) => {
                         </Box>
                         </Tooltip>
                         )}
-        
+
                         {product.numberOfPiecesPerBox && (
                           <Box
                             sx={{
