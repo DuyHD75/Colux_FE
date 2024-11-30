@@ -797,7 +797,7 @@ const CreateOrder = () => {
                   }}
                 >
                   <img
-                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Foops.jpg?alt=media&token=c4998194-cfe2-4400-8c2d-8e3c8e618132"
+                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
                     alt="No products found"
                     style={{
                       maxWidth: "50%",

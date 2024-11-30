@@ -5,10 +5,17 @@ import textConfigs from "../../config/text.config";
 import backgroundConfigs from "../../config/background.config";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import {
+  selectPosts,
+} from "../../redux/reducer/postsSlice";
 
 const Blogs = () => {
-  const { blogs } = useSelector((state) => state.blogs);
+  const posts = useSelector(selectPosts);
+  const blogs = useSelector(selectPosts);
   const { t } = useTranslation();
+
+  console.log(posts);
+  
 
   const capitalizeWords = (str) => {
     return str
@@ -27,7 +34,7 @@ const Blogs = () => {
           {t('home.blogs.title')}
         </Typography>
         <Box>
-          {blogs.map((blog, index) => (
+          {posts.map((blog, index) => (
             <Box
               key={blog.id}
               sx={{
@@ -45,7 +52,7 @@ const Blogs = () => {
                       <img
                         src={blog.image}
                         alt={blog.title}
-                        style={{ maxWidth: "100%" }}
+                        style={{ width: "100%" }}
                       />
                     </Grid>
                     <Grid item xs={12} md={6} sx={{ paddingX: "16px" }}>

@@ -25,6 +25,7 @@ import BlogDetail from "../page/detail/BlogDetail";
 import VerifyEmail from "../components/commons/VerifyEmail";
 import ChangePassword from "../page/ChangePassword";
 import ResultPayment from "../page/ResultPayment";
+import NotFound from "../page/404" 
 
 export const routesGen = {
   home: "/",
@@ -48,6 +49,11 @@ export const routesGen = {
 };
 
 const routes = [
+  {
+    path: "*",
+    element: <NotFound />,
+    state: "not.found"
+  },
   {
     index: true,
     element: <Home />,

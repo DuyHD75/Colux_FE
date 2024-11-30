@@ -158,17 +158,17 @@ const user = [
     ),
     state: "orderHistory",
   },
-  {
-    display: "3D Saved",
-    path: "/3DSaved",
-    icon: <FiBox style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
-    state: "3DSaved",
-  },
+  // {
+  //   display: "3D Saved",
+  //   path: "/3DSaved",
+  //   icon: <FiBox style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
+  //   state: "3DSaved",
+  // },
   {
     display: "Product Reviews",
     path: "/product_reviews",
     icon: <IoMdStarOutline style={{ fontSize: "1.2rem", color: "#1C2759" }} />,
-    state: "product.reviews",
+    state: "productReviews",
   },
   // {
   //   display: "Favorites",

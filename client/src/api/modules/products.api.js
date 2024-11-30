@@ -10,6 +10,8 @@ const productEndpoints = {
     `product-service/api/v1/categories/public/categoryId/${categoryId}/products?page=${pageIndex}&size=${size}`,
   search: ({ keySearch }) =>
     `product-service/api/v1/searches/public?keyword=${keySearch}`,
+  searchMulti: ({ keySearch }) =>
+    `product-service/api/v1/searches/public/bulk?keywords=${keySearch}`,
   getTopProducts: ({ pageIndex, size }) =>
     `order-service/api/v1/orders/public/topProducts?page=${pageIndex}&size=${size}`,
   filterProducts: ({ params }) =>
@@ -18,6 +20,11 @@ const productEndpoints = {
     `product-service/api/v1/products/public/productId/${productId}`,
   getProductByColorId: ({ colorId, pageIndex, size }) =>
     `product-service/api/v1/paints/public/colorId/${colorId}?page=${pageIndex}&size=${size}`,
+  reviews: "product-service/api/v1/reviews/public/create",
+  getReviewsByProductId: ({ productId, pageIndex, size }) =>
+    `product-service/api/v1/reviews/public/productId/${productId}?page=${pageIndex}&size=${size}`,
+  getReviewsByCusId: ({ userId, pageIndex, size }) =>
+    `product-service/api/v1/reviews/public/userId/${userId}?page=${pageIndex}&size=${size}`,
 };
 
 const prodcutsApi = {
@@ -85,6 +92,16 @@ const prodcutsApi = {
       return { err };
     }
   },
+  searchMulti: async (keySearch) => {
+    try {
+      const response = await proxyClient.get(
+        productEndpoints.searchMulti({ keySearch })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
   filterProducts: async (params) => {
     try {
       const response = await proxyClient.get(
@@ -113,6 +130,36 @@ const prodcutsApi = {
     try {
       const response = await proxyClient.get(
         productEndpoints.getProductByColorId({ colorId, pageIndex, size })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  reviews: async (data) => {
+    try {
+      const response = await proxyClient.post(
+        productEndpoints.reviews, data
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getReviewsByProductId: async (productId, pageIndex, size) => {
+    try {
+      const response = await proxyClient.get(
+        productEndpoints.getReviewsByProductId({ productId, pageIndex, size })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getReviewsByCusId: async (userId, pageIndex, size) => {
+    try {
+      const response = await proxyClient.get(
+        productEndpoints.getReviewsByCusId({ userId, pageIndex, size })
       );
       return { response };
     } catch (err) {
