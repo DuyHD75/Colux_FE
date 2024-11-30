@@ -32,7 +32,7 @@ const ProductCard = ({ product }) => {
   const ratingAverage = product.ratingAverage || 0;
   const fullStars = Math.floor(ratingAverage);
   const hasHalfStar = ratingAverage % 1 !== 0;
-  const reviewsCount = product.reviewsCount || 0;
+  const reviewsCount = product.reviewCount || 0;
   
 
   const handleClick = () => {

@@ -4,13 +4,14 @@ import { useNavigate } from 'react-router-dom';
 const ProtectedEmployeeRoute = ({ children }) => {
   const navigate = useNavigate();
   const employee  = localStorage.getItem("employee");
+  const admin  = localStorage.getItem("admin");
   useEffect(() => {
-    if (!employee) {
+    if (!employee && !admin)  {
       navigate('/login');
     }
-  }, [employee, navigate]);
+  }, [employee, admin, navigate]);
 
-  return employee ? children : null;
+  return (employee || admin) ? children : null;
 };
 
 export default ProtectedEmployeeRoute; 

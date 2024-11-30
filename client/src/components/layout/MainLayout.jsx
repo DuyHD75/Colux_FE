@@ -59,7 +59,7 @@ const MainLayout = () => {
     };
     getCart();
   },
-    [user,]);
+    [user]);
 
 
   const showHeaderFooter = !(
