@@ -982,9 +982,10 @@ const ManageProduct = () => {
       field: "category",
       headerName: "Category",
       width: 90,
+      filterable: true,
+      
       renderCell: (params) => {
-        let category = params.row.category.name;
-
+        let category = params.row.category.name ;
         return (
           <Box
             display="flex"
@@ -1004,6 +1005,43 @@ const ManageProduct = () => {
           </Box>
         );
       },
+      filterOperators: [
+        {
+          label: "Equals",
+          value: "equals",
+          getApplyFilterFn: (filterItem) => {
+            if (!filterItem.value) return null;
+      
+            return (row) => {
+              console.log(row); 
+              return row.name && row.name
+                ? row.name.toLowerCase() === filterItem.value.toLowerCase()
+                : false;
+            };
+          },
+          InputComponent: ({ item, applyValue }) => (
+            <div>
+              <InputLabel shrink>Value</InputLabel>
+              <Select
+                value={item.value || ""}
+                onChange={(event) =>
+                  applyValue({ ...item, value: event.target.value })
+                }
+                fullWidth
+                displayEmpty
+              >
+                <MenuItem value="">None</MenuItem>
+                {/* Tạo danh sách category có sẵn */}
+                {categories.map((category, index) => (
+                  <MenuItem key={index} value={category.name}>
+                    {category.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          ),
+        }
+      ],
     },
     { field: "placeOfOrigin", headerName: "Place Of Origin", width: 150 },
     { field: "warranty", headerName: "Warranty", width: 150 },
@@ -1159,6 +1197,7 @@ const ManageProduct = () => {
                   onChange={handleEditChange}
                   fullWidth
                   size="small"
+                  disabled
                   sx={{
                     flex: 1,
                     "& .MuiOutlinedInput-root": {
@@ -2607,7 +2646,7 @@ const ManageProduct = () => {
                       sx={{
                         position: "relative",
                         width: "100%",
-                        height: "400px",
+                        height: "300px",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",

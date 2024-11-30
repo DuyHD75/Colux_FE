@@ -247,9 +247,9 @@ const OrderDetails = () => {
             ...prevOrder,
             ...response.data,
           }));
-          toast.success("Create Order success!");
+          toast.success("Update Order success!");
         } else {
-          toast.err(response.message);
+          toast.error(err.message);
         }
       } catch (error) {
         console.log(error);
@@ -370,6 +370,27 @@ const OrderDetails = () => {
                   }}
                 >
                   {formatDate(order.updatedAt)}
+                </Typography>
+              </Stack>
+              <Stack direction="column" spacing={1} alignItems="start">
+                <Typography
+                  sx={{
+                    fontWeight: "bold",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  Address
+                </Typography>
+                <Typography
+                  sx={{
+                    bgcolor: "#E7F5FF",
+                    borderRadius: "20px",
+                    padding: "0.3rem",
+                    fontSize: "14px",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  {`${order.toAddress}, ${order.toWardName}, ${order.toDistrictName}, ${order.toProvinceName}`}
                 </Typography>
               </Stack>
             </Stack>
@@ -939,7 +960,7 @@ const OrderDetails = () => {
                 value={billingForm.values.status}
                 onChange={billingForm.handleChange}
                 // Fetch fee when status changes
-
+                disabled
                 error={
                   billingForm.touched.status &&
                   billingForm.errors.status !== undefined

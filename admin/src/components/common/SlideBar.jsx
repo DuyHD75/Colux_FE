@@ -43,7 +43,7 @@ const Sidebar = () => {
       dispatch(setAdmin(null));
       localStorage.removeItem("admin");
       localStorage.removeItem("employee");
-      navigate("/");
+      navigate("/login");
       toast.success("Logout Success.");
     }
     if (err) {

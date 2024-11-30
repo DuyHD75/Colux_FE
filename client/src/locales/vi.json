@@ -129,5 +129,6 @@
     "price.range.500+": "500$ +",
   "free.ship": "Miễn phí giao hàng cho đơn từ 500$",
   "return": "Đổi trả trong vòng 7 ngày",
-  "value.cannot.be.negative": "Giá trị không thể âm."
+  "value.cannot.be.negative": "Giá trị không thể âm.",
+  "go.to.checkout": "Đặt hàng"
 }

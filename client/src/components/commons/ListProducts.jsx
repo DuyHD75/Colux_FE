@@ -7,6 +7,7 @@ import ProductCard from "./ProductCard";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
+import textConfigs from "../../config/text.config";
 
 const ListProducts = () => {
   const [categories, setCategories] = useState([]);
@@ -205,16 +206,30 @@ const ListProducts = () => {
                 sx={{
                   display: "flex",
                   minHeight: "50vh",
+                  flex: "column",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Typography
-                  variant="h6"
-                  sx={{ color: "#333", textAlign: "center", mb: 2 }}
-                >
-                  No Products Available
-                </Typography>
+
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                    alt="No products found"
+                    style={{
+                      maxWidth: "50%",
+                      height: "auto",
+                    }}
+                  />
+                  <Typography
+                    color="textSecondary"
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      my: "1rem",
+                      fontSize: "1.2rem",
+                    }}
+                  >
+                    No product
+                  </Typography>
               </Grid>
             )}
           </Grid>

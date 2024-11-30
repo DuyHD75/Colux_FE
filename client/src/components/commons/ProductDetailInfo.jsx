@@ -7,6 +7,7 @@ import {
   Button,
   IconButton,
   Input,
+  Tooltip,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import RemoveIcon from "@mui/icons-material/Remove";
@@ -45,7 +46,7 @@ const ProductDetailInfo = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [products, setProducts] = useState([]);
   const productsPerPage = 20;
-  const { user } = useSelector((state) => state.user);
+  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
   const [cart, setCart] = useState(null);
   const navigate = useNavigate();
 
@@ -59,11 +60,16 @@ const ProductDetailInfo = ({ product }) => {
 
   const pageIndex = 0;
 
-  const rating = 0;
-  const reviewsCount = 0;
+  // const rating = 0;
+  // const reviewsCount = 0;
 
-  const fullStars = Math.floor(rating);
-  const hasHalfStar = rating % 1 !== 0;
+  // const fullStars = Math.floor(rating);
+  // const hasHalfStar = rating % 1 !== 0;
+
+  const ratingAverage = product.ratingAverage || 0;
+  const fullStars = Math.floor(ratingAverage);
+  const hasHalfStar = ratingAverage % 1 !== 0;
+  const reviewsCount = product.reviewCount || 0;
 
   const increaseQuantity = () => {
     const inStock = selectedVariant.quantity;
@@ -398,20 +404,27 @@ const ProductDetailInfo = ({ product }) => {
                     return (
                       <React.Fragment key={index}>
                         {product.color && (
+                          <Tooltip
+                          title={`${product.color.name} (${product.color.code})`}
+                          placement="top"
+                          arrow
+                          sx={{ ...textConfigs.style.basicFont }}
+                        >
                           <Box
-                            sx={{
-                              position: "relative",
-                              display: "inline-block",
-                              cursor: "pointer",
-                            }}
-                            onClick={() => handleProductSelect(product)}
-                            onMouseEnter={(e) =>
-                              (e.currentTarget.style.transform = "scale(1.1)")
-                            }
-                            onMouseLeave={(e) =>
-                              (e.currentTarget.style.transform = "scale(1)")
-                            }
-                          >
+                          sx={{
+                            position: "relative",
+                            display: "inline-block",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => handleProductSelect(product)}
+                          onMouseEnter={(e) =>
+                            (e.currentTarget.style.transform = "scale(1.1)")
+                          }
+                          onMouseLeave={(e) =>
+                            (e.currentTarget.style.transform = "scale(1)")
+                          }
+                        >
+                          
                             <BsFillHexagonFill
                               size={window.innerWidth < 600 ? 20 : 40}
                               style={{
@@ -420,19 +433,21 @@ const ProductDetailInfo = ({ product }) => {
                                 transition: "transform 0.2s ease-in-out",
                               }}
                             />
-                            {selectedProduct === product && (
-                              <FaCheck
-                                style={{
-                                  position: "absolute",
-                                  top: "50%",
-                                  left: "50%",
-                                  transform: "translate(-50%, -50%)",
-                                  color: "#fff",
-                                  fontSize: window.innerWidth < 600 ? 10 : 20,
-                                }}
-                              />
-                            )}
-                          </Box>
+                         
+                          {selectedProduct === product && (
+                            <FaCheck
+                              style={{
+                                position: "absolute",
+                                top: "50%",
+                                left: "50%",
+                                transform: "translate(-50%, -50%)",
+                                color: "#fff",
+                                fontSize: window.innerWidth < 600 ? 10 : 20,
+                              }}
+                            />
+                          )}
+                        </Box>
+                        </Tooltip>
                         )}
         
                         {product.numberOfPiecesPerBox && (

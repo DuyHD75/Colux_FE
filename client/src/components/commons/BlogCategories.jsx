@@ -24,6 +24,8 @@ const BlogCategories = () => {
   const { categoryName } = useParams();
   const dispatch = useDispatch();
   const posts = useSelector(selectPosts);
+  console.log(posts);
+  
 
   const [currentPage, setCurrentPage] = useState(1);
   const postsPerPage = 9;

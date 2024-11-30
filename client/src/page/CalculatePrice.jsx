@@ -1,4 +1,10 @@
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   Container,
   Box,
@@ -12,6 +18,7 @@ import {
   IconButton,
   Stack,
 } from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 import { useDispatch } from "react-redux";
 import ProductModal from "../components/commons/ProductModel";
 import { FaCheck, FaEdit, FaTrash } from "react-icons/fa";
@@ -22,9 +29,16 @@ import { toast } from "react-toastify";
 import { BsFillHexagonFill } from "react-icons/bs";
 import textConfigs from "../config/text.config";
 import { useTranslation } from "react-i18next";
+import { Link } from "react-router-dom";
+import cartApi from "../api/modules/cart.api";
 
 const CalculatePrice = () => {
   const { t, i18n } = useTranslation();
+
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const [cart, setCart] = useState(null);
 
   const [paints, setPaints] = useState([]);
   const [wallpapers, setWallpapers] = useState([]);
@@ -63,6 +77,8 @@ const CalculatePrice = () => {
 
   const [userInputValue, setUserInputValue] = useState({});
   const [userIsEditing, setUserIsEditing] = useState(false);
+
+  const [showAddToCartBtn, setShowAddToCartBtn] = useState(true);
 
   const [isSticky, setIsSticky] = useState(false);
   const boxRef = useRef(null);
@@ -373,7 +389,6 @@ const CalculatePrice = () => {
     if (!product) return 0;
 
     let estimatedPrice = 0;
-    console.log(product);
     switch (type) {
       case "floor": {
         const numbers = sizeName.split(" x ").map(Number);
@@ -536,6 +551,109 @@ const CalculatePrice = () => {
     if (type === "wallpaper") setOpenWallpaperModal(false);
     if (type === "floor") setOpenFloorModal(false);
   };
+
+  useEffect(() => {
+    const getCart = async () => {
+      if (user) {
+        try {
+          dispatch(setGlobalLoading(true));
+          const { response, err } = await cartApi.getCart(user.userId);
+          dispatch(setGlobalLoading(false));
+          if (response) {
+            setCart(response.data.carts);
+          }
+          if (err) {
+            toast.error(err);
+          }
+        } catch (error) {
+          toast.error(error);
+        }
+      }
+    };
+    getCart();
+  }, [user]);
+
+  // console.log(selectedWallpaperVariant);
+
+  // console.log(selectedFloorValue);
+  // console.log(selectedFloorVariant);
+  // console.log(selectedVariants);
+  // console.log();Size
+
+  const handleAddToCart = (quantity) => {
+    if (user) {
+      const status = 1;
+      const updateQuantityType = "INCREMENTAL";
+      const customerId = user.userId;
+      const cartId = cart ? cart.cartId : "";
+      console.log(selectedWallpaper);
+      console.log(selectedFloor);
+      console.log(selectedPaints);
+      const cartItems = [
+        selectedWallpaper
+          ? {
+              productId: selectedWallpaper.productId,
+              quantity: 1,
+              variantId:
+                selectedWallpaperVariant && selectedWallpaperVariant.variantId,
+              wallpaperId:
+                selectedWallpaper && selectedWallpaper.wallpapers[0].id,
+            }
+          : null,
+        selectedFloor
+          ? {
+              productId: selectedFloor.productId,
+              quantity: 1,
+              variantId: selectedFloorValue && selectedFloorValue.variantId,
+              floorId: selectedFloorVariant && selectedFloorVariant.id,
+            }
+          : null,
+        ...(selectedPaints?.map((paint, i) => ({
+          productId: paint.productId,
+          quantity: 1,
+          variantId:
+            selectedVariants &&
+            selectedVariants[i].selectedVariantValue.variantId,
+          paintId: selectedVariants && selectedVariants[i].selectedVariant.id,
+        })) || []),
+
+        // {
+        //   ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
+        //   ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
+        //   ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
+        //   productId: product.productId,
+        //   quantity: quantity,
+        //   ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
+        //   ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
+        //   ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
+        // }
+      ].filter(Boolean);
+      console.log(cartItems);
+
+      updateCart(cartId, customerId, status, updateQuantityType, cartItems);
+      setShowAddToCartBtn(false);
+    } else {
+      toast.error("Please login to add to cart");
+    }
+  };
+
+  const updateCart = useCallback(
+    async (cartId, customerId, status, updateQuantityType, cartItems) => {
+      const { response, err } = await cartApi.saveCart(
+        cartId,
+        customerId,
+        status,
+        updateQuantityType,
+        cartItems
+      );
+      if (!response) {
+        toast.error(err);
+      } else {
+        toast.success("Added to cart successfully");
+      }
+    },
+    []
+  );
 
   return (
     <Fragment>
@@ -838,18 +956,22 @@ const CalculatePrice = () => {
                               px: 2,
                             }}
                           >
-                            <CardMedia
-                              component="img"
-                              sx={{
-                                height: { xs: 80, md: 100 },
-                                width: { xs: 80, md: 100 },
-                                objectFit: "cover",
-                              }}
-                              image={
-                                paint.images.length > 0 && paint.images[0].url
-                              }
-                              alt={paint.productName}
-                            />
+                            <Link
+                              to={`/products/${paint.category.name}/${paint.category.categoryId}/${paint.productName}/${paint.productId}`}
+                            >
+                              <CardMedia
+                                component="img"
+                                sx={{
+                                  height: { xs: 80, md: 100 },
+                                  width: { xs: 80, md: 100 },
+                                  objectFit: "cover",
+                                }}
+                                image={
+                                  paint.images.length > 0 && paint.images[0].url
+                                }
+                                alt={paint.productName}
+                              />
+                            </Link>
                             <CardContent
                               sx={{
                                 flex: 1,
@@ -891,61 +1013,75 @@ const CalculatePrice = () => {
                                       display: "flex",
                                       gap: 2,
                                       flexWrap: "wrap",
-                                      marginTop: 1,
+                                      marginY: 1,
                                     }}
                                   >
                                     {paint.paints.map(
                                       (variant, variantIndex) => (
-                                        <Box
-                                          key={variantIndex}
+                                        <Tooltip
+                                          title={`${variant.color.name} (${variant.color.code})`}
+                                          placement="top"
+                                          arrow
                                           sx={{
-                                            position: "relative",
-                                            display: "inline-block",
-                                            cursor: "pointer",
+                                            ...textConfigs.style.basicFont,
                                           }}
-                                          onClick={() =>
-                                            handleVariantSelect(index, variant)
-                                          }
-                                          onMouseEnter={(e) =>
-                                            (e.currentTarget.style.transform =
-                                              "scale(1.1)")
-                                          }
-                                          onMouseLeave={(e) =>
-                                            (e.currentTarget.style.transform =
-                                              "scale(1)")
-                                          }
                                         >
-                                          <BsFillHexagonFill
-                                            size={
-                                              window.innerWidth < 600 ? 40 : 40
-                                            }
-                                            style={{
-                                              color: variant.color.hex,
-                                              filter:
-                                                "drop-shadow(0px 0px 4px #ccc)",
-                                              transition:
-                                                "transform 0.2s ease-in-out",
+                                          <Box
+                                            key={variantIndex}
+                                            sx={{
+                                              position: "relative",
+                                              display: "inline-block",
+                                              cursor: "pointer",
                                             }}
-                                          />
-                                          {selectedVariants[index]
-                                            ?.selectedVariant?.id ===
-                                            variant.id && (
-                                            <FaCheck
+                                            onClick={() =>
+                                              handleVariantSelect(
+                                                index,
+                                                variant
+                                              )
+                                            }
+                                            onMouseEnter={(e) =>
+                                              (e.currentTarget.style.transform =
+                                                "scale(1.1)")
+                                            }
+                                            onMouseLeave={(e) =>
+                                              (e.currentTarget.style.transform =
+                                                "scale(1)")
+                                            }
+                                          >
+                                            <BsFillHexagonFill
+                                              size={
+                                                window.innerWidth < 600
+                                                  ? 40
+                                                  : 40
+                                              }
                                               style={{
-                                                position: "absolute",
-                                                top: "50%",
-                                                left: "50%",
-                                                transform:
-                                                  "translate(-50%, -50%)",
-                                                color: "#fff",
-                                                fontSize:
-                                                  window.innerWidth < 600
-                                                    ? 20
-                                                    : 20,
+                                                color: variant.color.hex,
+                                                filter:
+                                                  "drop-shadow(0px 0px 4px #ccc)",
+                                                transition:
+                                                  "transform 0.2s ease-in-out",
                                               }}
                                             />
-                                          )}
-                                        </Box>
+                                            {selectedVariants[index]
+                                              ?.selectedVariant?.id ===
+                                              variant.id && (
+                                              <FaCheck
+                                                style={{
+                                                  position: "absolute",
+                                                  top: "50%",
+                                                  left: "50%",
+                                                  transform:
+                                                    "translate(-50%, -50%)",
+                                                  color: "#fff",
+                                                  fontSize:
+                                                    window.innerWidth < 600
+                                                      ? 20
+                                                      : 20,
+                                                }}
+                                              />
+                                            )}
+                                          </Box>
+                                        </Tooltip>
                                       )
                                     )}
                                   </Box>
@@ -1674,7 +1810,7 @@ const CalculatePrice = () => {
                     md: isSticky ? "fixed" : "relative",
                   },
                   top: { xs: "0px", md: isSticky ? "50px" : "0px" },
-                  width: { xs: "auto", md: isSticky ? "20%" : "auto" },
+                  width: { xs: "auto", md: isSticky ? "276px" : "auto" },
                   padding: 3,
                   borderRadius: 2,
                   border: "1px solid #ccc",
@@ -1855,6 +1991,48 @@ const CalculatePrice = () => {
                       >
                         ${totalEstimatedPrice().toFixed(2)}
                       </Typography>
+                    </Box>
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        mt: 2,
+                      }}
+                    >
+                      {showAddToCartBtn === true ? (
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#c11700",
+                            padding: "8px",
+                            width: "70%",
+                            ":hover": { backgroundColor: "#1c2759" },
+                            ...textConfigs.style.basicFont,
+                            borderRadius: "50px",
+                          }}
+                          onClick={() => {
+                            handleAddToCart();
+                          }}
+                        >
+                          {t("add.to.cart")}
+                        </Button>
+                      ) : (
+                        <Button
+                          variant="contained"
+                          sx={{
+                            backgroundColor: "#c11700",
+                            padding: "8px",
+                            width: "70%",
+                            ":hover": { backgroundColor: "#1c2759" },
+                            ...textConfigs.style.basicFont,
+                            borderRadius: "50px",
+                          }}
+                          component={Link}
+                          to="/cart"
+                        >
+                          {t("go.to.checkout")}
+                        </Button>
+                      )}
                     </Box>
                   </>
                 ) : (

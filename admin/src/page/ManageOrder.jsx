@@ -5,7 +5,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControl,
+  InputLabel,
+  MenuItem,
   Paper,
+  Select,
   Stack,
   TextField,
   Typography,
@@ -14,7 +18,7 @@ import React, { Fragment, useState } from "react";
 import textConfig from "../config/text.config";
 import backgroundConfig from "../config/background.config";
 import { FaPlus } from "react-icons/fa6";
-import { DataGrid } from "@mui/x-data-grid";
+import { DataGrid, GridFilterInputValue } from "@mui/x-data-grid";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
 import customScrollbarStyle from "../config/scrollbar.config";
@@ -29,37 +33,6 @@ import StepLabel from "@mui/material/StepLabel";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 
-const steps = [
-  {
-    time: "22:40 12-11-2024",
-    status:
-      "Đơn hàng đã đến kho phân loại Xã Hòa Liên, Huyện Hòa Vang, Đà Nẵng",
-  },
-  {
-    time: "16:09 13-11-2024",
-    status: "Đơn hàng đã rời kho phân loại",
-  },
-  {
-    time: "07:13 14-11-2024",
-    status:
-      "Đơn hàng đã đến trạm giao hàng tại khu vực của bạn Thị Trấn Núi Thành, Huyện Núi Thành, Quảng Nam và sẽ được giao trong vòng 24 giờ tiếp theo",
-  },
-  {
-    time: "08:25 14-11-2024",
-    status: "Đã sắp xếp tài xế giao hàng",
-  },
-  {
-    time: "08:25 14-11-2024",
-    status:
-      "Đang vận chuyển: Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại",
-  },
-  {
-    time: "11:23 14-11-2024",
-    status: "Đã giao: Giao hàng thành công",
-    additionalInfo: "Người nhận hàng: Kiều Hoàng Đạt--",
-  },
-];
-
 const ManageOrder = () => {
   const products = useSelector((state) => state.products.products);
   const [orders, setOrders] = useState([]);
@@ -71,9 +44,40 @@ const ManageOrder = () => {
   const [selectedRow, setSelectedRow] = useState(null);
   const [searchText, setSearchText] = useState("");
 
+  const [filterValues, setFilterValues] = useState("");
+
+  const handleFilterChange = (e) => {
+    setFilterValues(e.target.value);
+  };
+
+  const applyFilter = () => {
+    const filterList = filterValues.split(',').map(value => value.trim());
+    const filteredData = rows.filter(row =>
+      filterList.includes(row.city)
+    );
+    setRows(filteredData);
+  };
+
   const [steps, setSteps] = useState(null);
 
   const filteredRows = useRef([]);
+
+  function removeDiacritics(str) {
+    const map = {
+      a: /á|à|ả|ã|ạ|ă|ắ|ằ|ẳ|ẵ|ặ|â|ấ|ầ|ẩ|ẫ|ậ/g,
+      e: /é|è|ẻ|ẽ|ẹ|ê|ế|ề|ể|ễ|ệ/g,
+      i: /í|ì|ỉ|ĩ|ị/g,
+      o: /ó|ò|ỏ|õ|ọ|ô|ố|ồ|ổ|ỗ|ộ|ơ|ớ|ờ|ở|ỡ|ợ/g,
+      u: /ú|ù|ủ|ũ|ụ|ư|ứ|ừ|ử|ữ|ự/g,
+      y: /ý|ỳ|ỷ|ỹ|ỵ/g,
+      d: /đ/g,
+    };
+  
+    for (let key in map) {
+      str = str.replace(map[key], key);
+    }
+    return str;
+  }
 
   useEffect(() => {
     if (searchText === "") {
@@ -82,8 +86,8 @@ const ManageOrder = () => {
       filteredRows.current = orders.filter(
         (order) =>
           searchText &&
-          (order.toName.toLowerCase().includes(searchText.toLowerCase()) ||
-            order.code.toLowerCase().includes(searchText.toLowerCase()))
+          (removeDiacritics(order.toName.toLowerCase()).includes(removeDiacritics(searchText.toLowerCase())) ||
+          removeDiacritics(order.code.toLowerCase()).includes(removeDiacritics(searchText.toLowerCase())))
       );
     }
     setRows(filteredRows.current); // Cập nhật rows với kết quả lọc
@@ -116,7 +120,13 @@ const ManageOrder = () => {
     try {
       const { response, err } = await ordersApi.getAllOrders();
       if (response) {
-        setRows([...response.data.orders]);
+        setRows([
+          ...response.data.orders.sort((a, b) => {
+            const dateA = new Date(a.createdAt);
+            const dateB = new Date(b.createdAt);
+            return dateB - dateA;
+        })
+        ]);
         setOrders([...response.data.orders]);
       } else if (err) {
         toast.error(err);
@@ -141,22 +151,20 @@ const ManageOrder = () => {
 
   const handleOpenShippingDialog = async (waybillId) => {
     console.log(waybillId);
-    
+
     try {
-      const {response} = await ordersApi.getAWallbilll(waybillId);
+      const { response } = await ordersApi.getAWallbilll(waybillId);
       if (response) {
         setSteps(response.data.waybill);
       }
-    } catch (error) {
-      
-    }
+    } catch (error) {}
 
     setOpenShipping(true);
-  }
+  };
 
   const handleCloseShippingDialog = () => {
     setOpenShipping(false);
-  }
+  };
 
   const handleCreateWaybill = async () => {
     const { weight, length, width, height } = formValues;
@@ -176,7 +184,7 @@ const ManageOrder = () => {
     // Tạo object Waybill
     const waybill = {
       orderId: selectedRow.orderId,
-      shippingDate: Date.now,
+      shippingDate: new Date().toISOString(),
       weight: parseInt(weight, 10),
       length: parseInt(length, 10),
       width: parseInt(width, 10),
@@ -188,10 +196,11 @@ const ManageOrder = () => {
 
     try {
       const { response, err } = await ordersApi.createWallbill(waybill);
-      if (response && response.code === 200) {
+      if (response) {
+        getAllOrders();
         toast.success("Create Waybill success!");
       } else {
-        toast.err(response.message);
+        toast.error(err.message);
       }
     } catch (error) {
       console.log(error);
@@ -211,37 +220,194 @@ const ManageOrder = () => {
     navigate(`/orderDetails/${row.id}`, { state: { data: row } });
   };
 
+  const paymentStatusMap = {
+    1: { label: "Unpaid", color: "#f44336" }, // Red
+    2: { label: "Paid", color: "#4caf50" }, // Green
+    3: { label: "Advance", color: "#ff9800" }, // Orange
+  };
+
+  const statusMap = {
+    1: { label: "CREATED", color: "#2196f3" }, // Blue
+    2: { label: "PENDING", color: "#ff9800" }, // Orange
+    3: { label: "APPROVED", color: "#4caf50" }, // Green
+    4: { label: "COMPLETED", color: "#9c27b0" }, // Purple
+    5: { label: "CANCELLED", color: "#f44336" }, // Red
+  };
+
   const columns = [
-    { field: "id", headerName: "ID", width: 70 },
-    { field: "toName", headerName: "Name", width: 210 },
-    { field: "toPhone", headerName: "Phone", width: 170 },
-    { field: "note", headerName: "Note", width: 358 },
-    { field: "toAddress", headerName: "To Address", width: 166 },
-    { field: "paymentMethod", headerName: "Payment Method", width: 133 },
+    {
+      field: "id",
+      headerName: "ID",
+      width: 70,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "toName",
+      headerName: "Name",
+      width: 210,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "toPhone",
+      headerName: "Phone",
+      width: 170,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "toAddress",
+      headerName: "To Address",
+      width: 166,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "paymentMethod",
+      headerName: "Payment Method",
+      width: 133,
+      align: "center",
+      headerAlign: "center",
+    },
     {
       field: "totalPay",
       headerName: "Total Pay",
       width: 115,
       renderCell: (params) => `$${params.row.totalPay}`,
+      align: "center",
+      headerAlign: "center",
     },
-    // { field: 'tax', headerName: 'Tax', width: 65 },
-    // { field: 'shippingCost', headerName: 'Shipping Cost', width: 125 },
-    // { field: 'totalPay', headerName: 'totalPay', width: 132, },
     {
       field: "advancePayment",
       headerName: "Advance Payment",
       width: 150,
       renderCell: (params) => `$${params.row.advancePayment}`,
+      align: "center",
+      headerAlign: "center",
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      width: 150,
+      renderCell: (params) => {
+        const status = statusMap[params.row.status];
+        return (
+          <span
+            style={{
+              color: status?.color || "#000",
+              fontWeight: "bold",
+            }}
+          >
+            {status?.label || "Unknown"}
+          </span>
+        );
+      },
+      align: "center",
+      headerAlign: "center",
+      filterable: true,
+      filterOperators: [
+        {
+          label: "Equals",
+          value: "equals",
+          getApplyFilterFn: (filterItem) => {
+            if (!filterItem.value) return null;
+
+            return (row) => row === parseInt(filterItem.value, 10);
+          },
+          InputComponent: ({ item, applyValue }) => (
+            <div>
+              <InputLabel shrink>
+                Value
+              </InputLabel>
+              <Select
+                value={item.value || ""}
+                onChange={(event) =>
+                  applyValue({ ...item, value: event.target.value })
+                }
+                fullWidth
+                displayEmpty
+              >
+                <MenuItem value="">None</MenuItem>
+                {Object.entries(statusMap).map(([key, value]) => (
+                  <MenuItem key={key} value={key}>
+                    {value.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          ),
+        },
+      ],
+    },
+    {
+      field: "paymentStatus",
+      headerName: "Payment Status",
+      width: 150,
+      renderCell: (params) => {
+        const paymentStatus = paymentStatusMap[params.row.paymentStatus];
+        return (
+          <span
+            style={{
+              color: paymentStatus?.color || "#000",
+              fontWeight: "bold",
+            }}
+          >
+            {paymentStatus?.label || "Unknown"}
+          </span>
+        );
+      },
+      align: "center",
+      headerAlign: "center",
+      filterable: true,
+      filterOperators: [
+        {
+          label: "Equals",
+          value: "equals",
+          getApplyFilterFn: (filterItem) => {
+            if (!filterItem.value) return null;
+
+            return (row) => row === parseInt(filterItem.value, 10);
+          },
+          InputComponent: ({ item, applyValue }) => (
+
+            <div>
+              <InputLabel shrink>
+                Value
+              </InputLabel>
+              <Select
+              value={item.value || ""}
+              onChange={(event) =>
+                applyValue({ ...item, value: event.target.value })
+              }
+              fullWidth
+              displayEmpty
+            >
+              <MenuItem value="">None</MenuItem>
+              {Object.entries(paymentStatusMap).map(([key, value]) => (
+                <MenuItem key={key} value={key}>
+                  {value.label}
+                </MenuItem>
+              ))}
+            </Select>
+            </div>
+            
+          ),
+        },
+      ],
     },
     {
       field: "View Details",
       headerName: "Action",
-      width: 200,
+      width: 220,
+      align: "center",
+      headerAlign: "center",
       renderCell: (params) => (
         <Stack
           spacing={1}
           direction="row"
           alignItems="center"
+          justifyContent="center" // Căn giữa các nút
           width="100%"
           height="100%"
         >
@@ -258,17 +424,18 @@ const ManageOrder = () => {
               px: 1.5,
               py: 0.25,
               fontSize: "0.75rem",
-              minWidth: "80px",
+              width: "100px",
               height: "24px",
             }}
           >
             View Details
           </Button>
+    
+          {/* Điều kiện cho "Create Waybill" chỉ hiển thị khi chưa có waybillId và status là 1 hoặc 2 */}
           {!params.row.waybillId && (params.row.status === 1 || params.row.status === 2) && (
             <Button
               variant="contained"
               size="small"
-              component={Link}
               onClick={() => handleOpenDialog(params.row)}
               sx={{
                 bgcolor: "#1c2759",
@@ -279,18 +446,19 @@ const ManageOrder = () => {
                 px: 1.5,
                 py: 0.25,
                 fontSize: "0.75rem",
-                minWidth: "80px",
+                width: "100px",
                 height: "24px",
               }}
             >
               Create Waybill
             </Button>
           )}
+    
+          {/* Hiển thị "View Waybill" khi có waybillId */}
           {params.row.waybillId && (
             <Button
               variant="contained"
               size="small"
-              component={Link}
               onClick={() => handleOpenShippingDialog(params.row.waybillId)}
               sx={{
                 bgcolor: "#1c2759",
@@ -301,17 +469,29 @@ const ManageOrder = () => {
                 px: 1.5,
                 py: 0.25,
                 fontSize: "0.75rem",
-                minWidth: "80px",
+                width: "100px",
                 height: "24px",
               }}
             >
-              View Walbill
+              View Waybill
             </Button>
           )}
         </Stack>
       ),
-    },
+    }
+    
   ];
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+  };
 
   const paginationModel = { page: 0, pageSize: 10 };
 
@@ -452,7 +632,10 @@ const ManageOrder = () => {
           onClose={handleCloseShippingDialog}
         >
           <DialogTitle sx={{ fontWeight: 400 }}>
-            Tracking Information
+            Tracking Information {steps && steps.code} <br></br>
+            GHN Note: {steps && steps.ghnRequiredNote} <br></br>
+            Customer Note: {steps && steps.note} <br></br>
+            Shipping Date: {formatDate(steps && steps.shippingDate)}
           </DialogTitle>
           <DialogContent
             sx={{
@@ -466,55 +649,61 @@ const ManageOrder = () => {
             }}
           >
             <Stepper orientation="vertical" sx={{ paddingLeft: 2 }}>
-              {steps && steps.waybillLogs.reverse().map((step, index) => (
-                <Step
-                  sx={{ alignItems: "start", justifyContent: "start" }}
-                  key={index}
-                  active={true}
-                  completed={index === steps.waybillLogs.length - 1}
-                >
-                  <StepLabel
-                    icon={
-                      index === 0 ? (
-                        <CheckCircleIcon color="success" />
-                      ) : (
-                        <AccessTimeIcon color="action" />
-                      )
-                    }
+              {steps &&
+                steps.waybillLogs.reverse().map((step, index) => (
+                  <Step
+                    sx={{ alignItems: "start", justifyContent: "start" }}
+                    key={index}
+                    active={true}
+                    completed={index === steps.waybillLogs.length - 1}
                   >
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{ width: "100%" }}
+                    <StepLabel
+                      icon={
+                        index === 0 ? (
+                          <CheckCircleIcon color="success" />
+                        ) : (
+                          <AccessTimeIcon color="action" />
+                        )
+                      }
                     >
-                      {/* Time and Status */}
-                      <Typography
-                        variant="subtitle2"
-                        noWrap
-                        sx={{
-                          flexShrink: 0,
-                          color:
-                            index === 0 ? "success.main" : "text.secondary",
-                          minWidth: "150px",
-                        }}
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ width: "100%" }}
                       >
-                        {step.createdAt}
-                      </Typography>
+                        {/* Time and Status */}
+                        <Typography
+                          variant="subtitle2"
+                          noWrap
+                          sx={{
+                            flexShrink: 0,
+                            color:
+                              index === 0 ? "success.main" : "text.secondary",
+                            minWidth: "150px",
+                          }}
+                        >
+                          {formatDate(step.createdAt)}
+                        </Typography>
 
-                      {/* Status and Additional Info */}
-                      <Stack direction="column" spacing={0.5}>
-                        <Typography variant="body2">{step.previousStatus}</Typography>
-                        {step.currentStatus && (
-                          <Typography variant="caption" color="text.secondary">
-                            {step.currentStatus}
+                        {/* Status and Additional Info */}
+                        <Stack direction="column" spacing={0.5}>
+                          <Typography variant="body2">
+                            {step.previousStatus}
                           </Typography>
-                        )}
+                          {step.currentStatus && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {step.currentStatus}
+                            </Typography>
+                          )}
+                        </Stack>
                       </Stack>
-                    </Stack>
-                  </StepLabel>
-                </Step>
-              ))}
+                    </StepLabel>
+                  </Step>
+                ))}
             </Stepper>
           </DialogContent>
           <DialogActions>
@@ -523,7 +712,6 @@ const ManageOrder = () => {
             </Button>
           </DialogActions>
         </Dialog>
-       
       </Box>
     </>
   );

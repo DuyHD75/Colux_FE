@@ -36,13 +36,17 @@ import productsApi from "../../api/modules/products.api";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
 import cartApi from "../../api/modules/cart.api";
+import backgroundConfigs from "../../config/background.config";
+import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
+
 
 export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [categories, setCategories] = useState([]);
-  const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const { t, i18n } = useTranslation();
+  const { globalLoading } = useSelector((state) => state.globalLoading);
 
   const [colorFamlily, setColorFamily] = useState([]);
   const [collections, setCollection] = useState([]);
@@ -81,6 +85,14 @@ export const Header = () => {
       }, delay);
     };
   };
+
+useEffect(() => {
+    if (globalLoading === true) {
+      setUser(JSON.parse(localStorage.getItem("user")));
+      dispatch(setGlobalLoading(false));
+    }
+}, [globalLoading])
+
 
   const HandleSearch = async (e) => {
     if (e.target.value.trim() === "") {
@@ -253,12 +265,12 @@ export const Header = () => {
             }}
           >
             <img
-              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Flogo-icon.svg?alt=media&token=039706dc-1908-40c7-b42f-755ed24a70f5" 
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Flogo-icon.svg?alt=media&token=039706dc-1908-40c7-b42f-755ed24a70f5"
               alt="Colux Logo"
               style={{
-                width: "45px", 
+                width: "45px",
                 height: "45px",
-                marginRight: "0px", 
+                marginRight: "0px",
               }}
             />
             LUX.
@@ -910,7 +922,10 @@ export const Header = () => {
           {/* End User Setting */}
         </Toolbar>
       </Container>
-      <Box className="w-full">
+      <Box
+        className="w-full"
+        sx={{ ...backgroundConfigs.style.backgroundSecondary }}
+      >
         <Container
           maxWidth="lg"
           sx={{
@@ -949,9 +964,20 @@ export const Header = () => {
                   inputRef={searchInputRef}
                   sx={{
                     "& .MuiOutlinedInput-root": {
-                      "& fieldset": { borderColor: "#1c2759" },
-                      "&:hover fieldset": { borderColor: "#1c2759" },
-                      "&.Mui-focused fieldset": { borderColor: "#1c2759" },
+                      "& fieldset": {
+                        borderColor: "#ffffff",
+                        borderRadius: "50px",
+                      },
+                      "&:hover fieldset": { borderColor: "#ffffff" },
+                      "&.Mui-focused fieldset": { borderColor: "#ffffff" },
+                    },
+                    "& .MuiInputBase-input": {
+                      color: "#ffffff", // Màu chữ khi nhập
+                      caretColor: "#ffffff", // Màu con trỏ chuột
+                      "&::placeholder": {
+                        color: "#ffffff", // Màu của placeholder
+                        opacity: 1, // Đảm bảo placeholder không bị mờ
+                      },
                     },
                     ...textConfigs.style.basicFont,
                     mt: 1,
@@ -968,7 +994,7 @@ export const Header = () => {
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
-                          color: "#1c2759",
+                          color: "#ffffff",
                         }}
                       >
                         <SearchIcon />
@@ -1000,31 +1026,32 @@ export const Header = () => {
                 }}
               >
                 {/* Colors Section */}
-                <Box
-                  sx={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    maxHeight: "100%",
-                    overflowY: "auto",
-                    pr: 2,
-                  }}
-                >
-                  <Typography
-                    variant="h6"
+                {searchResults.colors.length > 0 && (
+                  <Box
                     sx={{
-                      textAlign: "left",
-                      color: "#1c2759",
-                      borderBottom: "2px solid #1c2759",
-                      pb: 1,
-                      mb: 2,
-                      mt: 1,
-                      ...textConfigs.style.basicFont,
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      maxHeight: "100%",
+                      overflowY: "auto",
+                      pr: 2,
                     }}
                   >
-                    Colors
-                  </Typography>
-                  {searchResults.colors.length > 0 ? (
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        textAlign: "left",
+                        color: "#1c2759",
+                        borderBottom: "2px dashed rgba(28, 39, 89, 0.5)",
+                        pb: 1,
+                        mb: 2,
+                        mt: 1,
+                        ...textConfigs.style.basicFont,
+                      }}
+                    >
+                      Colors
+                    </Typography>
+
                     <Box
                       sx={{
                         display: "flex",
@@ -1047,7 +1074,7 @@ export const Header = () => {
                           <Grid
                             item
                             xs={6}
-                            md={3}
+                            md={2}
                             key={index}
                             sx={{ padding: "0 !important" }}
                           >
@@ -1121,45 +1148,35 @@ export const Header = () => {
                         ))}
                       </Grid>
                     </Box>
-                  ) : (
+                  </Box>
+                )}
+
+                {/* Products Section */}
+                {searchResults.products.length > 0 && (
+                  <Box
+                    sx={{
+                      flex: 1,
+                      display: "flex",
+                      flexDirection: "column",
+                      maxHeight: "100%",
+                      overflowY: "auto",
+                      pr: 2,
+                    }}
+                  >
                     <Typography
+                      variant="h6"
                       sx={{
-                        textAlign: "center",
+                        textAlign: "left",
                         color: "#1c2759",
+                        borderBottom: "2px dashed rgba(28, 39, 89, 0.5)",
+                        pb: 1,
                         mb: 2,
                         ...textConfigs.style.basicFont,
                       }}
                     >
-                      No colors found.
+                      Products
                     </Typography>
-                  )}
-                </Box>
 
-                {/* Products Section */}
-                <Box
-                  sx={{
-                    flex: 1,
-                    display: "flex",
-                    flexDirection: "column",
-                    maxHeight: "100%",
-                    overflowY: "auto",
-                    pr: 2,
-                  }}
-                >
-                  <Typography
-                    variant="h6"
-                    sx={{
-                      textAlign: "left",
-                      color: "#1c2759",
-                      borderBottom: "2px solid #1c2759",
-                      pb: 1,
-                      mb: 2,
-                      ...textConfigs.style.basicFont,
-                    }}
-                  >
-                    Products
-                  </Typography>
-                  {searchResults.products.length > 0 ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -1229,18 +1246,8 @@ export const Header = () => {
                         ))}
                       </Grid>
                     </Box>
-                  ) : (
-                    <Typography
-                      sx={{
-                        textAlign: "center",
-                        color: "#1c2759",
-                        mb: 2,
-                      }}
-                    >
-                      No products found.
-                    </Typography>
-                  )}
-                </Box>
+                  </Box>
+                )}
               </Box>
             )}
           </Box>

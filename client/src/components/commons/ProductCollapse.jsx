@@ -17,6 +17,12 @@ import { useTranslation } from "react-i18next";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import textConfigs from "../../config/text.config";
+import { useDispatch } from "react-redux";
+import productsApi from "../../api/modules/products.api"
+import StarIcon from "@mui/icons-material/Star";
+import StarBorderIcon from "@mui/icons-material/StarBorder";
+import StarHalfIcon from "@mui/icons-material/StarHalf";
+
 
 const blogs = data.blogs;
 
@@ -26,10 +32,27 @@ const ProductCollapse = ({ product }) => {
   const [reviews, setReviews] = useState([]);
   const navigate = useNavigate();
 
+  const currentPage = 1;
+  const size = 10;
 
-  const filteredReviews = reviews.filter(
-    (review) => review.productId === product.productId
-  );
+  const capitalizeWords = (str) => {
+    return str
+      .toLowerCase()
+      .split(" ")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  };
+
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based
+    const year = date.getFullYear();
+    const hours = date.getHours().toString().padStart(2, "0");
+    const minutes = date.getMinutes().toString().padStart(2, "0");
+    const seconds = date.getSeconds().toString().padStart(2, "0");
+    return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+  };
 
   const getProductOptions = () => {
     if (product.paints) {
@@ -48,6 +71,26 @@ const ProductCollapse = ({ product }) => {
       setSelectedProduct(products[0]);
     }
   }, []);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const getReviewsByProductId = async () => {
+      try {
+        const { response, err } = await productsApi.getReviewsByProductId(product.productId, currentPage - 1, size);
+
+        if (response) {
+          setReviews(response.data.Review.content);
+        } else {
+          console.error(err.exception);
+        }
+      } catch (error) {
+        console.error("Error fetching Product details:", error);
+      }
+    };
+
+    getReviewsByProductId();
+  }, [dispatch]);
 
   const handleProductSelect = (productType) => {
     navigate(
@@ -380,19 +423,32 @@ const ProductCollapse = ({ product }) => {
           </Typography>
         </AccordionSummary>
         <AccordionDetails>
-          {filteredReviews.length > 0 ? (
-            filteredReviews.map((review) => (
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
               <Grid container spacing={2} key={review.id} sx={{ mb: 2 }}>
                 <Grid item xs={12} sm={4}>
                   <Box display="flex" alignItems="center">
-                    <Rating
-                      value={review.rating}
-                      precision={0.1}
-                      readOnly
-                      size="small"
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+                {[...Array(Math.floor(review.score))].map((_, i) => (
+                  <StarIcon
+                    key={i}
+                    sx={{ color: "#f39c12", fontSize: "1rem" }}
+                  />
+                ))}
+                {(review.score % 1 !== 0) && (
+                  <StarHalfIcon sx={{ color: "#f39c12", fontSize: "1rem" }} />
+                )}
+                {[...Array(5 - Math.floor(review.score) - ((review.score % 1 !== 0) ? 1 : 0))].map(
+                  (_, i) => (
+                    <StarBorderIcon
+                      key={i}
+                      sx={{ color: "#f39c12", fontSize: "1rem" }}
                     />
+                  )
+                )}
+              </Box>
                     <Typography sx={{ ml: 1, ...textConfigs.style.basicFont }}>
-                      {review.rating} / 5
+                      {review.score} / 5
                     </Typography>
                   </Box>
                 </Grid>
@@ -401,20 +457,20 @@ const ProductCollapse = ({ product }) => {
                     variant="subtitle1"
                     sx={{ ...textConfigs.style.basicFont }}
                   >
-                    {review.user}
+                    {capitalizeWords(review.userInfo.firstName)} {capitalizeWords(review.userInfo.lastLogin)}
                   </Typography>
                   <Typography
                     variant="body2"
                     color="text.secondary"
                     sx={{ ...textConfigs.style.basicFont }}
                   >
-                    {review.date}
+                    {formatDate(review.updatedAt)}
                   </Typography>
                   <Typography
                     variant="body2"
                     sx={{ ...textConfigs.style.basicFont }}
                   >
-                    {review.comment}
+                    {review.content}
                   </Typography>
                 </Grid>
               </Grid>
