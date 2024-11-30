@@ -928,12 +928,18 @@ const initialState = {
       ],
     },
   ],
+  colorsSearch: "",
 };
 
 export const colorFamilies = createSlice({
   name: "ColorFamilies",
   initialState: initialState,
-  reducers: {},
+  reducers: {
+    setSearchColors(state, action) {
+      state.colorsSearch = action.payload;
+    },
+  },
 });
+export const { setSearchColors } = colorFamilies.actions;
 
 export default colorFamilies.reducer;

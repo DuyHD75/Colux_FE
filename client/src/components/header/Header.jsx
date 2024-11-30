@@ -59,6 +59,7 @@ export const Header = () => {
   const searchInputMobileRef = useRef(null);
   const [searchKey, setSearchKey] = useState(null);
   const [searchKeyMobile, setSearchKeyMobile] = useState(null);
+  const {colorsSearch} = useSelector((state) => state.colorFamilies);  
 
   const capitalizeWords = (str) => {
     return str
@@ -222,6 +223,27 @@ export const Header = () => {
     setAnchorElAbout(null);
   };
 
+  useEffect(() => {
+    const searchMultipleColors = async () => {
+      if (colorsSearch.length > 0) {
+        try {
+          const { response, err } = await productsApi.searchMulti(
+            colorsSearch
+          );
+          if (response) {
+            setSearchResults(response.data.Results);
+          } else if (err) {
+            toast.error(err);
+          }
+        } catch (error) {
+          console.error("Error fetching search results:", error);
+        }
+      }
+    }
+    searchMultipleColors();
+  }, [colorsSearch]);
+  console.log(searchResults);
+  
   return (
     <AppBar
       className="top-0 left-0 right-0 z-10 font-['Nunito']"
@@ -1024,7 +1046,7 @@ export const Header = () => {
                   >
                     Colors
                   </Typography>
-                  {searchResults.colors.length > 0 ? (
+                  {searchResults.colors&&searchResults.colors.length > 0 ? (
                     <Box
                       sx={{
                         display: "flex",
@@ -1121,7 +1143,8 @@ export const Header = () => {
                         ))}
                       </Grid>
                     </Box>
-                  ) : (
+                  )
+                   : (
                     <Typography
                       sx={{
                         textAlign: "center",

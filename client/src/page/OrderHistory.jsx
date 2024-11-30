@@ -23,38 +23,40 @@ const OrderHistory = () => {
     const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
     const dispatch = useDispatch();
     const [orders, setOrders] = useState([]);
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
+    const [openShipping, setOpenShipping] = useState(false);
+    const [steps, setSteps] = useState(null);
 
     const capitalizeFirstLetter = (string) => {
         return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
     };
-    const steps = [
-        {
-            time: "22:40 12-11-2024",
-            status: "Đơn hàng đã đến kho phân loại Xã Hòa Liên, Huyện Hòa Vang, Đà Nẵng",
-        },
-        {
-            time: "16:09 13-11-2024",
-            status: "Đơn hàng đã rời kho phân loại",
-        },
-        {
-            time: "07:13 14-11-2024",
-            status: "Đơn hàng đã đến trạm giao hàng tại khu vực của bạn Thị Trấn Núi Thành, Huyện Núi Thành, Quảng Nam và sẽ được giao trong vòng 24 giờ tiếp theo",
-        },
-        {
-            time: "08:25 14-11-2024",
-            status: "Đã sắp xếp tài xế giao hàng",
-        },
-        {
-            time: "08:25 14-11-2024",
-            status: "Đang vận chuyển: Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại",
-        },
-        {
-            time: "11:23 14-11-2024",
-            status: "Đã giao: Giao hàng thành công",
-            additionalInfo: "Người nhận hàng: Kiều Hoàng Đạt--",
-        },
-    ];
+    // const steps = [
+    //     {
+    //         time: "22:40 12-11-2024",
+    //         status: "Đơn hàng đã đến kho phân loại Xã Hòa Liên, Huyện Hòa Vang, Đà Nẵng",
+    //     },
+    //     {
+    //         time: "16:09 13-11-2024",
+    //         status: "Đơn hàng đã rời kho phân loại",
+    //     },
+    //     {
+    //         time: "07:13 14-11-2024",
+    //         status: "Đơn hàng đã đến trạm giao hàng tại khu vực của bạn Thị Trấn Núi Thành, Huyện Núi Thành, Quảng Nam và sẽ được giao trong vòng 24 giờ tiếp theo",
+    //     },
+    //     {
+    //         time: "08:25 14-11-2024",
+    //         status: "Đã sắp xếp tài xế giao hàng",
+    //     },
+    //     {
+    //         time: "08:25 14-11-2024",
+    //         status: "Đang vận chuyển: Đơn hàng sẽ sớm được giao, vui lòng chú ý điện thoại",
+    //     },
+    //     {
+    //         time: "11:23 14-11-2024",
+    //         status: "Đã giao: Giao hàng thành công",
+    //         additionalInfo: "Người nhận hàng: Kiều Hoàng Đạt--",
+    //     },
+    // ];
 
     useEffect(() => {
         const getOrder = async () => {
@@ -85,6 +87,18 @@ const OrderHistory = () => {
         const date = new Date(dateString);
         return date.toISOString().split('T')[0];
     };
+
+    const formatDateTime = (dateString) => {
+        const date = new Date(dateString);
+      
+        const hours = date.getHours().toString().padStart(2, '0');
+        const minutes = date.getMinutes().toString().padStart(2, '0');
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based
+        const year = date.getFullYear();
+      
+        return `${hours}:${minutes} ${day}-${month}-${year}`;
+      };
     console.log(orders);
 
     const getOrderStatusLabel = (orderStatus) => {
@@ -94,7 +108,7 @@ const OrderHistory = () => {
             case 2:
                 return 'Pending';
             case 3:
-                return 'Approved';  
+                return 'Approved';
             case 4:
                 return 'Completed';
             case 5:
@@ -106,20 +120,41 @@ const OrderHistory = () => {
 
     const getOrderStatusColor = (orderStatus) => {
         switch (orderStatus) {
-          case 1:
-            return '#B9B9B9';
-          case 2:
-            return '#FFA500';
-          case 3:
-            return '#0EA97A';
-          case 4:
-            return '#0EA97A';
-          case 5:
-            return '#FF0000';
-          default:
-            return '#B9B9B9';
+            case 1:
+                return '#B9B9B9';
+            case 2:
+                return '#FFA500';
+            case 3:
+                return '#0EA97A';
+            case 4:
+                return '#0EA97A';
+            case 5:
+                return '#FF0000';
+            default:
+                return '#B9B9B9';
         }
-      };
+    };
+
+    const handleOpenShippingDialog = async (waybillId) => {
+        console.log(waybillId);
+        try {
+            const { response } = await cartApi.getAWayBill(waybillId);
+            if (response) {
+                console.log(response.data.waybill);
+                setSteps(response.data.waybill);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+
+        setOpenShipping(true);
+    }
+
+    const handleCloseShippingDialog = () => {
+        setOpenShipping(false);
+    }
+
+    console.log(steps);
 
 
     return (
@@ -164,30 +199,30 @@ const OrderHistory = () => {
                                         <Divider />
                                         <Box sx={{
                                             overflow: 'auto',
-                                            scrollbarWidth:'none',
-                                            maxHeight:'200px'
+                                            scrollbarWidth: 'none',
+                                            maxHeight: '200px'
                                         }}>
-                                        {item.products.map((product, index) => {
-                                            return (
-                                                <Stack direction='row' spacing={2} justifyContent='space-between' alignItems='center' width='100%' mt='12px' mb='16px' >
-                                                    <Stack direction='row' spacing={2} justifyContent='flex-start' alignItems='center' width='80%'>
-                                                        <ImageComponent src={product.productDetails && product.productDetails.productImage} alt={product.productDetails && product.productDetails.productImage} width='75px' height='75px' />
-                                                        <Stack direction='column' spacing='12px' width={{ xs: '210px', md: '359px' }}>
-                                                            <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '700', fontSize: '14px' }}>{product.productDetails && product.productDetails.productName}</Typography>
-                                                            <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '400', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Description: {product.productDetails && product.productDetails.productDescription}</Typography>
-                                                            {product.categoryName && product.categoryName === 'Paint' &&
-                                                                <Stack direction='row' spacing={2}>
-                                                                    <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '400', fontSize: '14px', borderRight: '1px solid', pr: 2 }}>Color code: {product.productDetails && product.productDetails.paintDetails.hex}</Typography>
-                                                                    <Box sx={{ width: '20px', height: '20px', borderRadius: '8px', bgcolor: product.productDetails && product.productDetails.paintDetails.hex }}></Box>
-                                                                </Stack>
-                                                            }
+                                            {item.products.map((product, index) => {
+                                                return (
+                                                    <Stack direction='row' spacing={2} justifyContent='space-between' alignItems='center' width='100%' mt='12px' mb='16px' >
+                                                        <Stack direction='row' spacing={2} justifyContent='flex-start' alignItems='center' width='80%'>
+                                                            <ImageComponent src={product.productDetails && product.productDetails.productImage} alt={product.productDetails && product.productDetails.productImage} width='75px' height='75px' />
+                                                            <Stack direction='column' spacing='12px' width={{ xs: '210px', md: '359px' }}>
+                                                                <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '700', fontSize: '14px' }}>{product.productDetails && product.productDetails.productName}</Typography>
+                                                                <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '400', fontSize: '14px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Description: {product.productDetails && product.productDetails.productDescription}</Typography>
+                                                                {product.categoryName && product.categoryName === 'Paint' &&
+                                                                    <Stack direction='row' spacing={2}>
+                                                                        <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '400', fontSize: '14px', borderRight: '1px solid', pr: 2 }}>Color code: {product.productDetails && product.productDetails.paintDetails.hex}</Typography>
+                                                                        <Box sx={{ width: '20px', height: '20px', borderRadius: '8px', bgcolor: product.productDetails && product.productDetails.paintDetails.hex }}></Box>
+                                                                    </Stack>
+                                                                }
+                                                            </Stack>
                                                         </Stack>
+                                                        <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '700', fontSize: '16px', width: 'max-content' }}>${product.priceSell} <span style={{ color: '#669AE7', fontWeight: '400' }}>x {product.itemQuantity}</span></Typography>
                                                     </Stack>
-                                                    <Typography sx={{ ...TextConfig.style.headerText, fontWeight: '700', fontSize: '16px', width: 'max-content'}}>${product.priceSell} <span style={{ color: '#669AE7', fontWeight: '400' }}>x {product.itemQuantity}</span></Typography>
-                                                </Stack>
-                                            )
-                                        })
-                                        }
+                                                )
+                                            })
+                                            }
                                         </Box>
                                         <Divider />
                                         <Stack direction='row' spacing='12px' my='16px'>
@@ -232,62 +267,61 @@ const OrderHistory = () => {
                                             </Box>
                                         </Stack>
                                         <Divider />
-                                       <Stack direction='row' spacing={1} justifyContent='flex-end' alignItems='center' width='100%' mt='16px'>
-                                        <Button sx={{
-                                            ...TextConfig.style.headerText,
-                                            mt: '1rem',
-                                            fontWeight: 'bold',
-                                            fontSize: '16px',
-                                            bgcolor: '#1c2759',
-                                            color: 'white',
-                                            borderRadius: '14px',
-                                            width: '150px',
-                                            height: '30px',
-                                            textTransform: 'capitalize',
-                                            '&:hover': {
-                                                color: 'secondary.colorText',
-                                                backgroundColor: '#2c3766',
-                                            }
-                                        }}
-                                            onClick={() => setOpen(true)}
-                                        >View Tracking</Button>
-                                        {(item.status === 1 || item.status ===2) &&<Button sx={{
-                                            ...TextConfig.style.headerText,
-                                            mt: '1rem',
-                                            fontWeight: 'bold',
-                                            fontSize: '16px',
-                                            bgcolor: '#1c2759',
-                                            color: 'white',
-                                            borderRadius: '14px',
-                                            width: '150px',
-                                            height: '30px',
-                                            textTransform: 'capitalize',
-                                            '&:hover': {
-                                                color: 'secondary.colorText',
-                                                backgroundColor: '#2c3766',
-                                            }
-                                        }}
-                                        >Cancel Order</Button>}
-                                        {(item.status === 4) &&
-                                        <Button sx={{
-                                            ...TextConfig.style.headerText,
-                                            mt: '1rem',
-                                            fontWeight: 'bold',
-                                            fontSize: '16px',
-                                            bgcolor: '#1c2759',
-                                            color: 'white',
-                                            borderRadius: '14px',
-                                            width: '150px',
-                                            height: '30px',
-                                            textTransform: 'capitalize',
-                                            '&:hover': {
-                                                color: 'secondary.colorText',
-                                                backgroundColor: '#2c3766',
-                                            }
-                                        }}
-                                            onClick={() => setOpen(true)}
-                                        >Write a Review</Button>}
-                                    </Stack>
+                                        <Stack direction='row' spacing={1} justifyContent='flex-end' alignItems='center' width='100%' mt='16px'>
+                                            {item.waybillId && <Button sx={{
+                                                ...TextConfig.style.headerText,
+                                                mt: '1rem',
+                                                fontWeight: 'bold',
+                                                fontSize: '16px',
+                                                bgcolor: '#1c2759',
+                                                color: 'white',
+                                                borderRadius: '14px',
+                                                width: '150px',
+                                                height: '30px',
+                                                textTransform: 'capitalize',
+                                                '&:hover': {
+                                                    color: 'secondary.colorText',
+                                                    backgroundColor: '#2c3766',
+                                                }
+                                            }}
+                                                onClick={() => handleOpenShippingDialog(item.waybillId)}
+                                            >View Tracking</Button>}
+                                            {(item.status === 1 || item.status === 2) && <Button sx={{
+                                                ...TextConfig.style.headerText,
+                                                mt: '1rem',
+                                                fontWeight: 'bold',
+                                                fontSize: '16px',
+                                                bgcolor: '#1c2759',
+                                                color: 'white',
+                                                borderRadius: '14px',
+                                                width: '150px',
+                                                height: '30px',
+                                                textTransform: 'capitalize',
+                                                '&:hover': {
+                                                    color: 'secondary.colorText',
+                                                    backgroundColor: '#2c3766',
+                                                }
+                                            }}
+                                            >Cancel Order</Button>}
+                                            {(item.status === 4) &&
+                                                <Button sx={{
+                                                    ...TextConfig.style.headerText,
+                                                    mt: '1rem',
+                                                    fontWeight: 'bold',
+                                                    fontSize: '16px',
+                                                    bgcolor: '#1c2759',
+                                                    color: 'white',
+                                                    borderRadius: '14px',
+                                                    width: '150px',
+                                                    height: '30px',
+                                                    textTransform: 'capitalize',
+                                                    '&:hover': {
+                                                        color: 'secondary.colorText',
+                                                        backgroundColor: '#2c3766',
+                                                    }
+                                                }}
+                                                >Write a Review</Button>}
+                                        </Stack>
 
                                     </AccordionDetails>
                                 </Accordion>
@@ -307,7 +341,7 @@ const OrderHistory = () => {
                             boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
                         }
                     }}
-                    open={open} onClose={() => setOpen(false)}
+                    open={openShipping} onClose={() => setOpenShipping(false)}
                 >
                     <DialogTitle sx={{ fontWeight: 400 }}>Tracking Information</DialogTitle>
                     <DialogContent
@@ -321,8 +355,10 @@ const OrderHistory = () => {
                         }}
                     >
 
-                        <Stepper orientation="vertical" sx={{ paddingLeft: 2 }}>
-                            {steps.reverse().map((step, index) => (
+                        <Stepper orientation="vertical" sx={{
+                            paddingLeft: 2, paddingTop: '24px',
+                        }}>
+                            {steps && steps.waybillLogs.reverse().map((step, index) => (
                                 <Step
                                     sx={{ alignItems: "start", justifyContent: "start" }}
                                     key={index}
@@ -354,12 +390,12 @@ const OrderHistory = () => {
                                                     minWidth: "150px",
                                                 }}
                                             >
-                                                {step.time}
+                                                {formatDateTime(step.createdAt)}
                                             </Typography>
 
                                             {/* Status and Additional Info */}
                                             <Stack direction="column" spacing={0.5}>
-                                                <Typography variant="body2">{step.status}</Typography>
+                                                <Typography variant="body2">{step.currentStatus}</Typography>
                                                 {step.additionalInfo && (
                                                     <Typography variant="caption" color="text.secondary">
                                                         {step.additionalInfo}
@@ -374,7 +410,7 @@ const OrderHistory = () => {
 
                     </DialogContent>
                     <DialogActions>
-                        <Button onClick={() => setOpen(false)} color="primary">
+                        <Button onClick={() => setOpenShipping(false)} color="primary">
                             Cancel
                         </Button>
 

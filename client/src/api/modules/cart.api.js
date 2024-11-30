@@ -7,6 +7,8 @@ const userEndpoints = {
   createOrder: "/order-service/api/v1/orders/create",
   getOrdersbyCustomerId: ({ customerId }) =>
     `/order-service/api/v1/orders/customerId/${customerId}`,
+  getAWayBill: ( wayBillId ) =>
+    `/order-service/api/v1/waybills/public/${wayBillId}`,
 };
 
 const cartApi = {
@@ -60,6 +62,18 @@ const cartApi = {
     try {
       const response = await proxyClient.get(
         userEndpoints.getOrdersbyCustomerId({ customerId })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  getAWayBill: async (waybillId) => {
+    try {
+      console.log("waybillId", waybillId);
+      
+      const response = await proxyClient.get(
+        userEndpoints.getAWayBill( waybillId )
       );
       return { response };
     } catch (err) {

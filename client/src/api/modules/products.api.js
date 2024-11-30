@@ -10,6 +10,8 @@ const productEndpoints = {
     `product-service/api/v1/categories/public/categoryId/${categoryId}/products?page=${pageIndex}&size=${size}`,
   search: ({ keySearch }) =>
     `product-service/api/v1/searches/public?keyword=${keySearch}`,
+  searchMulti: ({ keySearch }) =>
+    `product-service/api/v1/searches/public/bulk?keywords=${keySearch}`,
   getTopProducts: ({ pageIndex, size }) =>
     `order-service/api/v1/orders/public/topProducts?page=${pageIndex}&size=${size}`,
   filterProducts: ({ params }) =>
@@ -79,6 +81,16 @@ const prodcutsApi = {
     try {
       const response = await proxyClient.get(
         productEndpoints.search({ keySearch })
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  searchMulti: async (keySearch) => {
+    try {
+      const response = await proxyClient.get(
+        productEndpoints.searchMulti({ keySearch })
       );
       return { response };
     } catch (err) {
