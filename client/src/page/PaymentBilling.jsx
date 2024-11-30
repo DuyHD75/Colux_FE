@@ -191,7 +191,7 @@ const PaymentBilling = () => {
         billing: values,
         shippingFee: shippingFee,
       };
-      user && createShipment(values)
+      user && shipments.length === 0 && createShipment(values)
       localStorage.setItem('checkoutData', JSON.stringify(updatedCheckoutData));
       navigate('/checkout');
     }
