@@ -43,7 +43,6 @@ const OrderHistory = () => {
     const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
     const dispatch = useDispatch();
     const [orders, setOrders] = useState([]);
-    const [open, setOpen] = useState(false);
     const [openShipping, setOpenShipping] = useState(false);
     const [steps, setSteps] = useState(null);
 
@@ -758,27 +757,24 @@ console.log(orders);
                         width="100%"
                         mt="16px"
                       >
-                        <Button
-                          sx={{
-                            ...TextConfig.style.headerText,
-                            mt: "1rem",
-                            fontWeight: "bold",
-                            fontSize: "16px",
-                            bgcolor: "#1c2759",
-                            color: "white",
-                            borderRadius: "14px",
-                            width: "150px",
-                            height: "30px",
-                            textTransform: "capitalize",
-                            "&:hover": {
-                              color: "secondary.colorText",
-                              backgroundColor: "#2c3766",
-                            },
-                          }}
-                          onClick={() => setOpen(true)}
-                        >
-                          View Tracking
-                        </Button>
+                       {item.waybillId && <Button sx={{
+                                                ...TextConfig.style.headerText,
+                                                mt: '1rem',
+                                                fontWeight: 'bold',
+                                                fontSize: '16px',
+                                                bgcolor: '#1c2759',
+                                                color: 'white',
+                                                borderRadius: '14px',
+                                                width: '150px',
+                                                height: '30px',
+                                                textTransform: 'capitalize',
+                                                '&:hover': {
+                                                    color: 'secondary.colorText',
+                                                    backgroundColor: '#2c3766',
+                                                }
+                                            }}
+                                                onClick={() => handleOpenShippingDialog(item.waybillId)}
+                                            >View Tracking</Button>}
                         {(item.status === 1 || item.status === 2) && (
                           <Button
                             sx={{
@@ -844,92 +840,7 @@ console.log(orders);
             )}
           </Stack>
         </Box>
-        <Dialog
-          sx={{
-            "& .MuiDialog-paper": {
-              width: "100%",
-              maxWidth: "633px",
-              maxHeight: "100%",
-              borderRadius: "0px",
-              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
-            },
-          }}
-          open={open}
-          onClose={() => setOpen(false)}
-        >
-          <DialogTitle sx={{ fontWeight: 400 }}>
-            Tracking Information
-          </DialogTitle>
-          <DialogContent
-            sx={{
-              width: "100%",
-              borderBottom: "1px solid #ccc",
-              borderTop: "1px solid #ccc",
-              overflow: "auto",
-              maxHeight: "450px",
-              ...customScrollbarStyle,
-              backgroundColor: "#f9f9f9",
-            }}
-          >
-            <Stepper orientation="vertical" sx={{ paddingLeft: 2 }}>
-              {steps.reverse().map((step, index) => (
-                <Step
-                  sx={{ alignItems: "start", justifyContent: "start" }}
-                  key={index}
-                  active={true}
-                  completed={index === steps.length - 1}
-                >
-                  <StepLabel
-                    icon={
-                      index === 0 ? (
-                        <CheckCircleIcon color="success" />
-                      ) : (
-                        <AccessTimeIcon color="action" />
-                      )
-                    }
-                  >
-                    <Stack
-                      direction="row"
-                      alignItems="center"
-                      spacing={2}
-                      sx={{ width: "100%" }}
-                    >
-                      {/* Time and Status */}
-                      <Typography
-                        variant="subtitle2"
-                        noWrap
-                        sx={{
-                          flexShrink: 0,
-                          color:
-                            index === 0 ? "success.main" : "text.secondary",
-                          minWidth: "150px",
-                        }}
-                      >
-                        {step.time}
-                      </Typography>
-
-                      {/* Status and Additional Info */}
-                      <Stack direction="column" spacing={0.5}>
-                        <Typography variant="body2">{step.status}</Typography>
-                        {step.additionalInfo && (
-                          <Typography variant="caption" color="text.secondary">
-                            {step.additionalInfo}
-                          </Typography>
-                        )}
-                      </Stack>
-                    </Stack>
-                  </StepLabel>
-                </Step>
-              ))}
-            </Stepper>
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setOpen(false)} color="primary">
-              Cancel
-            </Button>
-          </DialogActions>
-        </Dialog>
-
+       
         <Dialog
           open={openModal}
           onClose={handleCloseModal}
