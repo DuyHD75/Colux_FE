@@ -63,7 +63,6 @@ export const Header = () => {
   const searchInputMobileRef = useRef(null);
   const [searchKey, setSearchKey] = useState(null);
   const [searchKeyMobile, setSearchKeyMobile] = useState(null);
-  const {colorsSearch} = useSelector((state) => state.colorFamilies);  
 
   const capitalizeWords = (str) => {
     return str
@@ -235,26 +234,6 @@ useEffect(() => {
     setAnchorElAbout(null);
   };
 
-  useEffect(() => {
-    const searchMultipleColors = async () => {
-      if (colorsSearch.length > 0) {
-        try {
-          const { response, err } = await productsApi.searchMulti(
-            colorsSearch
-          );
-          if (response) {
-            setSearchResults(response.data.Results);
-          } else if (err) {
-            toast.error(err);
-          }
-        } catch (error) {
-          console.error("Error fetching search results:", error);
-        }
-      }
-    }
-    searchMultipleColors();
-  }, [colorsSearch]);
-  console.log(searchResults);
   
   return (
     <AppBar

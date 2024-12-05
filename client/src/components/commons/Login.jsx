@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { LoadingButton } from "@mui/lab";
@@ -29,6 +29,10 @@ const Login = ({ switchAuthState }) => {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
+
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const status = queryParams.get("status");
 
   const loginForm = useFormik({
     initialValues: {
@@ -58,11 +62,31 @@ const Login = ({ switchAuthState }) => {
       } else {
         setErrorMessage("Your account does not have permission to access this page.");
       }
-      if(err) {
+      if (err) {
         setErrorMessage(err.exception);
       }
     },
   });
+
+  useEffect(() => {
+    const loginWithGoogle = async () => {
+      const { response, err } = await userApi.getInfo();
+      if (response && response.data.user.role === "USER") {
+        console.log('response', response);
+
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        toast.success("Login with google successfully!");
+        navigate('/');
+      }
+    }
+    if (status === 'success') {
+      loginWithGoogle();
+    }
+    else {
+      toast.error("Login with google failed!");
+    }
+  }, [status]);
+  console.log('status', status);
 
   return (
     <div className="w-full bg-gray-800 rounded-lg shadow dark:border-gray-700 sm:max-w-lg xl:p-0">
@@ -87,7 +111,7 @@ const Login = ({ switchAuthState }) => {
                 className="bg-white rounded-full"
               />
             </Link> */}
-            <Link to="/login-google" className="flex items-center">
+            <Link to="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=https://colux.site/identity-service/api/v1/users/public/grantcode&client_id=106159633603-urb1kt4jf1tualas0qq1gs5ju729nb1h.apps.googleusercontent.com" className="flex items-center">
               <FcGoogle size={32} className="bg-white rounded-full" />
             </Link>
           </div>
@@ -184,7 +208,7 @@ const Login = ({ switchAuthState }) => {
               borderRadius: "8px",
               ":focus": {
                 outline: "none",
-                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)", 
+                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)",
               },
             }}
           >

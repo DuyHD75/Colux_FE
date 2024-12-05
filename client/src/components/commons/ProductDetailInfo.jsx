@@ -40,6 +40,7 @@ const ProductDetailInfo = ({ product }) => {
   const { t } = useTranslation();
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const { colorsSearch } = useSelector((state) => state.colorFamilies);
 
   const [quantity, setQuantity] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -57,6 +58,7 @@ const ProductDetailInfo = ({ product }) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
+  console.log('colorSearch', colorsSearch);
 
   const pageIndex = 0;
 
@@ -95,10 +97,29 @@ const ProductDetailInfo = ({ product }) => {
     const products = getProductOptions();
 
     if (products.length > 0) {
-      setSelectedProduct(products[0]);
-      setSelectedVariant(products[0].variants[0]);
+      console.log(products);
+
+      if (Array.isArray(colorsSearch) && colorsSearch.length > 0) {
+        const foundProduct = products.find((product) =>
+          colorsSearch.includes(product.color.hex)
+        );
+        console.log("Found product", foundProduct);
+        if (foundProduct) {
+          setSelectedProduct(foundProduct);
+          setSelectedVariant(foundProduct.variants[0]);
+        }
+        else {
+          setSelectedProduct(products[0]);
+          setSelectedVariant(products[0].variants[0]);
+        }
+      }
+      else {
+        setSelectedProduct(products[0]);
+        setSelectedVariant(products[0].variants[0]);
+      }
+
     }
-  }, []);
+  }, [colorsSearch, products]);
 
   useEffect(() => {
     const getAllProductPageAble = async (page, size) => {
@@ -155,7 +176,7 @@ const ProductDetailInfo = ({ product }) => {
 
   const handleAddToCart = (quantity) => {
     if (user) {
-        const status = 1;
+      const status = 1;
       const updateQuantityType = "INCREMENTAL";
       const customerId = user.userId;
       const cartId = cart ? cart.cartId : '';
@@ -180,7 +201,7 @@ const ProductDetailInfo = ({ product }) => {
       );
     }
     else {
-      
+
       toast.error("Please login to add to cart");
     }
 
@@ -236,8 +257,8 @@ const ProductDetailInfo = ({ product }) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
     if (!response) {
       toast.error(err);
-      console.log(err); 
-      
+      console.log(err);
+
     }
     else {
       toast.success('Added to cart successfully');
@@ -410,49 +431,49 @@ const ProductDetailInfo = ({ product }) => {
                       <React.Fragment key={index}>
                         {product.color && (
                           <Tooltip
-                          title={`${product.color.name} (${product.color.code})`}
-                          placement="top"
-                          arrow
-                          sx={{ ...textConfigs.style.basicFont }}
-                        >
-                          <Box
-                          sx={{
-                            position: "relative",
-                            display: "inline-block",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handleProductSelect(product)}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.1)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                          }
-                        >
-                          
-                            <BsFillHexagonFill
-                              size={window.innerWidth < 600 ? 20 : 40}
-                              style={{
-                                color: product.color.hex,
-                                filter: "drop-shadow(0px 0px 4px #ccc)",
-                                transition: "transform 0.2s ease-in-out",
+                            title={`${product.color.name} (${product.color.code})`}
+                            placement="top"
+                            arrow
+                            sx={{ ...textConfigs.style.basicFont }}
+                          >
+                            <Box
+                              sx={{
+                                position: "relative",
+                                display: "inline-block",
+                                cursor: "pointer",
                               }}
-                            />
-                         
-                          {selectedProduct === product && (
-                            <FaCheck
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                color: "#fff",
-                                fontSize: window.innerWidth < 600 ? 10 : 20,
-                              }}
-                            />
-                          )}
-                        </Box>
-                        </Tooltip>
+                              onClick={() => handleProductSelect(product)}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.transform = "scale(1.1)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.transform = "scale(1)")
+                              }
+                            >
+
+                              <BsFillHexagonFill
+                                size={window.innerWidth < 600 ? 20 : 40}
+                                style={{
+                                  color: product.color.hex,
+                                  filter: "drop-shadow(0px 0px 4px #ccc)",
+                                  transition: "transform 0.2s ease-in-out",
+                                }}
+                              />
+
+                              {selectedProduct === product && (
+                                <FaCheck
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    color: "#fff",
+                                    fontSize: window.innerWidth < 600 ? 10 : 20,
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </Tooltip>
                         )}
 
                         {product.numberOfPiecesPerBox && (
