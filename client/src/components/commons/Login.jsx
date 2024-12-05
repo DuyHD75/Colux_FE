@@ -71,7 +71,7 @@ const Login = ({ switchAuthState }) => {
   useEffect(() => {
     const loginWithGoogle = async () => {
       const { response, err } = await userApi.getInfo();
-      if (response && response.data.user.role === "USER") {
+      if (response ) {
         console.log('response', response);
 
         localStorage.setItem('user', JSON.stringify(response.data.user));
