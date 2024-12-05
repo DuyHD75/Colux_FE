@@ -85,7 +85,7 @@ const Login = ({ switchAuthState }) => {
     else {
       toast.error("Login with google failed!");
     }
-  }, [status]);
+  }, []);
   console.log('status', status);
 
   return (
