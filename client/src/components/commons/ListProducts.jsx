@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Container, Grid, Typography, Pagination } from "@mui/material";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import SidebarFilters from "../commons/SidebarFilters";
 import ProductCard from "./ProductCard";
@@ -9,7 +9,9 @@ import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
 import textConfigs from "../../config/text.config";
 
-const ListProducts = () => {
+const ListProducts = (productss) => {
+
+  const { colorsSearch } = useSelector((state) => state.colorFamilies);
   const [categories, setCategories] = useState([]);
 
   const [products, setProducts] = useState([]);
@@ -18,7 +20,6 @@ const ListProducts = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 16;
   const [totalPages, setTotalPages] = useState(0);
-
   const [selectedPriceRange, setSelectedPriceRange] = useState(null);
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
@@ -88,7 +89,7 @@ const ListProducts = () => {
 
   useEffect(() => {
     console.log("run useeffect");
-    
+
     const fetchFilteredProducts = async () => {
       try {
         if (
@@ -117,13 +118,13 @@ const ListProducts = () => {
         if (selectedPriceRange) {
           let minPrice, maxPrice;
           console.log(selectedPriceRange);
-          
-          
+
+
           if (selectedPriceRange.includes("+")) {
-            minPrice = selectedPriceRange.split("+")[0]; 
-            maxPrice = ""; 
+            minPrice = selectedPriceRange.split("+")[0];
+            maxPrice = "";
           } else {
-            
+
             [minPrice, maxPrice] = selectedPriceRange.split("-");
           }
 
@@ -140,12 +141,12 @@ const ListProducts = () => {
         const queryString = params.join("&");
         console.log(queryString);
 
-          const { response, err } = await productsApi.filterProducts(queryString);
-          if (response) {
-            setFilteredProducts(response.data.products.content);
-          } else if (err) {
-            toast.error(err);
-          }
+        const { response, err } = await productsApi.filterProducts(queryString);
+        if (response) {
+          setFilteredProducts(response.data.products.content);
+        } else if (err) {
+          toast.error(err);
+        }
 
       } catch (error) {
         console.error("Error fetching filtered products:", error);
@@ -160,7 +161,7 @@ const ListProducts = () => {
     productCategory,
     products,
   ]);
-  
+
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
   };
@@ -174,6 +175,12 @@ const ListProducts = () => {
       setSelectedFeatures(values);
     }
   };
+
+  useEffect(() => {
+    if (colorsSearch.length > 0 && productss?.products?.products?.length === 0) {
+      toast.error("Colors selected not found");
+    }
+  }, [colorsSearch, productss.products.products]);
 
   const hasProducts = filteredProducts.length > 0;
 
@@ -191,7 +198,56 @@ const ListProducts = () => {
 
         <Grid item xs={12} md={9}>
           <Grid container spacing={3}>
-            {hasProducts ? (
+            {productss?.products?.products?.length > 0 ? (
+              productss.products.products
+                .slice(0 * productsPerPage, 1 * productsPerPage)
+                .map((product, index) => (
+                  <Grid item xs={6} sm={4} md={3} key={index}>
+                    <ProductCard product={product} />
+                  </Grid>
+                ))
+            ) : (hasProducts ? (
+              filteredProducts
+                .slice(0 * productsPerPage, 1 * productsPerPage)
+                .map((product, index) => (
+                  <Grid item xs={6} sm={4} md={3} key={index}>
+                    <ProductCard product={product} />
+                  </Grid>
+                ))
+            ) : (
+              <Grid
+                item
+                xs={12}
+                sx={{
+                  display: "flex",
+                  minHeight: "50vh",
+                  flex: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                  alt="No products found"
+                  style={{
+                    maxWidth: "50%",
+                    height: "auto",
+                  }}
+                />
+                <Typography
+                  color="textSecondary"
+                  sx={{
+                    ...textConfigs.style.basicFont,
+                    my: "1rem",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  No product
+                </Typography>
+              </Grid>
+            ))}
+            {/* {hasProducts ? (
               filteredProducts
                 .slice(0 * productsPerPage, 1 * productsPerPage)
                 .map((product, index) => (
@@ -231,7 +287,7 @@ const ListProducts = () => {
                     No product
                   </Typography>
               </Grid>
-            )}
+            )} */}
           </Grid>
 
           {hasProducts && (

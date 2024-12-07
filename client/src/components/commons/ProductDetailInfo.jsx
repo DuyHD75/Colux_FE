@@ -40,6 +40,7 @@ const ProductDetailInfo = ({ product }) => {
   const { t } = useTranslation();
 
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
+  const { colorsSearch } = useSelector((state) => state.colorFamilies);
 
   const [quantity, setQuantity] = useState(1);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -59,6 +60,7 @@ const ProductDetailInfo = ({ product }) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
+  console.log('colorSearch', colorsSearch);
 
   const pageIndex = 0;
 
@@ -97,10 +99,29 @@ const ProductDetailInfo = ({ product }) => {
     const products = getProductOptions();
 
     if (products.length > 0) {
-      setSelectedProduct(products[0]);
-      setSelectedVariant(products[0].variants[0]);
+      console.log(products);
+
+      if (Array.isArray(colorsSearch) && colorsSearch.length > 0) {
+        const foundProduct = products.find((product) =>
+          colorsSearch.includes(product.color.hex)
+        );
+        console.log("Found product", foundProduct);
+        if (foundProduct) {
+          setSelectedProduct(foundProduct);
+          setSelectedVariant(foundProduct.variants[0]);
+        }
+        else {
+          setSelectedProduct(products[0]);
+          setSelectedVariant(products[0].variants[0]);
+        }
+      }
+      else {
+        setSelectedProduct(products[0]);
+        setSelectedVariant(products[0].variants[0]);
+      }
+
     }
-  }, []);
+  }, [colorsSearch, products]);
 
   const location = useLocation();
   const { productCal, selectedProductCal, selectedVariantCal } =
@@ -263,24 +284,17 @@ const ProductDetailInfo = ({ product }) => {
     navigate("/billing");
   };
 
-  const updateCart = useCallback(
-    async (cartId, customerId, status, updateQuantityType, cartItems) => {
-      const { response, err } = await cartApi.saveCart(
-        cartId,
-        customerId,
-        status,
-        updateQuantityType,
-        cartItems
-      );
-      if (!response) {
-        toast.error(err);
-        console.log(err);
-      } else {
-        toast.success("Added to cart successfully");
-      }
-    },
-    []
-  );
+  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
+    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
+    if (!response) {
+      toast.error(err);
+      console.log(err);
+
+    }
+    else {
+      toast.success('Added to cart successfully');
+    }
+  }, []);
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
