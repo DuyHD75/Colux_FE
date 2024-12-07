@@ -29,7 +29,7 @@ import { toast } from "react-toastify";
 import { BsFillHexagonFill } from "react-icons/bs";
 import textConfigs from "../config/text.config";
 import { useTranslation } from "react-i18next";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import cartApi from "../api/modules/cart.api";
 
 const CalculatePrice = () => {
@@ -39,6 +39,32 @@ const CalculatePrice = () => {
     JSON.parse(localStorage.getItem("user"))
   );
   const [cart, setCart] = useState(null);
+
+  const location = useLocation();
+  const { product, selectedProduct, selectedVariant } = location.state || {};
+
+  useEffect(() => {
+    if ( product || selectedProduct || selectedVariant ) {
+      if ( product.category.name === "Paint" ) {
+        setSelectedPaints((prev) => [...prev, product]);
+        setSelectedVariants((prev) => ({
+          ...prev,
+          0: {
+            ...prev[0],
+            selectedVariant: selectedProduct,
+            selectedVariantValue: selectedVariant,
+          },
+        }));
+      } else if ( product.category.name === "Wallpaper" ) {
+        setSelectedWallpaper(product);
+        setSelectedWallpaperVariant(selectedVariant)
+      } else if ( product.category.name === "Floor" ) {
+        setSelectedFloor(product);
+        setSelectedFloorVariant(selectedProduct);
+        setSelectedFloorValue(selectedVariant);
+      }
+    } 
+  }, []);
 
   const [paints, setPaints] = useState([]);
   const [wallpapers, setWallpapers] = useState([]);
@@ -573,13 +599,6 @@ const CalculatePrice = () => {
     getCart();
   }, [user]);
 
-  // console.log(selectedWallpaperVariant);
-
-  // console.log(selectedFloorValue);
-  // console.log(selectedFloorVariant);
-  // console.log(selectedVariants);
-  // console.log();Size
-
   const handleAddToCart = (quantity) => {
     if (user) {
       const status = 1;
@@ -958,6 +977,7 @@ const CalculatePrice = () => {
                           >
                             <Link
                               to={`/products/${paint.category.name}/${paint.category.categoryId}/${paint.productName}/${paint.productId}`}
+                              state={{ productCal: paint, selectedProductCal: selectedVariants[index]?.selectedVariant || null, selectedVariantCal: selectedVariants[index]?.selectedVariantValue || null }}
                             >
                               <CardMedia
                                 component="img"
@@ -1353,6 +1373,10 @@ const CalculatePrice = () => {
                           px: 2,
                         }}
                       >
+                        <Link
+                              to={`/products/${selectedWallpaper.category.name}/${selectedWallpaper.category.categoryId}/${selectedWallpaper.productName}/${selectedWallpaper.productId}`}
+                              state={{ productCal: selectedWallpaper, selectedProductCal: selectedWallpaper.wallpapers[0] || null, selectedVariantCal: selectedWallpaperVariant || null }}
+                            >
                         <CardMedia
                           component="img"
                           sx={{
@@ -1365,6 +1389,7 @@ const CalculatePrice = () => {
                           }
                           alt={selectedWallpaper.productName}
                         />
+                        </Link>
                         <CardContent
                           sx={{
                             flex: 1,
@@ -1554,6 +1579,10 @@ const CalculatePrice = () => {
                           px: 2,
                         }}
                       >
+                        <Link
+                              to={`/products/${selectedFloor.category.name}/${selectedFloor.category.categoryId}/${selectedFloor.productName}/${selectedFloor.productId}`}
+                              state={{ productCal: selectedFloor, selectedProductCal: selectedFloorVariant || null, selectedVariantCal: selectedFloorValue || null }}
+                            >
                         <CardMedia
                           component="img"
                           sx={{
@@ -1566,6 +1595,7 @@ const CalculatePrice = () => {
                           }
                           alt={selectedFloor.productName}
                         />
+                        </Link>
                         <CardContent
                           sx={{
                             flex: 1,

@@ -36,20 +36,22 @@ import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import productsApi from "../api/modules/products.api";
 import { Link } from "react-router-dom";
 import prodcutsApi from "../api/modules/products.api";
+import textConfigs from "../config/text.config";
 
 const OrderHistory = () => {
-    const { appState } = useSelector((state) => state.appState);
-    // const user = JSON.parse(localStorage.getItem("user"));
-    const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
-    const dispatch = useDispatch();
-    const [orders, setOrders] = useState([]);
-    const [openShipping, setOpenShipping] = useState(false);
-    const [steps, setSteps] = useState(null);
+  const { appState } = useSelector((state) => state.appState);
+  // const user = JSON.parse(localStorage.getItem("user"));
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  );
+  const dispatch = useDispatch();
+  const [orders, setOrders] = useState([]);
+  const [openShipping, setOpenShipping] = useState(false);
+  const [steps, setSteps] = useState(null);
 
-    const capitalizeFirstLetter = (string) => {
-        return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
-    };
-
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
+  };
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -117,15 +119,13 @@ const OrderHistory = () => {
       }
     }
 
-    
-
     console.log("Danh sách đánh giá:", formattedReviews);
 
     // Xử lý logic thêm (gọi API hoặc lưu trữ)
     handleCloseModal();
   };
 
-console.log(orders);
+  console.log(orders);
 
   useEffect(() => {
     const getOrder = async () => {
@@ -141,10 +141,10 @@ console.log(orders);
             setOrders(response.data.orders);
           }
           if (err) {
-            toast.error("Failed to fetch orders data");
+            toast.error(err.exception);
           }
         } catch (error) {
-          toast.error("An error occurred while fetching order data");
+          console.error(error);
         } finally {
           dispatch(setGlobalLoading(false));
         }
@@ -153,27 +153,26 @@ console.log(orders);
     getOrder();
   }, [user]);
 
-
-    const handleOpenShippingDialog = async (waybillId) => {
-        console.log(waybillId);
-        try {
-            const { response } = await cartApi.getAWayBill(waybillId);
-            if (response) {
-                console.log(response.data.waybill);
-                setSteps(response.data.waybill);
-            }
-        } catch (error) {
-            console.log(error);
-        }
-
-        setOpenShipping(true);
+  const handleOpenShippingDialog = async (waybillId) => {
+    console.log(waybillId);
+    try {
+      const { response } = await cartApi.getAWayBill(waybillId);
+      if (response) {
+        console.log(response.data.waybill);
+        setSteps(response.data.waybill);
+      }
+    } catch (error) {
+      console.log(error);
     }
 
-    const handleCloseShippingDialog = () => {
-        setOpenShipping(false);
-    }
+    setOpenShipping(true);
+  };
 
-    console.log(steps);
+  const handleCloseShippingDialog = () => {
+    setOpenShipping(false);
+  };
+
+  console.log(steps);
 
   useEffect(() => {
     const getReviewsByCusId = async () => {
@@ -353,7 +352,7 @@ console.log(orders);
                           ) : (
                             <Chip
                               size="small"
-                              label="Deposited"
+                              label="Advance"
                               sx={{
                                 ...TextConfig.style.headerText,
                                 width: "100px",
@@ -757,24 +756,31 @@ console.log(orders);
                         width="100%"
                         mt="16px"
                       >
-                       {item.waybillId && <Button sx={{
-                                                ...TextConfig.style.headerText,
-                                                mt: '1rem',
-                                                fontWeight: 'bold',
-                                                fontSize: '16px',
-                                                bgcolor: '#1c2759',
-                                                color: 'white',
-                                                borderRadius: '14px',
-                                                width: '150px',
-                                                height: '30px',
-                                                textTransform: 'capitalize',
-                                                '&:hover': {
-                                                    color: 'secondary.colorText',
-                                                    backgroundColor: '#2c3766',
-                                                }
-                                            }}
-                                                onClick={() => handleOpenShippingDialog(item.waybillId)}
-                                            >View Tracking</Button>}
+                        {item.waybillId && (
+                          <Button
+                            sx={{
+                              ...TextConfig.style.headerText,
+                              mt: "1rem",
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              bgcolor: "#1c2759",
+                              color: "white",
+                              borderRadius: "14px",
+                              width: "150px",
+                              height: "30px",
+                              textTransform: "capitalize",
+                              "&:hover": {
+                                color: "secondary.colorText",
+                                backgroundColor: "#2c3766",
+                              },
+                            }}
+                            onClick={() =>
+                              handleOpenShippingDialog(item.waybillId)
+                            }
+                          >
+                            View Tracking
+                          </Button>
+                        )}
                         {(item.status === 1 || item.status === 2) && (
                           <Button
                             sx={{
@@ -826,21 +832,39 @@ console.log(orders);
                 );
               })
             ) : (
-              <Typography
+              <Box
                 sx={{
-                  p: 5,
-                  textAlign: "center",
-                  ...TextConfig.style.basicFont,
-                  fontWeight: "700",
-                  fontSize: "20px",
+                  display: "flex",
+                  minHeight: "50vh",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
                 }}
               >
-                No order history
-              </Typography>
+
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                    alt="No order history found"
+                    style={{
+                      maxWidth: "50%",
+                      height: "auto",
+                    }}
+                  />
+                  <Typography
+                    color="textSecondary"
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      my: "1rem",
+                      fontSize: "1.2rem",
+                    }}
+                  >
+                    No order history
+                  </Typography>
+              </Box>
             )}
           </Stack>
         </Box>
-       
+
         <Dialog
           open={openModal}
           onClose={handleCloseModal}
@@ -850,10 +874,18 @@ console.log(orders);
           <DialogTitle>Write a Review for Your Order</DialogTitle>
           <DialogContent>
             <Box>
-              <Typography variant="h6" gutterBottom sx={{...TextConfig.style.basicFont}}>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ ...TextConfig.style.basicFont }}
+              >
                 Order ID: {selectedOrder?.code}
               </Typography>
-              <Typography variant="body1" gutterBottom sx={{...TextConfig.style.basicFont}}>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ ...TextConfig.style.basicFont }}
+              >
                 Please share your experience with the products below:
               </Typography>
               <Stack spacing={2} mt={2}>
@@ -894,18 +926,31 @@ console.log(orders);
 
                         {/* Details Section */}
                         <Grid item xs={12} sm={9}>
-                          <Typography variant="h6" gutterBottom sx={{...TextConfig.style.basicFont}}>
+                          <Typography
+                            variant="h6"
+                            gutterBottom
+                            sx={{ ...TextConfig.style.basicFont }}
+                          >
                             {product.productDetails.productName}
                           </Typography>
                           {hasReviewed ? (
                             // Thông báo nếu đã review
-                            <Typography variant="body2" sx={{ color: "red", ...TextConfig.style.basicFont }}>
+                            <Typography
+                              variant="body2"
+                              sx={{
+                                color: "red",
+                                ...TextConfig.style.basicFont,
+                              }}
+                            >
                               You have already reviewed this product.
                             </Typography>
                           ) : (
                             <>
                               {/* Star Rating */}
-                              <Typography variant="body2" sx={{ mb: 1, ...TextConfig.style.basicFont }}>
+                              <Typography
+                                variant="body2"
+                                sx={{ mb: 1, ...TextConfig.style.basicFont }}
+                              >
                                 Rate this product:
                               </Typography>
                               <Rating
@@ -1002,90 +1047,102 @@ console.log(orders);
           </DialogActions>
         </Dialog>
         <Dialog
-                    sx={{
-                        '& .MuiDialog-paper': {
-                            width: '100%',
-                            maxWidth: '633px',
-                            maxHeight: '100%',
-                            borderRadius: '0px',
-                            boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
-                        }
-                    }}
-                    open={openShipping} onClose={() => setOpenShipping(false)}
-                >
-                    <DialogTitle sx={{ fontWeight: 400 }}>Tracking Information</DialogTitle>
-                    <DialogContent
-                        sx={{
-                            width: "100%",
-                            borderBottom: "1px solid #ccc",
-                            borderTop: "1px solid #ccc",
-                            overflow: "auto",
-                            maxHeight: '450px',
-                            ...customScrollbarStyle, backgroundColor: "#f9f9f9",
-                        }}
+          sx={{
+            "& .MuiDialog-paper": {
+              width: "100%",
+              maxWidth: "633px",
+              maxHeight: "100%",
+              borderRadius: "0px",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            },
+          }}
+          open={openShipping}
+          onClose={() => setOpenShipping(false)}
+        >
+          <DialogTitle sx={{ fontWeight: 400 }}>
+            Tracking Information
+          </DialogTitle>
+          <DialogContent
+            sx={{
+              width: "100%",
+              borderBottom: "1px solid #ccc",
+              borderTop: "1px solid #ccc",
+              overflow: "auto",
+              maxHeight: "450px",
+              ...customScrollbarStyle,
+              backgroundColor: "#f9f9f9",
+            }}
+          >
+            <Stepper
+              orientation="vertical"
+              sx={{
+                paddingLeft: 2,
+                paddingTop: "24px",
+              }}
+            >
+              {steps &&
+                steps.waybillLogs.reverse().map((step, index) => (
+                  <Step
+                    sx={{ alignItems: "start", justifyContent: "start" }}
+                    key={index}
+                    active={true}
+                    completed={index === steps.length - 1}
+                  >
+                    <StepLabel
+                      icon={
+                        index === 0 ? (
+                          <CheckCircleIcon color="success" />
+                        ) : (
+                          <AccessTimeIcon color="action" />
+                        )
+                      }
                     >
+                      <Stack
+                        direction="row"
+                        alignItems="center"
+                        spacing={2}
+                        sx={{ width: "100%" }}
+                      >
+                        {/* Time and Status */}
+                        <Typography
+                          variant="subtitle2"
+                          noWrap
+                          sx={{
+                            flexShrink: 0,
+                            color:
+                              index === 0 ? "success.main" : "text.secondary",
+                            minWidth: "150px",
+                          }}
+                        >
+                          {formatDate(step.createdAt)}
+                        </Typography>
 
-                        <Stepper orientation="vertical" sx={{
-                            paddingLeft: 2, paddingTop: '24px',
-                        }}>
-                            {steps && steps.waybillLogs.reverse().map((step, index) => (
-                                <Step
-                                    sx={{ alignItems: "start", justifyContent: "start" }}
-                                    key={index}
-                                    active={true}
-                                    completed={index === steps.length - 1}
-                                >
-                                    <StepLabel
-                                        icon={
-                                            index === 0 ? (
-                                                <CheckCircleIcon color="success" />
-                                            ) : (
-                                                <AccessTimeIcon color="action" />
-                                            )
-                                        }
-                                    >
-                                        <Stack
-                                            direction="row"
-                                            alignItems="center"
-                                            spacing={2}
-                                            sx={{ width: "100%" }}
-                                        >
-                                            {/* Time and Status */}
-                                            <Typography
-                                                variant="subtitle2"
-                                                noWrap
-                                                sx={{
-                                                    flexShrink: 0,
-                                                    color: index === 0 ? "success.main" : "text.secondary",
-                                                    minWidth: "150px",
-                                                }}
-                                            >
-                                                {formatDate(step.createdAt)}
-                                            </Typography>
-
-                                            {/* Status and Additional Info */}
-                                            <Stack direction="column" spacing={0.5}>
-                                                <Typography variant="body2">{step.currentStatus}</Typography>
-                                                {step.additionalInfo && (
-                                                    <Typography variant="caption" color="text.secondary">
-                                                        {step.additionalInfo}
-                                                    </Typography>
-                                                )}
-                                            </Stack>
-                                        </Stack>
-                                    </StepLabel>
-                                </Step>
-                            ))}
-                        </Stepper>
-
-                    </DialogContent>
-                    <DialogActions>
-                        <Button onClick={() => setOpenShipping(false)} color="primary">
-                            Cancel
-                        </Button>
-
-                    </DialogActions>
-                </Dialog>
+                        {/* Status and Additional Info */}
+                        <Stack direction="column" spacing={0.5}>
+                          <Typography variant="body2">
+                            {step.currentStatus}
+                          </Typography>
+                          {step.additionalInfo && (
+                            <Typography
+                              variant="caption"
+                              color="text.secondary"
+                            >
+                              {step.additionalInfo}
+                            </Typography>
+                          )}
+                        </Stack>
+                      </Stack>
+                    </StepLabel>
+                  </Step>
+                ))}
+            </Stepper>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenShipping(false)} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
       </UserSidebar>
     </>
   );

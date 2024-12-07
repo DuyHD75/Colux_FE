@@ -18,6 +18,7 @@ import {
   ExpandMore,
   ExitToApp,
 } from "@mui/icons-material";
+import ColorLensIcon from '@mui/icons-material/ColorLens';
 import { Link, useNavigate } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { useDispatch } from "react-redux";
@@ -45,9 +46,8 @@ const Sidebar = () => {
       localStorage.removeItem("employee");
       navigate("/login");
       toast.success("Logout Success.");
-    }
-    if (err) {
-      toast.error(err);
+    } else {
+      toast.error("Error while logout.");
     }
   };
 
@@ -130,9 +130,17 @@ const Sidebar = () => {
             </ListItem>
           </List>
         </Collapse>
-
+        {/* <ListItem component={Link} to="/manage-colors">
+          <ListItemIcon>
+            <ColorLensIcon style={{ color: "#666" }} />
+          </ListItemIcon>
+          <ListItemText
+            primary="Color"
+            sx={{ ...textConfigs.style.basicFont }}
+          />
+        </ListItem> */}
         {/* Inbox */}
-        <ListItem component={Link} to="#">
+        {/* <ListItem component={Link} to="#">
           <ListItemIcon>
             <Inbox style={{ color: "#666" }} />
           </ListItemIcon>
@@ -140,9 +148,9 @@ const Sidebar = () => {
             primary="Inbox"
             sx={{ ...textConfigs.style.basicFont }}
           />
-        </ListItem>
+        </ListItem> */}
         {admin && (
-        <ListItem component={Link} to="#">
+        <ListItem component={Link} to="/manage-users">
           <ListItemIcon>
             <People style={{ color: "#666" }} />
           </ListItemIcon>

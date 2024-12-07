@@ -65,25 +65,26 @@ const OrderDetails = () => {
       }
     };
     fetchProvinces();
-    console.log("chạy lại");
-    
   }, [order]);
 
   useEffect(() => {
-    const convertProvince = () => {
-      const province = provinces.find(
-        (province) => province.ProvinceName === order.toProvinceName
-      );
-      console.log("provinceId", province && province.ProvinceID);
-      const newProvinceId = province && province.ProvinceID;
-      setProvinceId(newProvinceId);
-      fetchDistricts(newProvinceId);
-      billingForm.setFieldValue("toProvinceName", newProvinceId);
-    };
-    convertProvince();
-  }, [provinces]);
+    if (provinces.length > 0) {
+      const convertProvince = () => {
+        const province = provinces.find(
+          (province) => province.ProvinceName === order.toProvinceName
+        );
+        console.log("provinceId", province && province.ProvinceID);
+        const newProvinceId = province && province.ProvinceID;
+        setProvinceId(newProvinceId);
+        fetchDistricts(newProvinceId);
+        billingForm.setFieldValue("toProvinceName", newProvinceId);
+      };
+      convertProvince();
+    }
+  }, [provinces, order.toProvinceName]);
 
   useEffect(() => {
+    if (districts.length > 0) {
     const convertDistrict = () => {
       const district = districts.find(
         (district) => district.DistrictName === order.toDistrictName
@@ -94,10 +95,12 @@ const OrderDetails = () => {
       billingForm.setFieldValue("toDistrictName", newDistrictId);
     };
     convertDistrict();
-  }, [districts]);
+  }
+  }, [districts, order.toDistrictName]);
 
   useEffect(() => {
-    const convertDistrict = () => {
+    if (provinces.length > 0) {
+    const convertWard = () => {
       console.log(wards);
       console.log(order.toWardName);
 
@@ -108,8 +111,9 @@ const OrderDetails = () => {
 
       billingForm.setFieldValue("toWardName", newWardId);
     };
-    convertDistrict();
-  }, [wards]);
+    convertWard();
+  }
+  }, [wards, order.toWardName]);
 
   const fetchDistricts = async (provinceID) => {
     try {

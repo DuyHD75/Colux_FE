@@ -262,7 +262,7 @@ const ListProducts = (productss) => {
                 sx={{
                   display: "flex",
                   minHeight: "50vh",
-                  flex: "column",
+                  flexDirection: "column",
                   alignItems: "center",
                   justifyContent: "center",
                 }}

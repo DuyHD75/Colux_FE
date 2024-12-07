@@ -9,9 +9,11 @@ import Login from "../page/Auth";
 import ManageOrder from "../page/ManageOrder";
 import OrderDetails from "../page/OrderDetails";
 import CreateOrder from "../page/CreateOrder";
+import ManageColor from "../page/ManageColor"
 
 export const routesGen = {
-  manageUser: "/manageUser",
+  manageUser: "/manage-users",
+  manageColor: "/manage-colors",
   addProduct: "/add-product",
   manageProduct: "/manage-products",
   dashboard: "/dashboard",
@@ -70,6 +72,15 @@ const routes = [
       </ProtectedEmployeeRoute>
     ),
     state: "manageProduct",
+  },
+  {
+    path: routesGen.manageColor,
+    element: (
+      <ProtectedEmployeeRoute>
+        <ManageColor />
+      </ProtectedEmployeeRoute>
+    ),
+    state: "manageColor",
   },
   {
     path: routesGen.manageOrder,

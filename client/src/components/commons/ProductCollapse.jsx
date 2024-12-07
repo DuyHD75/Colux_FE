@@ -476,9 +476,35 @@ const ProductCollapse = ({ product }) => {
               </Grid>
             ))
           ) : (
-            <Typography sx={{ ...textConfigs.style.basicFont }}>
-              {t("no.review")}
-            </Typography>
+            <Box
+                sx={{
+                  display: "flex",
+                  minHeight: "50vh",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+
+                  <img
+                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                    alt="No review found"
+                    style={{
+                      maxWidth: "30%",
+                      height: "auto",
+                    }}
+                  />
+                  <Typography
+                    color="textSecondary"
+                    sx={{
+                      ...textConfigs.style.basicFont,
+                      my: ".5rem",
+                      fontSize: "1rem",
+                    }}
+                  >
+                   {t("no.review")}
+                  </Typography>
+              </Box>
           )}
         </AccordionDetails>
       </Accordion>

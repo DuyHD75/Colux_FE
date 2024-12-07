@@ -15,8 +15,12 @@ const productEndpoints = {
   addSupplier: "product-service/api/v1/suppliers",
   addProperties: "product-service/api/v1/properties",
   addFeatures: "product-service/api/v1/features",
+  getAllProduct: "product-service/api/v1/products/public",
   getAllProductPageAble: ({ pageIndex, size }) =>
     `product-service/api/v1/products/public/pageable?page=${pageIndex}&size=${size}`,
+  saveFileProduct: "product-service/api/v1/products/excel",
+  upStockHistory: "product-service/api/v1/products/upStockHistory",
+  
 };
 
 const prodcutsApi = {
@@ -153,6 +157,24 @@ const prodcutsApi = {
       const response = await proxyClient.get(
         productEndpoints.getAllProductPageAble({ pageIndex, size })
       );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  saveFileProduct: async (product) => {
+    try {
+      const response = await proxyClient.post(
+        productEndpoints.saveFileProduct, product
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  upStockHistory: async () => {
+    try {
+      const response = await proxyClient.get(productEndpoints.upStockHistory);
       return { response };
     } catch (err) {
       return { err };
