@@ -68,12 +68,13 @@ const Login = ({ switchAuthState }) => {
     },
   });
 
-  useEffect(() => {
+   useEffect(() => {
     const loginWithGoogle = async () => {
       const { response, err } = await userApi.getInfo();
-      if (response ) {
+      if (response?.status === 500) {
+        toast.error("Login with google failed!");
+      } else if (response) {
         console.log('response', response);
-
         localStorage.setItem('user', JSON.stringify(response.data.user));
         toast.success("Login with google successfully!");
         navigate('/');
@@ -82,10 +83,8 @@ const Login = ({ switchAuthState }) => {
     if (status === 'success') {
       loginWithGoogle();
     }
-    else {
-      toast.error("Login with google failed!");
-    }
   }, []);
+  
   console.log('status', status);
 
   return (
