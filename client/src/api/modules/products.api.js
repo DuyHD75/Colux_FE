@@ -20,7 +20,7 @@ const productEndpoints = {
     `product-service/api/v1/products/public/productId/${productId}`,
   getProductByColorId: ({ colorId, pageIndex, size }) =>
     `product-service/api/v1/paints/public/colorId/${colorId}?page=${pageIndex}&size=${size}`,
-  reviews: "product-service/api/v1/reviews/public/create",
+  reviews: "product-service/api/v1/reviews/create",
   getReviewsByProductId: ({ productId, pageIndex, size }) =>
     `product-service/api/v1/reviews/public/productId/${productId}?page=${pageIndex}&size=${size}`,
   getReviewsByCusId: ({ userId, pageIndex, size }) =>

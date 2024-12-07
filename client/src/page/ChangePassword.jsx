@@ -31,15 +31,16 @@ const ChangePassword = () => {
     }),
     onSubmit: async (values) => {
       setErrorMessage(undefined);
-      const { response } = await customerApi.changePassword(values);
+      const { response, err } = await customerApi.changePassword(values);
 
       if (response) {
         formikPassword.resetForm();
+        setErrorMessage(null);
         toast.success(response.message);
       } else {
-        setErrorMessage(response.exception);
-        console.log(response.exception);
-        toast.error(response.exception);
+        setErrorMessage(err.exception);
+        console.log(err.exception);
+        toast.error(err.exception);
       }
     },
   });
@@ -182,7 +183,7 @@ const ChangePassword = () => {
                 ) : null}
               </Grid>
             </Grid>
-            {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
+            {errorMessage && <Alert sx={{ marginTop: 1 }} severity="error">{errorMessage}</Alert>}
             <Button
               type="submit"
               size="small"

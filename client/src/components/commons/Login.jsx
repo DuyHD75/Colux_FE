@@ -53,12 +53,14 @@ const Login = ({ switchAuthState }) => {
         dispatch(setUser(response.data.user));
         loginForm.resetForm();
         dispatch(setUser(response.data.user));
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        navigate('/');
+        localStorage.setItem("user", JSON.stringify(response.data.user));
+        navigate("/");
       } else {
-        setErrorMessage("Your account does not have permission to access this page.");
+        setErrorMessage(
+          "Your account does not have permission to access this page."
+        );
       }
-      if(err) {
+      if (err) {
         setErrorMessage(err.exception);
       }
     },
@@ -68,8 +70,24 @@ const Login = ({ switchAuthState }) => {
     <div className="w-full bg-gray-800 rounded-lg shadow dark:border-gray-700 sm:max-w-lg xl:p-0">
       {/* Nút Back Home */}
       <div className="absolute top-4 left-4">
-        <Link to="/" className="text-white underline">
-          Back Home
+        <Link
+          to="/"
+          className="flex items-center justify-center w-10 h-10 bg-white rounded-full shadow-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="w-5 h-5 text-gray-800"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
         </Link>
       </div>
       <div className="p-6 space-y-4 sm:p-8">
@@ -184,7 +202,7 @@ const Login = ({ switchAuthState }) => {
               borderRadius: "8px",
               ":focus": {
                 outline: "none",
-                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)", 
+                boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)",
               },
             }}
           >

@@ -22,9 +22,9 @@ const cartApi = {
   },
   deleteCartItem: async (cartId, itemDeleteRequests) => {
     try {
-      const response = await proxyClient.delete(userEndpoints.deleteCartItem, {
-        data: { cartId, itemDeleteRequests },
-      });
+      const response = await proxyClient.post(userEndpoints.deleteCartItem, 
+       { cartId, itemDeleteRequests },
+      );
       return { response };
     } catch (err) {
       return { err };

@@ -54,15 +54,16 @@ const ProductReviews = () => {
         try {
           const { response, err } = await prodcutsApi.getReviewsByCusId(
             user.userId,
-            page - 1 ,
+            page - 1,
             reviewsPerPage
           );
 
           if (response) {
             setProductReviews([...response.data.Review.content]);
-            setTotalPages(response.data.Review.totalPages)
+            setTotalPages(response.data.Review.totalPages);
           }
           if (err) {
+            toast.error(err.message);
             console.error(err);
           }
         } catch (error) {
@@ -92,7 +93,6 @@ const ProductReviews = () => {
   const handleChange = (event, value) => {
     setPage(value);
   };
-
 
   const formatDate = (dateString) => {
     const date = new Date(dateString);
@@ -126,72 +126,108 @@ const ProductReviews = () => {
           Product Reviews
         </Typography>
 
-        {productReviews.map((review, index) => (
+        {productReviews.length > 0 ? (
+          productReviews.map((review, index) => (
+            <>
+              <Box
+                sx={{
+                  borderRadius: "10px",
+                  bgcolor: "#E1FCF3",
+                  p: "10px",
+                  mb: "18px",
+                }}
+              >
+                <Stack
+                  direction={{ xs: "column", md: "row" }}
+                  alignItems="center"
+                  justifyContent="space-between"
+                >
+                  <Stack
+                    direction="row"
+                    spacing={2}
+                    alignItems="center"
+                    pb="12px"
+                  >
+                    <ImageComponent
+                      src={review.img}
+                      width="30px"
+                      height="30px"
+                      alt="product"
+                    />
+                    <Typography
+                      sx={{
+                        ...textConfigs.style.basicFont,
+                        fontWeight: "bold",
+                        fontSize: "14px",
+                      }}
+                    >
+                      {review.name}
+                    </Typography>
+                    <Typography
+                      sx={{ ...textConfigs.style.basicFont, fontSize: "14px" }}
+                    >
+                      {formatDate(review.updatedAt)}
+                    </Typography>
+                    <Rating
+                      size="small"
+                      name="read-only"
+                      value={Number(review.score)}
+                      readOnly
+                    />
+                  </Stack>
+                </Stack>
+                <Stack direction="row" spacing={3}>
+                  <RiDoubleQuotesL size="20px" style={{ flexShrink: 0 }} />
+                  <Typography
+                    sx={{ ...textConfigs.style.basicFont, fontSize: "14px" }}
+                  >
+                    {review.content}
+                  </Typography>
+                </Stack>
+              </Box>
+              <Pagination
+                count={totalPages}
+                page={page}
+                onChange={handleChange}
+                renderItem={(item) => (
+                  <PaginationItem
+                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                    {...item}
+                  />
+                )}
+              />
+            </>
+          ))
+        ) : (
           <Box
             sx={{
-              borderRadius: "10px",
-              bgcolor: "#E1FCF3",
-              p: "10px",
-              mb: "18px",
+              display: "flex",
+              minHeight: "50vh",
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            <Stack
-              direction={{ xs: "column", md: "row" }}
-              alignItems="center"
-              justifyContent="space-between"
-            >
-              <Stack direction="row" spacing={2} alignItems="center" pb="12px">
-                <ImageComponent
-                  src={review.img}
-                  width="30px"
-                  height="30px"
-                  alt="product"
-                />
-                <Typography
-                  sx={{
-                    ...textConfigs.style.basicFont,
-                    fontWeight: "bold",
-                    fontSize: "14px",
-                  }}
-                >
-                  {review.name}
-                </Typography>
-                <Typography
-                  sx={{ ...textConfigs.style.basicFont, fontSize: "14px" }}
-                >
-                  {formatDate(review.updatedAt)}
-                </Typography>
-                <Rating
-                  size="small"
-                  name="read-only"
-                  value={Number(review.score)}
-                  readOnly
-                />
-              </Stack>
-
-            </Stack>
-            <Stack direction="row" spacing={3}>
-              <RiDoubleQuotesL size="20px" style={{ flexShrink: 0 }} />
-              <Typography
-                sx={{ ...textConfigs.style.basicFont, fontSize: "14px" }}
-              >
-                {review.content}
-              </Typography>
-            </Stack>
-          </Box>
-        ))}
-
-        <Pagination
-          count={totalPages}
-          page={page}
-          onChange={handleChange}
-          renderItem={(item) => (
-            <PaginationItem
-              slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-              {...item}
+            <img
+              src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+              alt="No review found"
+              style={{
+                maxWidth: "50%",
+                height: "auto",
+              }}
             />
-          )}
-        />
+            <Typography
+              color="textSecondary"
+              sx={{
+                ...textConfigs.style.basicFont,
+                my: "1rem",
+                fontSize: "1.2rem",
+              }}
+            >
+              No review
+            </Typography>
+          </Box>
+        )}
       </Box>
     </UserSidebar>
   );

@@ -127,7 +127,7 @@ const Profile = () => {
         phone: phone || "",
       });
     }
-  }, [user]);
+  }, []);
 
   return (
     <UserSidebar>
@@ -165,13 +165,13 @@ const Profile = () => {
             justifyContent="space-between"
           >
             <Stack direction="row" spacing={2} alignItems="center">
-              {/* <Avatar alt="Remy Sharp" src={user&&user.imageUrl} sx={{ width: 60, height: 60 }} /> */}
+             
               <div style={{ textAlign: "center" }}>
-                {/* Avatar hiển thị ảnh */}
+              
                 <label htmlFor="avatar-upload">
                   <Avatar
                     alt="User Avatar"
-                    src={userImage || "https://via.placeholder.com/60"} // Ảnh mặc định nếu chưa chọn
+                    src={userImage || "https://via.placeholder.com/60"}
                     sx={{
                       width: 60,
                       height: 60,
@@ -179,13 +179,13 @@ const Profile = () => {
                     }}
                   />
                 </label>
-                {/* Input ẩn dùng để upload ảnh */}
+  
                 <input
                   type="file"
                   id="avatar-upload"
                   style={{ display: "none" }}
                   accept="image/*"
-                  onChange={handleImageChange} // Gọi khi ảnh được chọn
+                  onChange={handleImageChange} 
                 />
               </div>
               <Box>
@@ -198,7 +198,7 @@ const Profile = () => {
                 >
                   {user && user.firstName} {user && user.lastName}
                 </Typography>
-                {/* <Typography sx={{ ...textConfigs.style.headerText, fontSize: '14px', color: 'text.secondary' }}>Leeds, United Kingdom</Typography> */}
+                
               </Box>
             </Stack>
           </Stack>

@@ -1,4 +1,5 @@
 import {
+  Avatar,
   Box,
   Button,
   Checkbox,
@@ -14,6 +15,7 @@ import {
   IconButton,
   InputLabel,
   MenuItem,
+  Modal,
   Paper,
   Select,
   Stack,
@@ -31,7 +33,7 @@ import {
 import React, { useEffect, useRef, useState } from "react";
 import textConfig from "../config/text.config";
 import backgroundConfig from "../config/background.config";
-import { FaPlus } from "react-icons/fa6";
+import { FaPlus, FaTimes } from "react-icons/fa";
 import { DataGrid } from "@mui/x-data-grid";
 import { CiEdit } from "react-icons/ci";
 import { Link } from "react-router-dom";
@@ -45,9 +47,14 @@ import colorsApi from "../api/modules/color.api";
 import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import textConfigs from "../config/text.config";
+import * as XLSX from "xlsx";
 
 const ManageProduct = () => {
+  const [productsFile, setProductsFile] = useState([]);
+  const [file, setFile] = useState(null);
+
   const [products, setProducts] = useState([]);
+  const [upStockHistory, setUpStockHistory] = useState([]);
   const [categories, setCategories] = useState([]);
   const [brands, setBrands] = useState([]);
   const [colors, setColors] = useState([]);
@@ -57,7 +64,9 @@ const ManageProduct = () => {
   const [availableProperties, setAvailableProperties] = useState([]);
 
   const [avatarUrl, setAvatarUrl] = useState([]);
+  const [imageUrl, setImageUrl] = useState([]);
   const [editRow, setEditRow] = useState(null);
+  const [editRowUpStock, setEditUpStockRow] = useState(null);
   const [openFeature, setOpenFeature] = useState(false);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [openProperties, setOpenProperties] = useState(false);
@@ -89,6 +98,20 @@ const ManageProduct = () => {
   const [selectedPaints, setSelectedPaints] = useState([]);
 
   const [searchText, setSearchText] = useState("");
+  const [orderCode, setOrderCode] = useState([]);
+
+  const [open, setOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState("");
+
+  const handleOpen = (image) => {
+    setSelectedImage(image);
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setSelectedImage("");
+  };
 
   const handleSelectPaint = (paintId) => {
     setSelectedPaints((prevSelected) =>
@@ -602,6 +625,24 @@ const ManageProduct = () => {
     getAllProduct();
   }, [dispatch]);
 
+  const getUpStockHistory = async () => {
+    try {
+      const { response, err } = await productsApi.upStockHistory();
+      if (response) {
+        setUpStockHistory([...response.data.upStockHistory]);
+      } else if (err) {
+        toast.error(err);
+      }
+    } catch (error) {
+      console.log("Error", error);
+      toast.error("An error occurred while fetching up stock history.");
+    }
+  };
+
+  useEffect(() => {
+    getUpStockHistory();
+  }, [dispatch]);
+
   useEffect(() => {
     const getAllcategory = async () => {
       try {
@@ -714,6 +755,12 @@ const ManageProduct = () => {
   useEffect(() => {
     setRows(products);
   }, [products]);
+
+  const [rowUpStockHistory, setRowsUpStockHistory] = useState(products);
+
+  useEffect(() => {
+    setRowsUpStockHistory(upStockHistory);
+  }, [upStockHistory]);
 
   useEffect(() => {
     if (editRow) {
@@ -886,6 +933,10 @@ const ManageProduct = () => {
     setEditRow(row);
   };
 
+  const handleEditUpStockClick = (row) => {
+    setEditUpStockRow(row);
+  };
+
   const handleEditChange = (event) => {
     const { name, value } = event.target;
 
@@ -934,6 +985,9 @@ const ManageProduct = () => {
     setEditRow(null);
   };
 
+  const handleEditUpStockCancel = () => {
+    setEditUpStockRow(null);
+  };
   const handleChangePage = (event, newPage) => {
     setCurrentColorsPage(newPage + 1);
   };
@@ -983,9 +1037,9 @@ const ManageProduct = () => {
       headerName: "Category",
       width: 90,
       filterable: true,
-      
+
       renderCell: (params) => {
-        let category = params.row.category.name ;
+        let category = params.row.category.name;
         return (
           <Box
             display="flex"
@@ -1011,9 +1065,9 @@ const ManageProduct = () => {
           value: "equals",
           getApplyFilterFn: (filterItem) => {
             if (!filterItem.value) return null;
-      
+
             return (row) => {
-              console.log(row); 
+              console.log(row);
               return row.name && row.name
                 ? row.name.toLowerCase() === filterItem.value.toLowerCase()
                 : false;
@@ -1040,7 +1094,7 @@ const ManageProduct = () => {
               </Select>
             </div>
           ),
-        }
+        },
       ],
     },
     { field: "placeOfOrigin", headerName: "Place Of Origin", width: 150 },
@@ -1076,22 +1130,250 @@ const ManageProduct = () => {
     },
   ];
 
-  const paginationModel = { page: 0, pageSize: 10 };
+  const columnsUpStockHistory = [
+    { field: "stockImportHistoryId", headerName: "ID", width: 330 },
+    { field: "billCode", headerName: "Bill Code", width: 150 },
+    {
+      field: 'name',
+      headerName: 'Name',
+      width: 250,
+      renderCell: (params) => (
+        <Box display="flex" alignItems="center" justifyContent="start" width="100%" height="100%">
+          <Avatar alt={params.row.userInfo.firstName} src={params.row.userInfo.imageUrl} sx={{ marginRight: 1 }} />
+          <Typography>{params.row.userInfo.firstName} {params.row.userInfo.lastLogin}</Typography>
+        </Box>
+      ),
+    },
+    {
+      field: "actions",
+      headerName: "Actions",
+      width: 140,
+      renderCell: (params) => (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="space-between"
+          width="100%"
+          height="100%"
+        >
+          <Button
+            variant="contained"
+            sx={{ ...backgroundConfig.style.backgroundPrimary }}
+            onClick={() => handleEditUpStockClick(params.row)}
+          >
+            <CiEdit />
+          </Button>
+          {/* <Button
+            variant="contained"
+            onClick={() => ban(params.productId)}
+            sx={{ ...backgroundConfig.style.backgroundPrimary }}
+          >
+            <FaBan />
+          </Button> */}
+        </Box>
+      ),
+    },
+  ];
+
+  const paginationModel = { page: 0, pageSize: 20 };
   const filteredRows = useRef([]);
 
   useEffect(() => {
     if (searchText === "") {
       filteredRows.current = products;
     } else {
-      console.log(searchText);
-      console.log(products);
-
       filteredRows.current = products.filter((product) =>
         product.productName.toLowerCase().includes(searchText.toLowerCase())
       );
     }
     setRows(filteredRows.current); // Cập nhật rows với kết quả lọc
   }, [searchText, products]);
+
+  const handleOrderCodeChange = (e) => {
+    const { name, value } = e.target;
+    setOrderCode(value);
+  };
+
+  const handleFileUpload = (event) => {
+    const file = event.target.files[0];
+
+    if (!file) return;
+    setFile(file);
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      const data = new Uint8Array(e.target.result);
+      try {
+        const workbook = XLSX.read(data, { type: "array" });
+
+        // Lấy dữ liệu từ các sheet
+        const productSheet = XLSX.utils.sheet_to_json(
+          workbook.Sheets["Product"]
+        );
+        const colorSheet = XLSX.utils.sheet_to_json(workbook.Sheets["Color"]);
+        const propertySheet = XLSX.utils.sheet_to_json(
+          workbook.Sheets["Property"]
+        );
+        const featureSheet = XLSX.utils.sheet_to_json(
+          workbook.Sheets["Feature"]
+        );
+        if (productSheet.length > 0 && colorSheet.length > 0 && productSheet.length > 0 && featureSheet.length > 0) {
+          console.log(productSheet);
+
+          // Map dữ liệu từ Product Sheet
+          const productsF = productSheet.map((row) => {
+            const {
+              "Product Name": productName,
+              Description: description,
+              Code: code,
+              PlaceOfOrigin: placeOfOrigin,
+              Warranty: warranty,
+              "Applicable Surface": applicableSurface,
+              SupplierId: supplierId,
+              BrandId: brandId,
+              CategoryId: categoryId,
+              Category: categoryName,
+              "Number Pieces Per Box (Floors)": numberPiecesPerBox,
+              Color: colorHex,
+              Quantity: quantity,
+              Price: price,
+              "Size (Paint: L; Floor, Wallpaper: m)": sizeName,
+              "Package Type": packageType,
+              Images: images,
+              Feature: feature,
+              Property: property,
+              BrandCode: brandCode,
+            } = row;
+            // Phân loại sản phẩm
+            console.log(categoryName);
+            if (productName) {
+              const productType = categoryName.toLowerCase();
+              let productSpecificData = {};
+
+              if (productType === "paint") {
+                const colorData = colorSheet.find(
+                  (color) => color.hexCode.trim() === colorHex.trim()
+                );
+                console.log(colorData["Interior"]);
+                console.log(colorData);
+
+                productSpecificData = {
+                  numberPiecesPerBox: null,
+                  color: colorData
+                    ? {
+                        name: colorData["Color Name"],
+                        code: colorData["Color Code"],
+                        hex: colorData["hexCode"],
+                        LRV: colorData["LRV"],
+                        interior: colorData["Interior"] === "true",
+                        exterior: colorData["Exterior"] === "true",
+                        description: colorData["Description"],
+                        colorTypeId: 0,
+                        image: colorData["Image"],
+                      }
+                    : null,
+                };
+              } else if (productType === "floor") {
+                productSpecificData = { numberPiecesPerBox };
+              } else {
+                productSpecificData = { numberPiecesPerBox: null };
+              }
+
+              const featureValueIds = feature
+                .split(",")
+                .map((feat) => {
+                  console.log(feat);
+
+                  const featureData = featureSheet.find(
+                    (f) => f["Feature Code"] === feat.trim()
+                  );
+                  return featureData ? featureData["FeatureValueId"] : null;
+                })
+                .filter((id) => id !== null); // Lọc bỏ các giá trị null nếu không tìm thấy
+
+              const propertyValueIds = property
+                .split(",")
+                .map((prop) => {
+                  const propertyData = propertySheet.find(
+                    (p) => p["Property Code"] === prop.trim()
+                  );
+                  return propertyData ? propertyData["PropertyValueId"] : null;
+                })
+                .filter((id) => id !== null); // Lọc bỏ các giá trị null nếu không tìm thấy
+
+              return {
+                productName,
+                description,
+                code,
+                placeOfOrigin,
+                warranty,
+                supplierId,
+                brandId,
+                categoryId,
+                categoryName: productType,
+                images: images.split(","),
+                featureValueIds, // Lưu các id của feature
+                propertyValueIds, // Lưu các id của property
+                quantity,
+                price,
+                sizeName: isNaN(sizeName) ? sizeName : String(sizeName),
+                packageType,
+                applicableSurface,
+                brandCode,
+                ...productSpecificData,
+              };
+            }
+            return null;
+          });
+          const filteredProductsF = productsF.filter(
+            (product) => product !== null
+          );
+          setProductsFile(filteredProductsF);
+        } else {
+          toast.warn("Invalid file format, please upload a different file.");
+        }
+      } catch (error) {
+        console.log(error);
+        toast.warn("Invalid file format, please upload a different file.");
+      }
+    };
+
+    reader.readAsArrayBuffer(file);
+  };
+
+  console.log(productsFile);
+
+  const handleRemoveFile = () => {
+    setFile(null);
+  };
+
+  const handleSaveFile = async () => {
+    
+    const stringUrl = imageUrl.join(", ");
+    const data = { images: stringUrl, billCode: orderCode, products: productsFile};
+    if (productsFile.length > 0) {
+      const { response, err } = await productsApi.saveFileProduct(data);
+      if (response) {
+        getAllProduct();
+        toast.success(response.message);
+      } else {
+        console.log(err);
+        toast.error("Error while save file");
+      }
+    } else {
+      toast.warn("No product in file.");
+    }
+  };
+  const [openStockUp, setOpenStockUp] = useState(false);
+
+  const handleOpenStockUpDialog = () => {
+    setOpenStockUp(true);
+  };
+
+  const handleCloseStockUpDialog = () => {
+    setOpenStockUp(false);
+  };
+
   return (
     <Stack direction="row" spacing={1} my={1}>
       {/* <SlideBar></SlideBar> */}
@@ -1121,20 +1403,43 @@ const ManageProduct = () => {
           >
             Manage Product
           </Typography>
-          <Button
-            sx={{
-              color: "white",
-              ...backgroundConfig.style.backgroundPrimary,
-              "&:hover": {
-                ...backgroundConfig.style.backgroundSecondary,
-              },
-            }}
-            startIcon={<FaPlus />}
-            component={Link}
-            to="/add-product"
-          >
-            New Product
-          </Button>
+          <div>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              gap={2}
+            >
+              <Button
+                sx={{
+                  color: "white",
+                  ...backgroundConfig.style.backgroundPrimary,
+                  "&:hover": {
+                    ...backgroundConfig.style.backgroundSecondary,
+                  },
+                }}
+                startIcon={<FaPlus />}
+                onClick={handleOpenStockUpDialog}
+              >
+                Stock Up
+              </Button>
+
+              <Button
+                sx={{
+                  color: "white",
+                  ...backgroundConfig.style.backgroundPrimary,
+                  "&:hover": {
+                    ...backgroundConfig.style.backgroundSecondary,
+                  },
+                }}
+                startIcon={<FaPlus />}
+                component={Link}
+                to="/add-product"
+              >
+                New Product
+              </Button>
+            </Box>
+          </div>
         </Stack>
         <TextField
           label="Search"
@@ -1167,6 +1472,44 @@ const ManageProduct = () => {
               fontSize: "14px",
             }}
           />
+          
+        </Paper>
+        <Stack
+          direction="row"
+          sx={{
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginY: "1rem",
+          }}
+        >
+          <Typography
+            sx={{
+              ...textConfig.style.headerText,
+              fontSize: "1.5rem",
+            }}
+          >
+            Up Stock History
+          </Typography>
+        </Stack>
+        <Paper
+          sx={{
+            height: "90%",
+            width: "60%",
+            overflowX: "auto",
+          }}
+        >
+          <DataGrid
+            rows={rowUpStockHistory} // Hiển thị rows đã lọc
+            columns={columnsUpStockHistory}
+            initialState={{ pagination: { paginationModel } }}
+            pageSizeOptions={[2]}
+            checkboxSelection
+            getRowId={(row) => row.stockImportHistoryId}
+            sx={{
+              fontSize: "14px",
+            }}
+          />
+          
         </Paper>
         <Dialog
           maxWidth="lg"
@@ -2716,6 +3059,121 @@ const ManageProduct = () => {
             </Button>
           </DialogActions>
         </Dialog>
+
+        <Dialog
+          maxWidth="lg"
+          fullWidth
+          open={!!editRowUpStock}
+          onClose={handleEditUpStockCancel}
+        >
+          <DialogTitle>Up Stock: {editRowUpStock && editRowUpStock.billCode}</DialogTitle>
+          <DialogContent
+            sx={{
+              ...customScrollbarStyle,
+              width: "1200px",
+            }}
+          >
+            <Typography variant="body1" component="div" gutterBottom>
+              <strong>ImporterId:</strong> {editRowUpStock && editRowUpStock.userInfo.userId}<br/>
+              <strong>Importer:</strong> {editRowUpStock && editRowUpStock.userInfo.firstName} {editRowUpStock && editRowUpStock.userInfo.lastLogin} <br/>
+              <strong>Role:</strong> {editRowUpStock && editRowUpStock.userInfo.role}
+            </Typography>
+
+            <Typography variant="h6" component="div" gutterBottom>
+              Images Up Stock
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="flex-start"
+              width="100%"
+              mt={2}
+            >
+              {editRowUpStock?.images ? (
+        editRowUpStock.images.split(", ").map((s) => s.trim()).map((image, index) => (
+          <Grid key={index} item xs={6} sm={4} md={3}>
+            <Box
+              sx={{
+                position: "relative",
+                width: "100%",
+                height: "300px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                m: 1,
+              }}
+              onClick={() => handleOpen(image)} // Handle click to open modal
+            >
+              <img
+                style={{
+                  borderRadius: "5px",
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                  boxShadow: "2px 2px 5px rgba(255,255,255, 0.6)",
+                  overflow: "hidden",
+                  cursor: "pointer",
+                }}
+                src={image}
+                alt="PhotoItem"
+              />
+            </Box>
+          </Grid>
+        ))
+      ) : (
+        <Grid item xs={12} md={12}>
+          <Typography
+            variant="body1"
+            color="textSecondary"
+            align="center"
+            my={2}
+          >
+            There are no images for this up stock.
+          </Typography>
+        </Grid>
+      )}
+
+      {/* Modal to show full-size image */}
+      <Modal
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="modal-title"
+        aria-describedby="modal-description"
+      >
+        <Box
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+            maxWidth: "90%",
+            maxHeight: "90%",
+          }}
+        >
+          <img
+            src={selectedImage}
+            alt="FullImage"
+            style={{
+              maxWidth: "100%",
+              maxHeight: "100%",
+              borderRadius: "5px",
+            }}
+          />
+        </Box>
+      </Modal>
+            </Grid>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleEditUpStockCancel} color="primary">
+              Cancel
+            </Button>
+          </DialogActions>
+        </Dialog>
+
         {/* Dialog to select Properties */}
         <Dialog open={openProperties} onClose={handleCloseProperties}>
           <DialogTitle>Select Properties</DialogTitle>
@@ -2964,6 +3422,203 @@ const ManageProduct = () => {
             </Button>
             <Button
               onClick={handleAddColorsToProduct}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
+              Save
+            </Button>
+          </DialogActions>
+        </Dialog>
+
+        <Dialog
+          sx={{
+            "& .MuiDialog-paper": {
+              width: "100%",
+              maxWidth: "633px",
+              maxHeight: "100%",
+              borderRadius: "0px",
+              boxShadow: "0px 0px 10px rgba(0, 0, 0, 0.1)",
+            },
+          }}
+          open={openStockUp}
+          onClose={handleCloseStockUpDialog}
+        >
+          <DialogTitle sx={{ fontWeight: 400 }}>Stock Up</DialogTitle>
+          <DialogContent
+            sx={{
+              width: "100%",
+              borderBottom: "1px solid #ccc",
+              borderTop: "1px solid #ccc",
+              overflow: "auto",
+              height: "450px",
+              ...customScrollbarStyle,
+            }}
+          >
+            <Box
+              display="flex"
+              justifyContent="end"
+              alignItems="center"
+              gap={2}
+              mt={2}
+            >
+              {file && (
+                <div
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                  }}
+                >
+                  <span>{file.name}</span>
+                  <IconButton
+                    sx={{ color: "red", marginLeft: "10px" }}
+                    onClick={handleRemoveFile}
+                  >
+                    <FaTimes />
+                  </IconButton>
+                  {/* <Button
+                    variant="outlined"
+                    component="span"
+                    sx={{
+                      color: "white",
+                      ...backgroundConfig.style.backgroundPrimary,
+                      "&:hover": {
+                        ...backgroundConfig.style.backgroundSecondary,
+                      },
+                    }}
+                    onClick={handleSaveFile}
+                  >
+                    Save
+                  </Button> */}
+                </div>
+              )}
+              <input
+                type="file"
+                accept=".xlsx, .xls"
+                onChange={handleFileUpload}
+                style={{ display: "none" }} // Ẩn input file đi
+                id="file-input"
+              />
+              <label htmlFor="file-input">
+                <Button
+                  variant="outlined"
+                  component="span"
+                  sx={{
+                    color: "white",
+                    ...backgroundConfig.style.backgroundPrimary,
+                    "&:hover": {
+                      ...backgroundConfig.style.backgroundSecondary,
+                    },
+                  }}
+                  startIcon={<FaPlus />}
+                >
+                  Upload File
+                </Button>
+              </label>
+            </Box>
+            <Typography
+              sx={{
+                ...textConfig.style.headerText,
+                fontSize: "16px",
+                fontWeight: "bold",
+              }}
+            >
+              Information Stock Up
+            </Typography>
+            <Grid
+              container
+              spacing={2}
+              alignItems="center"
+              justifyContent="flex-start"
+              width="100%"
+              my={2}
+            >
+              <Grid item xs={12} md={12}>
+                <TextField
+                  margin="dense"
+                  label="Order code"
+                  name="orderCode"
+                  onChange={handleOrderCodeChange}
+                  fullWidth
+                />
+              </Grid>
+              {imageUrl.length > 0 ? (
+                imageUrl.map((image, index) => (
+                  <Grid key={index} item xs={12} md={6}>
+                    <Box
+                      sx={{
+                        position: "relative",
+                        width: "100%",
+                        height: "200px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        m: 1,
+                      }}
+                    >
+                      <img
+                        style={{
+                          borderRadius: "5px",
+                          width: "100%",
+                          height: "100%",
+                          objectFit: "cover",
+                          boxShadow: "2px 2px 5px rgba(255,255,255, 0.6)",
+                          overflow: "hidden",
+                        }}
+                        src={image}
+                        alt="PhotoItem"
+                      />
+                      <IconButton
+                        sx={{
+                          cursor: "pointer",
+                          color: "#fff",
+                          borderRadius: "50%",
+                          padding: "5px",
+                          position: "absolute",
+                          top: "8px",
+                          right: "8px",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          "&:hover": {
+                            backgroundColor: "rgba(0, 0, 0, 0.7)",
+                          },
+                        }}
+                        onClick={() => handleDeleteImage(index)}
+                      >
+                        <CloseIcon
+                          sx={{
+                            fontSize: "1rem",
+                            color: "#fff",
+                          }}
+                        />
+                      </IconButton>
+                    </Box>
+                  </Grid>
+                ))
+              ) : (
+                <Grid item xs={12} md={12}>
+                  <Typography
+                    variant="body1"
+                    color="textSecondary"
+                    align="center"
+                    my={2}
+                  >
+                    There are no images.
+                  </Typography>
+                </Grid>
+              )}
+            </Grid>
+
+            <ImageUploader handleUpload={setImageUrl} />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={handleCloseStockUpDialog}
+              color="primary"
+              sx={{ textTransform: "none" }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSaveFile}
               color="primary"
               sx={{ textTransform: "none" }}
             >

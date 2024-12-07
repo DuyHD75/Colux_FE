@@ -40,7 +40,7 @@ const ImageUploader = ({ handleUpload }) => {
           alignItems: "center",
           height: "100%",
           justifyContent: "center",
-          border: "1px solid #333",
+          border: "2px dashed #333",
           borderRadius: "10px",
           flexDirection: "column",
         }}
@@ -68,7 +68,7 @@ const ImageUploader = ({ handleUpload }) => {
             d="M12 16.5V9.75m0 0l3 3m-3-3l-3 3M6.75 19.5a4.5 4.5 0 01-1.41-8.775 5.25 5.25 0 0110.233-2.33 3 3 0 013.758 3.848A3.752 3.752 0 0118 19.5H6.75z"
           />
         </svg>
-        {isUploading ? "Uploading image ..." : "Upload new product photos..."}
+        {isUploading ? "Uploading image ..." : "Upload new photos..."}
       </label>
     </Grid>
   );

@@ -6,6 +6,9 @@ const adminEndpoints = {
   logout: "identity-service/api/v1/users/logout",
   changePassword: "identity-service/api/v1/users/change-password",
   verifyToken: "identity-service/api/v1/users/verify-token",
+  getAllUser: "identity-service/api/v1/users/getAll",
+  setStatusUser: (id) => `identity-service/api/v1/users/status/${id}`,
+  createEmployee: "identity-service/api/v1/users/register/employee",
   
   // Dashboard endpoints
   getDashboard: "order-service/api/v1/admins/dashboard",
@@ -22,6 +25,7 @@ const adminEndpoints = {
 
   // Add new endpoint for order details
   getOrderDetails: (orderId) => `order-service/api/v1/orders/order/${orderId}`,
+
 };
 
 const adminApi = {
@@ -138,6 +142,34 @@ const adminApi = {
       const response = await proxyAdmin.get(
         adminEndpoints.getOrderDetails(orderId)
       );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+
+  setStatusUser: async (id) => {
+    try {
+      const response = await proxyAdmin.put(
+        adminEndpoints.setStatusUser(id)
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+
+  getAllUser: async () => {
+    try {
+      const response = await proxyAdmin.get(adminEndpoints.getAllUser);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  createEmployee: async (info) => {
+    try {
+      const response = await proxyAdmin.post(adminEndpoints.createEmployee, info);
       return { response };
     } catch (err) {
       return { err };

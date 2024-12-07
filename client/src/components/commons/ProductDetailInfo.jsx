@@ -17,7 +17,7 @@ import StarBorderIcon from "@mui/icons-material/StarBorder";
 import StarHalfIcon from "@mui/icons-material/StarHalf";
 import ProductCollapse from "./ProductCollapse";
 import ProductsRelated from "./ProductRelated";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { BsFillHexagonFill } from "react-icons/bs";
 import { FaCheck } from "react-icons/fa6";
 import { useTranslation } from "react-i18next";
@@ -46,7 +46,9 @@ const ProductDetailInfo = ({ product }) => {
   const [selectedVariant, setSelectedVariant] = useState(null);
   const [products, setProducts] = useState([]);
   const productsPerPage = 20;
-  const [user, setUser] = useState(() => JSON.parse(localStorage.getItem("user")));
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  );
   const [cart, setCart] = useState(null);
   const navigate = useNavigate();
 
@@ -100,6 +102,32 @@ const ProductDetailInfo = ({ product }) => {
     }
   }, []);
 
+  const location = useLocation();
+  const { productCal, selectedProductCal, selectedVariantCal } =
+    location.state || {};
+
+  useEffect(() => {
+    if (productCal || selectedProductCal || selectedVariantCal) {
+      if (product.category.name === "Paint") {
+        console.log(selectedProductCal);
+        console.log(selectedVariantCal);
+
+        setSelectedProduct(selectedProductCal);
+        setSelectedVariant(selectedVariantCal);
+      } else if (product.category.name === "Wallpaper") {
+        console.log(selectedProductCal);
+        console.log(selectedVariantCal);
+        setSelectedProduct(selectedProductCal);
+        setSelectedVariant(selectedVariantCal);
+      } else if (product.category.name === "Floor") {
+        console.log(selectedProductCal);
+        console.log(selectedVariantCal);
+        setSelectedProduct(selectedProductCal);
+        setSelectedVariant(selectedVariantCal);
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const getAllProductPageAble = async (page, size) => {
       dispatch(setGlobalLoading(true));
@@ -128,7 +156,6 @@ const ProductDetailInfo = ({ product }) => {
   const handleProductSelect = (productType) => {
     setSelectedProduct(productType);
     setSelectedVariant(productType.variants[0]);
-
   };
   console.log("Variant", selectedVariant);
 
@@ -155,94 +182,105 @@ const ProductDetailInfo = ({ product }) => {
 
   const handleAddToCart = (quantity) => {
     if (user) {
-        const status = 1;
+      const status = 1;
       const updateQuantityType = "INCREMENTAL";
       const customerId = user.userId;
-      const cartId = cart ? cart.cartId : '';
-      const cartItems = [{
-        ...(selectedVariant.categoryName === 'Paint' && { variantId: selectedVariant.variantId }),
-        ...(selectedVariant.categoryName === 'Wallpaper' && { variantId: selectedVariant.variantId }),
-        ...(selectedVariant.categoryName === 'Floor' && { variantId: selectedVariant.variantId }),
-        productId: product.productId,
-        quantity: quantity,
-        ...(selectedVariant.categoryName === 'Paint' && { paintId: selectedProduct.id }),
-        ...(selectedVariant.categoryName === 'Wallpaper' && { wallpaperId: selectedProduct.id }),
-        ...(selectedVariant.categoryName === 'Floor' && { floorId: selectedProduct.id }),
-      }];
+      const cartId = cart ? cart.cartId : "";
+      const cartItems = [
+        {
+          ...(selectedVariant.categoryName === "Paint" && {
+            variantId: selectedVariant.variantId,
+          }),
+          ...(selectedVariant.categoryName === "Wallpaper" && {
+            variantId: selectedVariant.variantId,
+          }),
+          ...(selectedVariant.categoryName === "Floor" && {
+            variantId: selectedVariant.variantId,
+          }),
+          productId: product.productId,
+          quantity: quantity,
+          ...(selectedVariant.categoryName === "Paint" && {
+            paintId: selectedProduct.id,
+          }),
+          ...(selectedVariant.categoryName === "Wallpaper" && {
+            wallpaperId: selectedProduct.id,
+          }),
+          ...(selectedVariant.categoryName === "Floor" && {
+            floorId: selectedProduct.id,
+          }),
+        },
+      ];
 
-      updateCart(
+      updateCart(cartId, customerId, status, updateQuantityType, cartItems);
+    } else {
+      toast.error("Please login to add to cart");
+    }
+  };
+
+  const handleBuyNow = (quantity) => {
+    const checkoutData = {
+      products: [
+        {
+          cartItemQuantity: quantity,
+          cartItemVariant: {
+            categoryName: selectedVariant.categoryName,
+            packageType: selectedVariant.packageType,
+            priceSell: selectedVariant.price,
+            productDetails: {
+              code: product.code,
+              ...(selectedVariant.categoryName === "Paint" && {
+                paintDetails: {
+                  colorId: selectedProduct.color.id,
+                  hex: selectedProduct.color.hex,
+                  paintId: selectedProduct.id,
+                },
+              }),
+              ...(selectedVariant.categoryName === "Wallpaper" && {
+                wallpaperDetails: {
+                  wallpaperId: selectedProduct.id,
+                },
+              }),
+              ...(selectedVariant.categoryName === "Floor" && {
+                floorDetails: {
+                  floorId: selectedProduct.id,
+                },
+              }),
+              productId: product.productId,
+              productImage: product.images[0].url,
+              productName: product.productName,
+            },
+            variantDescription: selectedVariant.sizeName,
+            variantId: selectedVariant.variantId,
+            variantInventory: selectedVariant.quantity,
+          },
+        },
+      ],
+      totalAmount: quantity * selectedVariant.price,
+      billing: {},
+      shippingFee: 0,
+    };
+    localStorage.setItem("checkoutData", JSON.stringify(checkoutData));
+    navigate("/billing");
+  };
+
+  const updateCart = useCallback(
+    async (cartId, customerId, status, updateQuantityType, cartItems) => {
+      const { response, err } = await cartApi.saveCart(
         cartId,
         customerId,
         status,
         updateQuantityType,
         cartItems
-
       );
-    }
-    else {
-      
-      toast.error("Please login to add to cart");
-    }
-
-  };
-
-  const handleBuyNow = (quantity) => {
-    const checkoutData = {
-      products: [{
-        cartItemQuantity: quantity,
-        cartItemVariant:
-        {
-          categoryName: selectedVariant.categoryName,
-          packageType: selectedVariant.packageType,
-          priceSell: selectedVariant.price,
-          productDetails: {
-            code: product.code,
-            ...(selectedVariant.categoryName === 'Paint' && {
-              paintDetails: {
-                colorId: selectedProduct.color.id,
-                hex: selectedProduct.color.hex,
-                paintId: selectedProduct.id
-              }
-            }),
-            ...(selectedVariant.categoryName === 'Wallpaper' && {
-              wallpaperDetails: {
-                wallpaperId: selectedProduct.id
-              }
-            }),
-            ...(selectedVariant.categoryName === 'Floor' && {
-              floorDetails: {
-                floorId: selectedProduct.id
-              }
-            }),
-            productId: product.productId,
-            productImage: product.images[0].url,
-            productName: product.productName,
-
-          },
-          variantDescription: selectedVariant.sizeName,
-          variantId: selectedVariant.variantId,
-          variantInventory: selectedVariant.quantity,
-        }
-      }],
-      totalAmount: quantity * selectedVariant.price,
-      billing: {},
-      shippingFee: 0,
-    }
-    localStorage.setItem('checkoutData', JSON.stringify(checkoutData));
-    navigate('/billing');
-  };
-
-  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
-    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (!response) {
-      toast.error(err);
-      console.log(err); 
-      
-    }
-    else {
-      toast.success('Added to cart successfully');
-    }
-  }, []);
+      if (!response) {
+        toast.error(err);
+        console.log(err);
+      } else {
+        toast.success("Added to cart successfully");
+      }
+    },
+    []
+  );
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
@@ -410,49 +448,47 @@ const ProductDetailInfo = ({ product }) => {
                       <React.Fragment key={index}>
                         {product.color && (
                           <Tooltip
-                          title={`${product.color.name} (${product.color.code})`}
-                          placement="top"
-                          arrow
-                          sx={{ ...textConfigs.style.basicFont }}
-                        >
-                          <Box
-                          sx={{
-                            position: "relative",
-                            display: "inline-block",
-                            cursor: "pointer",
-                          }}
-                          onClick={() => handleProductSelect(product)}
-                          onMouseEnter={(e) =>
-                            (e.currentTarget.style.transform = "scale(1.1)")
-                          }
-                          onMouseLeave={(e) =>
-                            (e.currentTarget.style.transform = "scale(1)")
-                          }
-                        >
-                          
-                            <BsFillHexagonFill
-                              size={window.innerWidth < 600 ? 20 : 40}
-                              style={{
-                                color: product.color.hex,
-                                filter: "drop-shadow(0px 0px 4px #ccc)",
-                                transition: "transform 0.2s ease-in-out",
+                            title={`${product.color.name} (${product.color.code})`}
+                            placement="top"
+                            arrow
+                            sx={{ ...textConfigs.style.basicFont }}
+                          >
+                            <Box
+                              sx={{
+                                position: "relative",
+                                display: "inline-block",
+                                cursor: "pointer",
                               }}
-                            />
-                         
-                          {selectedProduct === product && (
-                            <FaCheck
-                              style={{
-                                position: "absolute",
-                                top: "50%",
-                                left: "50%",
-                                transform: "translate(-50%, -50%)",
-                                color: "#fff",
-                                fontSize: window.innerWidth < 600 ? 10 : 20,
-                              }}
-                            />
-                          )}
-                        </Box>
-                        </Tooltip>
+                              onClick={() => handleProductSelect(product)}
+                              onMouseEnter={(e) =>
+                                (e.currentTarget.style.transform = "scale(1.1)")
+                              }
+                              onMouseLeave={(e) =>
+                                (e.currentTarget.style.transform = "scale(1)")
+                              }
+                            >
+                              <BsFillHexagonFill
+                                size={window.innerWidth < 600 ? 20 : 40}
+                                style={{
+                                  color: product.color.hex,
+                                  filter: "drop-shadow(0px 0px 4px #ccc)",
+                                  transition: "transform 0.2s ease-in-out",
+                                }}
+                              />
+                              {selectedProduct?.id === product.id && (
+                                <FaCheck
+                                  style={{
+                                    position: "absolute",
+                                    top: "50%",
+                                    left: "50%",
+                                    transform: "translate(-50%, -50%)",
+                                    color: "#fff",
+                                    fontSize: window.innerWidth < 600 ? 10 : 20,
+                                  }}
+                                />
+                              )}
+                            </Box>
+                          </Tooltip>
                         )}
 
                         {product.numberOfPiecesPerBox && (
@@ -468,7 +504,7 @@ const ProductDetailInfo = ({ product }) => {
                               marginBottom: 1,
                               cursor: "pointer",
                               backgroundColor:
-                                selectedProduct === product
+                                selectedProduct?.id === product?.id
                                   ? "#f0f0f0"
                                   : "#fff",
                               width: "100px",
@@ -529,7 +565,8 @@ const ProductDetailInfo = ({ product }) => {
                             variant="body2"
                             sx={{ ...textConfigs.style.basicFont }}
                           >
-                            {variant.sizeName} {selectedProduct.color ? "L" : "m"}
+                            {variant.sizeName}{" "}
+                            {selectedProduct.color ? "L" : "m"}
                           </Typography>
                         </Box>
                       ))}
@@ -562,7 +599,7 @@ const ProductDetailInfo = ({ product }) => {
                   color="#000"
                   sx={{ ...textConfigs.style.basicFont }}
                 >
-                  {product.code}
+                  {product.brand.name}
                 </Typography>
               </Box>
               <Box
@@ -663,8 +700,9 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${selectedVariant.quantity
-                      } ${t("products")})`
+                      ? `${t("still.in.stock")} (${
+                          selectedVariant.quantity
+                        } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -718,6 +756,7 @@ const ProductDetailInfo = ({ product }) => {
             />
             <Link
               to="/calculate-price"
+              state={{ product, selectedProduct, selectedVariant }}
               className="text-[#1D4Ed8] no-underline"
               style={{
                 fontWeight: "bold",

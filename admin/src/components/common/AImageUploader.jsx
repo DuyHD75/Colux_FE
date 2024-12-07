@@ -40,7 +40,7 @@ const AImageUploader = ({ handleUpload }) => {
           alignItems: "center",
           height: "100%",
           justifyContent: "center",
-          border: "1px solid #333",
+          border: "2px dashed #333",
           borderRadius: "10px",
           flexDirection: "column",
         }}

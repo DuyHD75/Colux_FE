@@ -2,17 +2,17 @@ import proxyClient from "../client/proxy.client";
 
 const userEndpoints = {
   login: "identity-service/api/v1/users/login",
-  register: "identity-service/api/v1/users/register",
+  register: "identity-service/api/v1/users/public/register",
   forgotPassword: ({ email }) =>
-    `identity-service/api/v1/users/password/reset?email=${email}`,
-  resetPassword: "identity-service/api/v1/users/password/reset",
+    `identity-service/api/v1/users/public/password/reset?email=${email}`,
+  resetPassword: "identity-service/api/v1/users/public/password/reset",
   getInfo: `identity-service/api/v1/users/info`,
   passwordUpdate: "identity-service/api/v1/users/change-password",
   logout: "identity-service/api/v1/users/logout",
   verifyAccount: ({ key }) =>
-    `identity-service/api/v1/users/verify/account?key=${key}`,
+    `identity-service/api/v1/users/public/verify/account?key=${key}`,
   verifyResetPassword: ({ key }) =>
-    `identity-service/api/v1/users/password/reset/verify?key=${key}`,
+    `identity-service/api/v1/users/public/password/reset/verify?key=${key}`,
   changePassword: "identity-service/api/v1/users/change-password",
   updateProfile: "identity-service/api/v1/users/update-profile",
 };
