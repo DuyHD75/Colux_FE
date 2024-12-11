@@ -286,12 +286,14 @@ const ProductDetailInfo = ({ product }) => {
 
   const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (response?.status === 200) {
+    if (response) {
       toast.success('Added to cart successfully');
     }
-    else {
-      toast.error(response.error);
-      console.log(err);
+    if (err && (err.code === 400 || err.code === 404)) {
+      toast.error("Not found cart");
+    }
+    if (err && err.code === 500) {
+      toast.error("Server error.");
     }
   }, []);
 

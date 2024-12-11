@@ -9,6 +9,7 @@ import { CiLocationOn } from "react-icons/ci";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import ImageComponent from '../components/commons/ImageComponent';
+import ContactForm from '../components/commons/ContactForm';
 
 const ContactUs = () => {
 
@@ -77,9 +78,9 @@ const ContactUs = () => {
 
                 </Stack>
             </Box>
-            <Box paddingX={{ xs: '10px', md: '600px' }} mt='1rem' justifyContent='center'>
-                <Typography variant='h4' sx={{ ...textConfigs.style.basicFont, mb: '1rem' }} textAlign='center' >Submit a Request</Typography>
-                <form onSubmit={formik.handleSubmit} className="space-y-8">
+            <Box paddingX={{ xs: '10px', md: '500px' }} mt='1rem' justifyContent='center'>
+                {/* <Typography variant='h4' sx={{ ...textConfigs.style.basicFont, mb: '1rem' }} textAlign='center' >Submit a Request</Typography> */}
+                {/* <form onSubmit={formik.handleSubmit} className="space-y-8">
                     <div className="flex flex-row gap-4">
                         <div className="w-1/2">
                             <label htmlFor="firstName" className="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300">First name</label>
@@ -168,7 +169,8 @@ const ContactUs = () => {
                     >
                         Send message
                     </button>
-                </form>
+                </form> */}
+                <ContactForm></ContactForm>
             </Box>
         </Box>
     )

@@ -117,29 +117,18 @@ const AboutUs = () => {
                 </Typography>
                 <Grid container spacing={3} gridTemplateColumns='4,1fr'>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
+                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FJotun.png?alt=media&token=107f6a84-7851-46d9-9e3e-ba594a078264' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
+                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FNippon.png?alt=media&token=c70e5039-7b00-416e-89ca-64ec5daccd0b' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
+                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FMyKolor.png?alt=media&token=49b8fd00-b1e4-421c-98ad-d0a0845b4a49' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
+                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FDulux.png?alt=media&token=28b21bac-5a0d-4177-a0a1-8f002c8ab8f2' />
                     </Grid>
-                    <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
-                    </Grid>
-                    <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
-                    </Grid>
-                    <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
-                    </Grid>
-                    <Grid item xs={6} sm={3} >
-                        <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/componentgrid/parsys/image_482285121.coreimg.85.320.png/1724774377978/cabot-logo.png' />
-                    </Grid>
+                 
 
 
                 </Grid>
