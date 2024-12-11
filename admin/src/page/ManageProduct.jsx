@@ -1371,6 +1371,7 @@ const ManageProduct = () => {
       const { response, err } = await productsApi.saveFileProduct(data);
       if (response) {
         getAllProduct();
+        getUpStockHistory()
         toast.success(response.message);
       } else {
         console.log(err);
