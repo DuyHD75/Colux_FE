@@ -1,19 +1,18 @@
 import React, { useEffect, useState } from "react";
 import { Box, Grid, Typography } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
-import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
 const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
-  // const { collections } = useSelector((state) => state.collections);
   const dispatch = useDispatch();
   const [ collections, setCollection ] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const getCollections = async () => {
-      dispatch(setGlobalLoading(true)); 
+      setIsLoading(true);
       try {
         const { response, err } = await colorsApi.getCollections();
         if(response) {
@@ -25,7 +24,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
         console.log("Error", error);
         toast.error("An error occurred while fetching collections.")
       } finally {
-        dispatch(setGlobalLoading(false)); 
+        setIsLoading(false);
       }
     }
     getCollections();
@@ -34,7 +33,7 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
   return (
     <Box sx={{ padding: "0px !important" }}>
       <Grid container spacing={2}>
-        {collections.map((collection) => (
+        {isLoading === false && collections.map((collection) => (
           <Grid item xs={6} md={2} key={collection.id}>
             <Box
               sx={{
@@ -102,6 +101,79 @@ const CollectionBox = ({ onCollectionSelect, selectedCollection }) => {
           </Grid>
         ))}
       </Grid>
+      {isLoading === true && (
+        <Grid
+          container
+          spacing={2}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+        >
+          <Box
+            display="flex"
+            justifyContent="center"
+            alignItems="center"
+            width="20%"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+              <circle
+                fill="#1C2759"
+                stroke="#1C2759"
+                stroke-width="15"
+                r="15"
+                cx="40"
+                cy="100"
+              >
+                <animate
+                  attributeName="opacity"
+                  calcMode="spline"
+                  dur="2"
+                  values="1;0;1;"
+                  keySplines=".5 0 .5 1;.5 0 .5 1"
+                  repeatCount="indefinite"
+                  begin="-.4"
+                ></animate>
+              </circle>
+              <circle
+                fill="#1C2759"
+                stroke="#1C2759"
+                stroke-width="15"
+                r="15"
+                cx="100"
+                cy="100"
+              >
+                <animate
+                  attributeName="opacity"
+                  calcMode="spline"
+                  dur="2"
+                  values="1;0;1;"
+                  keySplines=".5 0 .5 1;.5 0 .5 1"
+                  repeatCount="indefinite"
+                  begin="-.2"
+                ></animate>
+              </circle>
+              <circle
+                fill="#1C2759"
+                stroke="#1C2759"
+                stroke-width="15"
+                r="15"
+                cx="160"
+                cy="100"
+              >
+                <animate
+                  attributeName="opacity"
+                  calcMode="spline"
+                  dur="2"
+                  values="1;0;1;"
+                  keySplines=".5 0 .5 1;.5 0 .5 1"
+                  repeatCount="indefinite"
+                  begin="0"
+                ></animate>
+              </circle>
+            </svg>
+          </Box>
+        </Grid>
+      )}
     </Box>
   );
 };

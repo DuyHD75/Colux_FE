@@ -1,7 +1,6 @@
 import Dashboard from "../page/Dashboard";
 import AddProduct from "../page/AddProduct";
 import ManageUser from "../page/ManageUser";
-import MainLayout from "../components/layout/MainLayout";
 import ProtectedRoute from "../components/common/ProtectedRoute";
 import ProtectedEmployeeRoute from "../components/common/ProtectedEmployeeRoute";
 import ManageProduct from "../page/ManageProduct";
@@ -9,7 +8,9 @@ import Login from "../page/Auth";
 import ManageOrder from "../page/ManageOrder";
 import OrderDetails from "../page/OrderDetails";
 import CreateOrder from "../page/CreateOrder";
-import ManageColor from "../page/ManageColor"
+import ManageColor from "../page/ManageColor";
+import CreateColor from "../page/CreateColor";
+import Profile from "../page/Profile";
 
 export const routesGen = {
   manageUser: "/manage-users",
@@ -21,6 +22,7 @@ export const routesGen = {
   manageOrder: "/manage-orders",
   orderDetails: "/orderDetails/:id",
   createOrder: "/create-order",
+  createColor: "create-color",
 };
 const routes = [
   {
@@ -83,6 +85,15 @@ const routes = [
     state: "manageColor",
   },
   {
+    path: routesGen.createColor,
+    element: (
+      <ProtectedEmployeeRoute>
+        <CreateColor />
+      </ProtectedEmployeeRoute>
+    ),
+    state: "createColor",
+  },
+  {
     path: routesGen.manageOrder,
     element: (
       <ProtectedEmployeeRoute>
@@ -109,6 +120,24 @@ const routes = [
     ),
     state: "createOrder",
   },
+  {
+    path: "/profile",
+    element: (
+      <ProtectedEmployeeRoute>
+        <Profile />
+      </ProtectedEmployeeRoute>
+    ),
+    state: "profile",
+  },
+  // {
+  //   path: "/changePassword",
+  //   element: (
+  //     <ProtectedRoute>
+  //       <ChangePassword />
+  //     </ProtectedRoute>
+  //   ),
+  //   state: "changePassword",
+  // },
 ];
 
 export default routes;

@@ -22,7 +22,6 @@ const SidebarFilters = ({ categories, category, onChange, categoryName }) => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setGlobalLoading(true));
 
       try {
         const { response: propertiesResponse, err: propertiesErr } =
@@ -43,9 +42,7 @@ const SidebarFilters = ({ categories, category, onChange, categoryName }) => {
       } catch (error) {
         console.log("Error", error);
         toast.error("An error occurred while fetching products.");
-      } finally {
-        dispatch(setGlobalLoading(false));
-      }
+      } 
     };
 
     fetchData();

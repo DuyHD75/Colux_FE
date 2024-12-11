@@ -121,7 +121,7 @@ const ProductDetailInfo = ({ product }) => {
       }
 
     }
-  }, [colorsSearch, products]);
+  }, []);
 
   const location = useLocation();
   const { productCal, selectedProductCal, selectedVariantCal } =

@@ -8,14 +8,13 @@ import {
   FormControl,
   InputLabel,
   Pagination,
-  TextField,
+  Box,
 } from "@mui/material";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { useParams } from "react-router-dom";
 import textConfigs from "../../config/text.config";
 import { BsFillHexagonFill } from "react-icons/bs";
-import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import colorsApi from "../../api/modules/colors.api";
 import { toast } from "react-toastify";
 import { useTranslation } from "react-i18next";
@@ -28,8 +27,8 @@ const ListColorsByRoom = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [hoveredColor, setHoveredColor] = useState(null);
   const colorsPerPage = 20;
-  const [searchTerm, setSearchTerm] = useState("");
   const [totalPages, setTotalPages] = useState(0);
+  const [isLoading, setIsLoading] = useState(false);
 
   const [rooms, setRooms] = useState([]);
   const [colors, setColors] = useState([]);
@@ -48,14 +47,14 @@ const ListColorsByRoom = () => {
 
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setGlobalLoading(true));
+      setIsLoading(true);
 
       try {
         await getListColorFamily();
       } catch (error) {
         console.log("Error occurred during data fetching", error);
       } finally {
-        dispatch(setGlobalLoading(false));
+        setIsLoading(false);
       }
     };
 
@@ -87,7 +86,7 @@ const ListColorsByRoom = () => {
   useEffect(() => {
     const getListColors = async () => {
       if (selectedRoomCollection) {
-        dispatch(setGlobalLoading(true));
+        setIsLoading(true);
         try {
           const { response } = collection === "All Colors" ? 
           await colorsApi.getAllColors(
@@ -113,7 +112,7 @@ const ListColorsByRoom = () => {
           console.log("Error", error);
           toast.error("An error occurred while fetching colors.");
         } finally {
-          dispatch(setGlobalLoading(false));
+          setIsLoading(false);
         }
       }
     };
@@ -141,10 +140,6 @@ const ListColorsByRoom = () => {
 
   const handlePageChange = (event, value) => {
     setCurrentPage(value);
-  };
-
-  const handleSearchChange = (event) => {
-    setSearchTerm(event.target.value);
   };
 
   const paginatedColors = colors.slice(
@@ -218,8 +213,8 @@ const ListColorsByRoom = () => {
           </FormControl>
         </Grid>
       </Grid>
-      <Grid container spacing={3}>
-        {paginatedColors.map((color, index) => {
+      <Grid container spacing={3} display="flex" justifyContent="center" alignItems="center">
+        {isLoading === false && paginatedColors.map((color, index) => {
           return (
             <Grid item xs={6} md={2.4} key={index}>
             <Link
@@ -263,6 +258,67 @@ const ListColorsByRoom = () => {
           </Grid>
           )
         })}
+
+{isLoading === true && (
+          <Box display="flex" justifyContent="center" alignItems="center" width="20%">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+            <circle
+              fill="#1C2759"
+              stroke="#1C2759"
+              stroke-width="15"
+              r="15"
+              cx="40"
+              cy="100"
+            >
+              <animate
+                attributeName="opacity"
+                calcMode="spline"
+                dur="2"
+                values="1;0;1;"
+                keySplines=".5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+                begin="-.4"
+              ></animate>
+            </circle>
+            <circle
+              fill="#1C2759"
+              stroke="#1C2759"
+              stroke-width="15"
+              r="15"
+              cx="100"
+              cy="100"
+            >
+              <animate
+                attributeName="opacity"
+                calcMode="spline"
+                dur="2"
+                values="1;0;1;"
+                keySplines=".5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+                begin="-.2"
+              ></animate>
+            </circle>
+            <circle
+              fill="#1C2759"
+              stroke="#1C2759"
+              stroke-width="15"
+              r="15"
+              cx="160"
+              cy="100"
+            >
+              <animate
+                attributeName="opacity"
+                calcMode="spline"
+                dur="2"
+                values="1;0;1;"
+                keySplines=".5 0 .5 1;.5 0 .5 1"
+                repeatCount="indefinite"
+                begin="0"
+              ></animate>
+            </circle>
+          </svg>
+          </Box>
+        )}
       </Grid>
 
       <Grid container justifyContent="center" sx={{ marginTop: 3 }}>

@@ -4,13 +4,14 @@ import BackgroundColor from "../../config/background.config";
 import { Link } from "react-router-dom";
 import menuConfigs from "../../config/menu.config";
 import { useTranslation } from "react-i18next";
+import textConfigs from "../../config/text.config";
 
 const Footer = () => {
   const { t } = useTranslation();
 
   return (
     <Box
-      className="font-['Nunito']"
+      className="font-nunito"
       sx={{ ...BackgroundColor.style.backgroundPrimary }}
     >
       <Container maxWidth="lg">
@@ -36,7 +37,7 @@ const Footer = () => {
                   letterSpacing: ".8rem",
                   fontSize: "1.8rem",
                   overflow: "inherit",
-                  fontFamily: "Nunito",
+                  ...textConfigs.style.basicFont,
                   fontWeight: 700,
                 }}
               >
@@ -51,13 +52,13 @@ const Footer = () => {
                 />
                 LUX
               </Box>
-              <Typography variant="h5" sx={{ fontFamily: "Nunito" }}>
+              <Typography variant="h5" sx={{ ...textConfigs.style.basicFont }}>
                 {t("footer.title")}
               </Typography>
               <Typography
                 sx={{
                   fontSize: "1rem",
-                  fontFamily: "Nunito",
+                  ...textConfigs.style.basicFont,
                   marginBottom: "8px",
                 }}
               >
@@ -65,7 +66,7 @@ const Footer = () => {
               </Typography>
               <Link
                 to="/about"
-                className="text-white capitalize text-xl font-['Nunito']"
+                className="text-white capitalize text-xl font-nunito"
               >
                 {t("footer.btn")}
               </Link>
@@ -76,12 +77,12 @@ const Footer = () => {
                 xs={12}
                 md={6}
                 key="ourCompany"
-                className="text-white font-['Nunito']"
+                className="text-white font-nunito"
                 sx={{ mb: 3 }}
               >
                 <Typography
                   variant="h5"
-                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
+                  sx={{ ...textConfigs.style.basicFont, marginX: "8px" }}
                 >
                   {t("footer.our")}
                 </Typography>
@@ -106,7 +107,7 @@ const Footer = () => {
               >
                 <Typography
                   variant="h5"
-                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
+                  sx={{ ...textConfigs.style.basicFont, marginX: "8px" }}
                 >
                   {t("footer.term")}
                 </Typography>
@@ -124,7 +125,7 @@ const Footer = () => {
               {/* <Grid item xs={12} md={4} key="product" className="text-white">
                 <Typography
                   variant="h5"
-                  sx={{ fontFamily: "Nunito", marginX: "8px" }}
+                  sx={{ ...textConfigs.style.basicFont, marginX: "8px" }}
                 >
                   {t("footer.user")}
                 </Typography>
@@ -154,7 +155,7 @@ const Footer = () => {
             borderTop: "1px solid #fff",
           }}
         >
-          © Design By KOLUX - 2024
+          © Design By COLUX - 2024
         </Typography>
       </Container>
     </Box>

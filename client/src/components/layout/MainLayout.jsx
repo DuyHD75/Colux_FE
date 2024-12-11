@@ -45,6 +45,27 @@ const MainLayout = () => {
   //   authUser();
   // }, []);
 
+  // const refreshAccessToken = async () => {
+  //   try {
+  //     const { response } = await userApi.refreshToken();
+  //     if (response) {
+  //       console.log('Refresh token is valid. New access token issued.');
+        
+  //     } else {
+  //       console.error('Refresh token expired or invalid.');
+  //       localStorage.clear();
+  //     }
+  //   } catch (err) {
+  //     console.error('Error refreshing token:', err);
+  //   }
+  // };
+
+
+  // useEffect(() => {
+  //   console.log("hello");
+  //   refreshAccessToken();
+  // },[]);
+
 
   useEffect(() => {
     const getCart = async () => {
@@ -53,7 +74,6 @@ const MainLayout = () => {
         if (response) {
           setItemCart(response.data.carts.cartItems.length);
           console.log(itemCart);
-
         }
       }
     };

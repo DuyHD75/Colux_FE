@@ -9,10 +9,10 @@ import { Alert } from "@mui/material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link, useLocation } from "react-router-dom";
-import { FaFacebook } from "react-icons/fa";
 import { FcGoogle } from "react-icons/fc";
 import { LoadingButton } from "@mui/lab";
 import { useNavigate } from "react-router-dom";
+import textConfigs from "../../config/text.config";
 
 const actionState = {
   login: "login",
@@ -64,8 +64,14 @@ const Login = ({ switchAuthState }) => {
           "Your account does not have permission to access this page."
         );
       }
-      if (err) {
-        setErrorMessage(err.exception);
+      if (err && err.code === 401) {
+        setErrorMessage("No access permission.");
+      }
+      if (err && (err.code === 400 || err.code === 404)) {
+        setErrorMessage("Not found user");
+      }
+      if (err && err.code === 500) {
+        setErrorMessage("Server error.");
       }
     },
   });
@@ -88,6 +94,16 @@ const Login = ({ switchAuthState }) => {
   }, []);
   
   console.log('status', status);
+
+  useEffect(() => {
+    if (errorMessage) {
+      const timer = setTimeout(() => {
+        setErrorMessage(undefined);
+      }, 10000);
+  
+      return () => clearTimeout(timer);
+    }
+  }, [errorMessage]);
 
   return (
     <div className="w-full bg-gray-800 rounded-lg shadow dark:border-gray-700 sm:max-w-lg xl:p-0">
@@ -116,7 +132,7 @@ const Login = ({ switchAuthState }) => {
       <div className="p-6 space-y-4 sm:p-8">
         <div className="grid grid-cols-12 gap-4 items-center">
           <div className="col-span-4 flex justify-start">
-            <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
+            <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl font-nunito">
               Login with
             </h1>
           </div>
@@ -134,14 +150,14 @@ const Login = ({ switchAuthState }) => {
           </div>
         </div>
 
-        <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl">
+        <h1 className="text-xl font-bold leading-tight tracking-tight text-white md:text-2xl font-nunito">
           Or login to your account
         </h1>
         <form className="space-y-4" onSubmit={loginForm.handleSubmit}>
           <div>
             <label
               htmlFor="email"
-              className="block mb-2 text-sm font-medium text-white"
+              className="block mb-2 text-sm font-medium text-white font-nunito"
             >
               Email
             </label>
@@ -149,14 +165,14 @@ const Login = ({ switchAuthState }) => {
               type="text"
               id="email"
               name="email"
-              className="bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5"
+              className="bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5 font-nunito"
               placeholder="Your Email"
               onChange={loginForm.handleChange}
               onBlur={loginForm.handleBlur}
               value={loginForm.values.email}
             />
             {loginForm.errors.email && loginForm.touched.email && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1 font-nunito">
                 {loginForm.errors.email}
               </p>
             )}
@@ -164,7 +180,7 @@ const Login = ({ switchAuthState }) => {
           <div>
             <label
               htmlFor="password"
-              className="block mb-2 text-sm font-medium text-white"
+              className="block mb-2 text-sm font-medium text-white font-nunito"
             >
               Password
             </label>
@@ -173,7 +189,7 @@ const Login = ({ switchAuthState }) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                className="bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5"
+                className="bg-gray-700 border border-gray-600 text-white rounded-lg block w-full p-2.5 font-nunito"
                 placeholder="••••••••"
                 onChange={loginForm.handleChange}
                 onBlur={loginForm.handleBlur}
@@ -183,7 +199,7 @@ const Login = ({ switchAuthState }) => {
                 type="button"
                 onClick={handleClickShowPassword}
                 onMouseDown={handleMouseDownPassword}
-                className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none"
+                className="absolute inset-y-0 right-0 flex items-center pr-3 focus:outline-none font-nunito"
               >
                 {showPassword ? (
                   <Visibility className="text-white" />
@@ -193,7 +209,7 @@ const Login = ({ switchAuthState }) => {
               </button>
             </div>
             {loginForm.errors.password && loginForm.touched.password && (
-              <p className="text-red-600 text-sm mt-1">
+              <p className="text-red-600 text-sm mt-1 font-nunito">
                 {loginForm.errors.password}
               </p>
             )}
@@ -201,7 +217,7 @@ const Login = ({ switchAuthState }) => {
           <div className="flex items-center justify-between">
             <Link
               href="#"
-              className="text-sm font-medium text-primary-500 hover:underline"
+              className="text-sm font-medium text-primary-500 hover:underline font-nunito"
               onClick={() => switchAuthState(actionState.forgotPassword)}
             >
               Forgot password?
@@ -227,16 +243,17 @@ const Login = ({ switchAuthState }) => {
                 outline: "none",
                 boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)",
               },
+              ...textConfigs.style.basicFont
             }}
           >
             Login
           </LoadingButton>
-          {errorMessage && <Alert severity="error">{errorMessage}</Alert>}
-          <p className="text-sm font-light text-gray-400">
+          {errorMessage && <Alert sx={{...textConfigs.style.basicFont}} severity="error">{errorMessage}</Alert>}
+          <p className="text-sm font-light text-gray-400 font-nunito">
             Don’t have an account yet?{" "}
             <Link
               href="register"
-              className="font-medium text-primary-500 hover:underline"
+              className="font-medium text-primary-500 hover:underline font-nunito"
               onClick={() => switchAuthState(actionState.register)}
             >
               Register

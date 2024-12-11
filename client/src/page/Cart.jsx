@@ -784,7 +784,7 @@ const Cart = () => {
                   within 14 days will be forfeited. You will be charged for
                   custom and special order items; all others will be cancelled
                   and restocked without charge. Tinted paint cannot be returned.{" "}
-                  <Link style={{ color: "#0069AF", fontSize: "11.9px" }}>
+                  <Link style={{ color: "#0069AF", fontSize: "11.9px" }} to="/privacy_policy">
                     See Return Policy for details.
                   </Link>
                 </Typography>
@@ -799,7 +799,7 @@ const Cart = () => {
                 >
                   By placing this order, you agree to the Kolux
                   Online{" "}
-                  <Link style={{ color: "#0069AF", fontSize: "11.9px" }}>
+                  <Link style={{ color: "#0069AF", fontSize: "11.9px" }} to="/terms_and_condition">
                     Terms and Conditions of Sale
                   </Link>
                 </Typography>

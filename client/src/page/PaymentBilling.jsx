@@ -602,10 +602,10 @@ const PaymentBilling = () => {
                   borderBottom: '1px solid #E5E5E5'
                 }}>
                   <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
-                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
+                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/privacy_policy">See Return Policy for details.</Link>
                   </Typography>
                   <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap', ...TextConfig.style.basicFont }}>
-                    By placing this order, you agree to the Kolux Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
+                    By placing this order, you agree to the Colux Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/terms_and_condition">Terms and Conditions of Sale</Link>
                   </Typography>
                 </Box>
                 <button type='submit' style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' >Continue</button>

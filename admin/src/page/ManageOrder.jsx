@@ -493,7 +493,7 @@ const ManageOrder = () => {
     return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
   };
 
-  const paginationModel = { page: 0, pageSize: 10 };
+  const paginationModel = { page: 0, pageSize: 20 };
 
   return (
     <>

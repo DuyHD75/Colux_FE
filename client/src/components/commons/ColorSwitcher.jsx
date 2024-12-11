@@ -15,7 +15,6 @@ import ColorBanner from "./ColorBanner";
 import data from "../../data/data";
 import { toast } from "react-toastify";
 import colorsApi from "../../api/modules/colors.api";
-import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 import { useTranslation } from "react-i18next";
 
 
@@ -76,7 +75,6 @@ const ColorSwitcher = () => {
   
   useEffect(() => {
     const fetchData = async () => {
-      dispatch(setGlobalLoading(true));
   
       try {
         await Promise.all([
@@ -86,9 +84,7 @@ const ColorSwitcher = () => {
         ]);
       } catch (error) {
         console.log("Error occurred during data fetching", error);
-      } finally {
-        dispatch(setGlobalLoading(false));
-      }
+      } 
     };
     const getListColorFamily = async () => {
       try {

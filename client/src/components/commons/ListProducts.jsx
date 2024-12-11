@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Grid, Typography, Pagination } from "@mui/material";
+import { Container, Grid, Typography, Pagination, Box } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import SidebarFilters from "../commons/SidebarFilters";
@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import textConfigs from "../../config/text.config";
 
 const ListProducts = (productss) => {
-
   const { colorsSearch } = useSelector((state) => state.colorFamilies);
   const [categories, setCategories] = useState([]);
 
@@ -24,11 +23,12 @@ const ListProducts = (productss) => {
   const [selectedProperty, setSelectedProperty] = useState([]);
   const [selectedFeatures, setSelectedFeatures] = useState([]);
   const [filteredProducts, setFilteredProducts] = useState(products);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   useEffect(() => {
     const getAllProductPageAble = async (page, size) => {
-      dispatch(setGlobalLoading(true));
+      setIsLoading(true);
       try {
         let response, err;
         if (productCategoryId) {
@@ -57,7 +57,7 @@ const ListProducts = (productss) => {
         console.log("Error", error);
         toast.error("An error occurred while fetching products.");
       } finally {
-        dispatch(setGlobalLoading(false));
+        setIsLoading(false);
       }
     };
     getAllProductPageAble(currentPage, productsPerPage);
@@ -65,7 +65,7 @@ const ListProducts = (productss) => {
 
   useEffect(() => {
     const getAllcategory = async () => {
-      dispatch(setGlobalLoading(true));
+
       try {
         const { response, err } = await productsApi.getAllCategory();
         if (response) {
@@ -76,16 +76,14 @@ const ListProducts = (productss) => {
       } catch (error) {
         console.log("Error", error);
         toast.error("An error occurred while fetching categories.");
-      } finally {
-        dispatch(setGlobalLoading(false));
-      }
+      } 
     };
     getAllcategory();
   }, [dispatch]);
 
   useEffect(() => {
     setFilteredProducts(products);
-  }, [products])
+  }, [products]);
 
   useEffect(() => {
     console.log("run useeffect");
@@ -119,12 +117,10 @@ const ListProducts = (productss) => {
           let minPrice, maxPrice;
           console.log(selectedPriceRange);
 
-
           if (selectedPriceRange.includes("+")) {
             minPrice = selectedPriceRange.split("+")[0];
             maxPrice = "";
           } else {
-
             [minPrice, maxPrice] = selectedPriceRange.split("-");
           }
 
@@ -147,7 +143,6 @@ const ListProducts = (productss) => {
         } else if (err) {
           toast.error(err);
         }
-
       } catch (error) {
         console.error("Error fetching filtered products:", error);
       }
@@ -177,7 +172,10 @@ const ListProducts = (productss) => {
   };
 
   useEffect(() => {
-    if (colorsSearch.length > 0 && productss?.products?.products?.length === 0) {
+    if (
+      colorsSearch.length > 0 &&
+      productss?.products?.products?.length === 0
+    ) {
       toast.error("Colors selected not found");
     }
   }, [colorsSearch, productss.products.products]);
@@ -197,107 +195,142 @@ const ListProducts = (productss) => {
         </Grid>
 
         <Grid item xs={12} md={9}>
-          <Grid container spacing={3}>
-            {productss?.products?.products?.length > 0 ? (
-              productss.products.products
-                .slice(0 * productsPerPage, 1 * productsPerPage)
-                .map((product, index) => (
-                  <Grid item xs={6} sm={4} md={3} key={index}>
-                    <ProductCard product={product} />
-                  </Grid>
-                ))
-            ) : (hasProducts ? (
-              filteredProducts
-                .slice(0 * productsPerPage, 1 * productsPerPage)
-                .map((product, index) => (
-                  <Grid item xs={6} sm={4} md={3} key={index}>
-                    <ProductCard product={product} />
-                  </Grid>
-                ))
-            ) : (
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  minHeight: "50vh",
-                  flex: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-
-                <img
-                  src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
-                  alt="No products found"
-                  style={{
-                    maxWidth: "50%",
-                    height: "auto",
-                  }}
-                />
-                <Typography
-                  color="textSecondary"
-                  sx={{
-                    ...textConfigs.style.basicFont,
-                    my: "1rem",
-                    fontSize: "1.2rem",
-                  }}
-                >
-                  No product
-                </Typography>
-              </Grid>
-            ))}
-            {/* {hasProducts ? (
-              filteredProducts
-                .slice(0 * productsPerPage, 1 * productsPerPage)
-                .map((product, index) => (
-                  <Grid item xs={6} sm={4} md={3} key={index}>
-                    <ProductCard product={product} />
-                  </Grid>
-                ))
-            ) : (
-              <Grid
-                item
-                xs={12}
-                sx={{
-                  display: "flex",
-                  minHeight: "50vh",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
-                    alt="No products found"
-                    style={{
-                      maxWidth: "50%",
-                      height: "auto",
-                    }}
-                  />
-                  <Typography
-                    color="textSecondary"
+          {isLoading === false && (
+            <>
+              <Grid container spacing={3}>
+                {productss?.products?.products?.length > 0 ? (
+                  productss.products.products
+                    .slice(0 * productsPerPage, 1 * productsPerPage)
+                    .map((product, index) => (
+                      <Grid item xs={6} sm={4} md={3} key={index}>
+                        <ProductCard product={product} />
+                      </Grid>
+                    ))
+                ) : hasProducts ? (
+                  filteredProducts
+                    .slice(0 * productsPerPage, 1 * productsPerPage)
+                    .map((product, index) => (
+                      <Grid item xs={6} sm={4} md={3} key={index}>
+                        <ProductCard product={product} />
+                      </Grid>
+                    ))
+                ) : (
+                  <Grid
+                    item
+                    xs={12}
                     sx={{
-                      ...textConfigs.style.basicFont,
-                      my: "1rem",
-                      fontSize: "1.2rem",
+                      display: "flex",
+                      minHeight: "50vh",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      justifyContent: "center",
                     }}
                   >
-                    No product
-                  </Typography>
+                    <img
+                      src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                      alt="No products found"
+                      style={{
+                        maxWidth: "50%",
+                        height: "auto",
+                      }}
+                    />
+                    <Typography
+                      color="textSecondary"
+                      sx={{
+                        ...textConfigs.style.basicFont,
+                        my: "1rem",
+                        fontSize: "1.2rem",
+                      }}
+                    >
+                      No product
+                    </Typography>
+                  </Grid>
+                )}
               </Grid>
-            )} */}
-          </Grid>
 
-          {hasProducts && (
-            <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
-              <Pagination
-                count={totalPages}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-              />
+              {hasProducts && (
+                <Grid container justifyContent="center" sx={{ marginTop: 3 }}>
+                  <Pagination
+                    count={totalPages}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                  />
+                </Grid>
+              )}
+            </>
+          )}
+          {isLoading === true && (
+            <Grid
+              container
+              spacing={2}
+              display="flex"
+              justifyContent="center"
+              alignItems="center"
+            >
+              <Box
+                display="flex"
+                justifyContent="center"
+                alignItems="center"
+                width="20%"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+                  <circle
+                    fill="#1C2759"
+                    stroke="#1C2759"
+                    stroke-width="15"
+                    r="15"
+                    cx="40"
+                    cy="100"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      calcMode="spline"
+                      dur="2"
+                      values="1;0;1;"
+                      keySplines=".5 0 .5 1;.5 0 .5 1"
+                      repeatCount="indefinite"
+                      begin="-.4"
+                    ></animate>
+                  </circle>
+                  <circle
+                    fill="#1C2759"
+                    stroke="#1C2759"
+                    stroke-width="15"
+                    r="15"
+                    cx="100"
+                    cy="100"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      calcMode="spline"
+                      dur="2"
+                      values="1;0;1;"
+                      keySplines=".5 0 .5 1;.5 0 .5 1"
+                      repeatCount="indefinite"
+                      begin="-.2"
+                    ></animate>
+                  </circle>
+                  <circle
+                    fill="#1C2759"
+                    stroke="#1C2759"
+                    stroke-width="15"
+                    r="15"
+                    cx="160"
+                    cy="100"
+                  >
+                    <animate
+                      attributeName="opacity"
+                      calcMode="spline"
+                      dur="2"
+                      values="1;0;1;"
+                      keySplines=".5 0 .5 1;.5 0 .5 1"
+                      repeatCount="indefinite"
+                      begin="0"
+                    ></animate>
+                  </circle>
+                </svg>
+              </Box>
             </Grid>
           )}
         </Grid>

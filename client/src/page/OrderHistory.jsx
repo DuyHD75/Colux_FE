@@ -24,7 +24,6 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ImageComponent from "../components/commons/ImageComponent";
-import { SiVisa } from "react-icons/si";
 import { PiWarningCircle } from "react-icons/pi";
 import UserSidebar from "../components/commons/UserSidebar";
 import cartApi from "../api/modules/cart.api";
