@@ -159,8 +159,12 @@ const Cart = () => {
 
   const handleIncrease = (index) => {
     const updatedProducts = [...products];
-    updatedProducts[index].cartItemQuantity++;
-    const status = 1;
+    const maxQuantity = updatedProducts[index].cartItemVariant.variantInventory;
+    const quantity = updatedProducts[index].cartItemQuantity + 1;
+    updatedProducts[index].cartItemQuantity = Math.max(
+      1,
+      Math.min(quantity, maxQuantity)
+    );    const status = 1;
     const updateQuantityType = "INCREMENTAL";
     const customerId = user.userId;
     const cartItems = [
@@ -723,17 +727,7 @@ const Cart = () => {
                     Apply
                   </Button>
                 </Stack>
-                <Typography
-                  sx={{
-                    ...TextConfig.style.basicFont,
-                    fontSize: "11.9px",
-                    marginTop: "12px",
-                  }}
-                >
-                  Estimated Tax:
-                  <br />
-                  <em>(Determined later)</em>
-                </Typography>
+               
                 <Box
                   sx={{
                     display: "flex",
@@ -803,7 +797,7 @@ const Cart = () => {
                     ...TextConfig.style.basicFont,
                   }}
                 >
-                  By placing this order, you agree to the Sherwin-Williams
+                  By placing this order, you agree to the Kolux
                   Online{" "}
                   <Link style={{ color: "#0069AF", fontSize: "11.9px" }}>
                     Terms and Conditions of Sale

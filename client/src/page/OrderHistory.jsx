@@ -248,6 +248,30 @@ const OrderHistory = () => {
     }
   };
 
+  const handleCancelOrder = async (order) => {
+    try {
+      const { response, err } = await cartApi.cancelOrder(user.userId,order.orderId );
+      if (response) {
+        toast.success(response.message);
+        const newOrders = orders.map((item) => {
+          if (item.id === order.id) {
+            return {
+              ...item,
+              status: 5,
+            };
+          }
+          return item;
+        });
+        setOrders(newOrders);
+      }
+      if (err) {
+        toast.error(err.exception);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   return (
     <>
       <UserSidebar>
@@ -512,7 +536,7 @@ const OrderHistory = () => {
                         })}
                       </Box>
                       <Divider />
-                      <Stack direction="row" spacing="12px" my="16px">
+                      <Stack direction={{xs:'column',sm:'row'}} spacing="12px" my="16px">
                         <Box
                           sx={{
                             width: "100%",
@@ -799,6 +823,7 @@ const OrderHistory = () => {
                                 backgroundColor: "#2c3766",
                               },
                             }}
+                            onClick={() => handleCancelOrder(item)}
                           >
                             Cancel Order
                           </Button>

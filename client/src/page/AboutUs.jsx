@@ -5,7 +5,7 @@ import ImageComponent from '../components/commons/ImageComponent'
 
 const AboutUs = () => {
     return (
-        <Box p={{ xs: '56px 0 16px 0', md: '152px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
+        <Box p={{ xs: '56px 0 16px 0', md: '150px 0 16px 0' }} bgcolor='#0000' minHeight='inherit'>
             <Box sx={{
                 bgcolor: '#476C9A',
                 height: 'auto'
@@ -80,14 +80,14 @@ const AboutUs = () => {
                         fontSize: '16px',
                         marginBottom: '24px',
                     }}>
-                        The Sherwin-Williams Company delivers the best in paint and coatings products to the world. Every day, our more than 64,000 employees provide the energy and experience to build on our track record of success – enabling us to innovate and grow in new and exciting ways. With our people as the foundation of our Company, we offer industry-leading innovation, value-added service and expertise, and differentiated distribution to our growing base of professional, industrial, commercial and consumer customers.
+                        The Kolux Company delivers the best in paint and coatings products to the world. Every day, our more than 64,000 employees provide the energy and experience to build on our track record of success – enabling us to innovate and grow in new and exciting ways. With our people as the foundation of our Company, we offer industry-leading innovation, value-added service and expertise, and differentiated distribution to our growing base of professional, industrial, commercial and consumer customers.
                     </Typography>
                     <Typography sx={{
                         ...textConfigs.style.basicFont,
                         fontSize: '16px',
                         marginBottom: '24px',
                     }}>
-                        Sherwin-Williams has one of the industry’s most recognized portfolios of branded and private-label products. The Company’s Sherwin-Williams® branded products are sold exclusively through a chain of more than 5,000 company operated stores and facilities in the United States, Canada, the Caribbean and Latin America.
+                        Kolux has one of the industry’s most recognized portfolios of branded and private-label products. The Company’s Kolux® branded products are sold exclusively through a chain of more than 5,000 company operated stores and facilities in the United States, Canada, the Caribbean and Latin America.
                     </Typography>
                     <Typography sx={{
                         ...textConfigs.style.basicFont,
@@ -169,7 +169,7 @@ const AboutUs = () => {
                         marginBottom: '25px',
                         color: '#fff'
                     }}>
-                        At Sherwin-Williams, we support you in life + career + connection. Plus, we're always looking for great talent to join our growing global team. Visit our Sherwin-Williams Careers website to learn more and explore available opportunities.
+                        At Kolux, we support you in life + career + connection. Plus, we're always looking for great talent to join our growing global team. Visit our Kolux Careers website to learn more and explore available opportunities.
                     </Typography>
                     <a href='11' style={{ ...textConfigs.style.basicFont, color: '#fff', textDecoration: 'underline', marginBottom: '20px' }}>View Careers</a>
                 </Box>

@@ -286,13 +286,12 @@ const ProductDetailInfo = ({ product }) => {
 
   const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (!response) {
-      toast.error(err);
-      console.log(err);
-
+    if (response?.status === 200) {
+      toast.success('Added to cart successfully');
     }
     else {
-      toast.success('Added to cart successfully');
+      toast.error(response.error);
+      console.log(err);
     }
   }, []);
 
@@ -714,9 +713,8 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${
-                          selectedVariant.quantity
-                        } ${t("products")})`
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>

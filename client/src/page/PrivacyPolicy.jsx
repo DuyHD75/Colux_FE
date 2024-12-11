@@ -5,7 +5,7 @@ import { FaChevronRight } from "react-icons/fa6";
 
 const PrivacyPolicy = () => {
     return (
-        <Box p={{ xs: '56px 10px 16px 10px', md: '110px 121.96px 16px 121.96px' }} bgcolor='#0000' minHeight='inherit'>
+        <Box p={{ xs: '65px 10px 16px 10px', md: '165px 121.96px 16px 121.96px' }} bgcolor='#0000' minHeight='inherit'>
             <Box sx={{ display: 'flex', justifyContent: 'center', flexDirection: 'column', mb: '2rem' }}>
                 <Typography id="section" sx={{ scrollMarginTop: '96px', ...textConfigs.style.headerText, fontWeight: 'bold', textAlign: 'center' }} variant='h2'>Privacy Policy</Typography>
                 <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '16px', mt: '5px', textAlign: 'center' }}>Last Updated May 23rd, 2024</Typography>
@@ -15,16 +15,16 @@ const PrivacyPolicy = () => {
                 <Box width={{ xs: '100%', sm: '75%' }}>
                     <Typography id="section1" sx={{ scrollMarginTop: '96px', ...textConfigs.style.basicFont, fontWeight: 'bold', fontSize: '36px', mb: '1.5rem' }}>Information Covered by this Privacy Policy</Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        This Privacy Policy explains the types of information that Sherwin-Williams and its affiliated companies collect about you; how we use, share, and protect this information; and the choices you can make about how we use and share this information. This Privacy Policy governs information collected by Sherwin-Williams or its Affiliates (as hereinafter defined), by any means, including, but not limited to, websites, mobile applications, and other online services that refer or link to this Privacy Policy, as well as information collected by other business functions of Sherwin-Williams, such as through our stores, customer loyalty programs or when you speak with a customer service representative (collectively, the “Services”).
+                        This Privacy Policy explains the types of information that Kolux and its affiliated companies collect about you; how we use, share, and protect this information; and the choices you can make about how we use and share this information. This Privacy Policy governs information collected by Kolux or its Affiliates (as hereinafter defined), by any means, including, but not limited to, websites, mobile applications, and other online services that refer or link to this Privacy Policy, as well as information collected by other business functions of Kolux, such as through our stores, customer loyalty programs or when you speak with a customer service representative (collectively, the “Services”).
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
                         It is important that you read this Privacy Policy carefully because anytime you use our Services you consent to the practices we describe in this Privacy Policy. Key jurisdiction-specific information about our privacy practices is available in our policy here. In the event of any inconsistencies between the English-language version of this Privacy Policy and any local language version that we make available, the English-language version will prevail.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        As permissible by law, Sherwin-Williams reserves the right to make changes to this Privacy Policy. If changes are made, updates will be reflected by the Last Updated date at the top of this Privacy Policy. These changes will take effect immediately upon posting. By continuing to use the Services following such changes, you will be deemed to have agreed to such changes.
+                        As permissible by law, Kolux reserves the right to make changes to this Privacy Policy. If changes are made, updates will be reflected by the Last Updated date at the top of this Privacy Policy. These changes will take effect immediately upon posting. By continuing to use the Services following such changes, you will be deemed to have agreed to such changes.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '1rem' }}>
-                        Our Services may link to third-party websites and services that are outside our control. In addition, we may have relationships with non-Sherwin-Williams entities that distribute Sherwin-Williams products. We are not responsible for the security or privacy of any information collected by such third parties. You should exercise caution, and review the privacy statements applicable to such third parties.
+                        Our Services may link to third-party websites and services that are outside our control. In addition, we may have relationships with non-Kolux entities that distribute Kolux products. We are not responsible for the security or privacy of any information collected by such third parties. You should exercise caution, and review the privacy statements applicable to such third parties.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', my: '1.5rem' }}>
                         <a href='#section' style={{ display: 'flex', alignItems: 'center' }}
@@ -81,7 +81,7 @@ const PrivacyPolicy = () => {
                     <Divider />
                     <Typography id="section3" sx={{ scrollMarginTop: '96px', ...textConfigs.style.basicFont, fontWeight: 'bold', fontSize: '36px', mb: '1.5rem', mt: '1.5rem' }}>Affiliates, Service Providers, and Other Parties</Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        Affiliates. We share information within Sherwin-Williams and with our affiliated companies, which include businesses under common control (collectively referred to as our “Affiliates”). This sharing may occur to improve our products and services for you.
+                        Affiliates. We share information within Kolux and with our affiliated companies, which include businesses under common control (collectively referred to as our “Affiliates”). This sharing may occur to improve our products and services for you.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
                         Service Providers. We engage third-party service providers to perform various contractual services on our behalf, which may require sharing your information. For example, these providers might help fulfill your product and service requests, process payments, respond to your inquiries, send emails on our behalf, and analyze data to enhance our offerings.
@@ -96,7 +96,7 @@ const PrivacyPolicy = () => {
                         - To prevent fraud or ensure adherence to the policies governing our services.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem', ml: '1rem' }}>
-                        - When legally permissible, to protect the rights, property, or safety of Sherwin-Williams, our affiliates, business partners, customers, or employees.
+                        - When legally permissible, to protect the rights, property, or safety of Kolux, our affiliates, business partners, customers, or employees.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem', ml: '1rem' }}>
                         - To fulfill corporate governance responsibilities, such as conducting audits.
@@ -130,7 +130,7 @@ const PrivacyPolicy = () => {
                     <Divider />
                     <Typography id="section4" sx={{ scrollMarginTop: '96px', ...textConfigs.style.basicFont, fontWeight: 'bold', fontSize: '36px', mb: '1.5rem', mt: '1.5rem' }}>International Transfer of Data</Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        Sherwin-Williams and its service providers may collect, transfer, store and process your personal information outside of your country of residence, including to the United States. Please note that other countries’ data protection and other laws may not be as comprehensive as those in your country. In accordance with applicable law, we implement measures such as standard data protection clauses to ensure that any transferred personal information remains protected and secure. You may obtain further information about these measures by contacting us using the Global Privacy Portal.
+                        Kolux and its service providers may collect, transfer, store and process your personal information outside of your country of residence, including to the United States. Please note that other countries’ data protection and other laws may not be as comprehensive as those in your country. In accordance with applicable law, we implement measures such as standard data protection clauses to ensure that any transferred personal information remains protected and secure. You may obtain further information about these measures by contacting us using the Global Privacy Portal.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', my: '1.5rem' }}>
                         <a href='#section' style={{ display: 'flex', alignItems: 'center' }}
@@ -232,19 +232,19 @@ const PrivacyPolicy = () => {
                     <Divider />
                     <Typography id="section7" sx={{ scrollMarginTop: '96px', ...textConfigs.style.basicFont, fontWeight: 'bold', fontSize: '36px', mb: '1.5rem', mt: '1.5rem' }}>How to Contact Us</Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        If you have questions about this Privacy Policy or our privacy practices, please contact Sherwin-Williams through our Global Privacy Portal or at the following address:
+                        If you have questions about this Privacy Policy or our privacy practices, please contact Kolux through our Global Privacy Portal or at the following address:
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        The Sherwin-Williams Company
+                        The Kolux Company
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        Global Privacy Compliance
+                        Viet Nam
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '0.5rem' }}>
-                        101 W. Prospect Ave.
+                        01 Vo Qui Huan.
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', mb: '1rem' }}>
-                        Cleveland, OH 44115
+                        Danang City, 550000
                     </Typography>
                     <Typography sx={{ ...textConfigs.style.basicFont, fontWeight: '400', fontSize: '18px', my: '1.5rem' }}>
                         <a href='#section' style={{ display: 'flex', alignItems: 'center' }}
