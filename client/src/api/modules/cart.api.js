@@ -1,3 +1,4 @@
+import { use } from "react";
 import proxyClient from "../client/proxy.client";
 
 const userEndpoints = {
@@ -9,6 +10,7 @@ const userEndpoints = {
     `/order-service/api/v1/orders/customerId/${customerId}`,
   getAWayBill: ( wayBillId ) =>
     `/order-service/api/v1/waybills/public/${wayBillId}`,
+  cancelOrder: (orderId,userId) => `/order-service/api/v1/orders/${userId}/${orderId}`,
 };
 
 const cartApi = {
@@ -74,6 +76,16 @@ const cartApi = {
       
       const response = await proxyClient.get(
         userEndpoints.getAWayBill( waybillId )
+      );
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  cancelOrder: async (orderId,userId) => {
+    try {
+      const response = await proxyClient.get(
+        userEndpoints.cancelOrder(userId,orderId)
       );
       return { response };
     } catch (err) {

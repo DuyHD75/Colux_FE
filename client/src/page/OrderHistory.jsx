@@ -24,7 +24,6 @@ import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import ImageComponent from "../components/commons/ImageComponent";
-import { SiVisa } from "react-icons/si";
 import { PiWarningCircle } from "react-icons/pi";
 import UserSidebar from "../components/commons/UserSidebar";
 import cartApi from "../api/modules/cart.api";
@@ -247,6 +246,30 @@ const OrderHistory = () => {
         return "#B9B9B9";
     }
   };
+
+  const handleCancelOrder = async (order) => {
+    try {
+      const { response, err } = await cartApi.cancelOrder(user.userId,order.orderId );
+      if (response) {
+        toast.success(response.message);
+        const newOrders = orders.map((item) => {
+          if (item.id === order.id) {
+            return {
+              ...item,
+              status: 5,
+            };
+          }
+          return item;
+        });
+        setOrders(newOrders);
+      }
+      if (err) {
+        toast.error(err.exception);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <>
@@ -512,7 +535,7 @@ const OrderHistory = () => {
                         })}
                       </Box>
                       <Divider />
-                      <Stack direction="row" spacing="12px" my="16px">
+                      <Stack direction={{xs:'column',sm:'row'}} spacing="12px" my="16px">
                         <Box
                           sx={{
                             width: "100%",
@@ -799,6 +822,7 @@ const OrderHistory = () => {
                                 backgroundColor: "#2c3766",
                               },
                             }}
+                            onClick={() => handleCancelOrder(item)}
                           >
                             Cancel Order
                           </Button>

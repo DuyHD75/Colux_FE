@@ -15,6 +15,7 @@ const userEndpoints = {
     `identity-service/api/v1/users/public/password/reset/verify?key=${key}`,
   changePassword: "identity-service/api/v1/users/change-password",
   updateProfile: "identity-service/api/v1/users/update-profile",
+  refreshToken: "identity-service/api/v1/users/refresh_token"
 };
 
 const userApi = {
@@ -131,6 +132,14 @@ const userApi = {
   updateProfile: async (profile) => {
     try {
       const response = await proxyClient.post(userEndpoints.updateProfile, profile);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  refreshToken: async () => {
+    try {
+      const response = await proxyClient.get(userEndpoints.refreshToken);
       return { response };
     } catch (err) {
       return { err };

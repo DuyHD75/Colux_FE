@@ -130,7 +130,7 @@ const Sidebar = () => {
             </ListItem>
           </List>
         </Collapse>
-        {/* <ListItem component={Link} to="/manage-colors">
+        <ListItem component={Link} to="/manage-colors">
           <ListItemIcon>
             <ColorLensIcon style={{ color: "#666" }} />
           </ListItemIcon>
@@ -138,7 +138,7 @@ const Sidebar = () => {
             primary="Color"
             sx={{ ...textConfigs.style.basicFont }}
           />
-        </ListItem> */}
+        </ListItem>
         {/* Inbox */}
         {/* <ListItem component={Link} to="#">
           <ListItemIcon>

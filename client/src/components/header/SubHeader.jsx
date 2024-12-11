@@ -29,20 +29,20 @@ export const SubHeader = () => {
         <Typography variant="body1" className="text-white flex">
           <MenuItem
             className="capitalize"
-            sx={{ cursor: "default", fontSize: "12px", paddingLeft: "0" }}
+            sx={{ cursor: "default", fontSize: "12px", paddingLeft: "0", ...textConfigs.style.basicFont, }}
           >
-            <LocationOnIcon className="mr-0.5" sx={{ fontSize: "12px" }} />
+            <LocationOnIcon className="mr-0.5" sx={{ fontSize: "12px", ...textConfigs.style.basicFont, }} />
             Da Nang, Viet Nam
           </MenuItem>
-          <MenuItem className="" sx={{ cursor: "default", fontSize: "12px" }}>
-            <EmailIcon className="mr-0.5" sx={{ fontSize: "12px" }} />
+          <MenuItem className="" sx={{ cursor: "default", fontSize: "12px", ...textConfigs.style.basicFont,}}>
+            <EmailIcon className="mr-0.5" sx={{ fontSize: "12px", ...textConfigs.style.basicFont, }} />
             coluxalpha@gmail.com
           </MenuItem>
           <MenuItem
             className="capitalize"
-            sx={{ cursor: "default", fontSize: "12px" }}
+            sx={{ cursor: "default", fontSize: "12px", ...textConfigs.style.basicFont, }}
           >
-            <PhoneIcon className="mr-0.5" sx={{ fontSize: "12px" }} />
+            <PhoneIcon className="mr-0.5" sx={{ fontSize: "12px", ...textConfigs.style.basicFont, }} />
             0327113934
           </MenuItem>
         </Typography>
@@ -52,7 +52,8 @@ export const SubHeader = () => {
             <MenuItem key={index}>
               <Link
                 to={item.path}
-                className="text-white capitalize text-xs hover:text-[#6dacd5]"
+                className="text-white capitalize text-xs hover:text-[#6dacd5] font-nunito"
+                style={{ ...textConfigs.style.basicFont, }}
               >
                 {t(item.display)}
               </Link>

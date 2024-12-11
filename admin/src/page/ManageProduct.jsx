@@ -48,6 +48,7 @@ import { toast } from "react-toastify";
 import CloseIcon from "@mui/icons-material/Close";
 import textConfigs from "../config/text.config";
 import * as XLSX from "xlsx";
+import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice"
 
 const ManageProduct = () => {
   const [productsFile, setProductsFile] = useState([]);
@@ -622,7 +623,21 @@ const ManageProduct = () => {
 
   const dispatch = useDispatch();
   useEffect(() => {
-    getAllProduct();
+    const getAllProducts = async () => {
+      try {
+        const { response, err } = await productsApi.getAllProduct();
+        if (response) {
+          setProducts([...response.data.products]);
+        } else if (err) {
+          toast.error(err);
+        }
+      } catch (error) {
+        console.log("Error", error);
+        toast.error("An error occurred while fetching products.");
+      }
+    };
+    getAllProducts();
+    
   }, [dispatch]);
 
   const getUpStockHistory = async () => {
@@ -637,6 +652,7 @@ const ManageProduct = () => {
       console.log("Error", error);
       toast.error("An error occurred while fetching up stock history.");
     }
+    
   };
 
   useEffect(() => {
@@ -1355,6 +1371,7 @@ const ManageProduct = () => {
       const { response, err } = await productsApi.saveFileProduct(data);
       if (response) {
         getAllProduct();
+        getUpStockHistory()
         toast.success(response.message);
       } else {
         console.log(err);
@@ -1421,7 +1438,7 @@ const ManageProduct = () => {
                 startIcon={<FaPlus />}
                 onClick={handleOpenStockUpDialog}
               >
-                Stock Up
+                Up Stock
               </Button>
 
               <Button
@@ -3443,7 +3460,7 @@ const ManageProduct = () => {
           open={openStockUp}
           onClose={handleCloseStockUpDialog}
         >
-          <DialogTitle sx={{ fontWeight: 400 }}>Stock Up</DialogTitle>
+          <DialogTitle sx={{ fontWeight: 400 }}>Up Stock</DialogTitle>
           <DialogContent
             sx={{
               width: "100%",
@@ -3522,7 +3539,7 @@ const ManageProduct = () => {
                 fontWeight: "bold",
               }}
             >
-              Information Stock Up
+              Information Up Stock
             </Typography>
             <Grid
               container

@@ -22,8 +22,7 @@ module.exports = {
         },
       },
       fontFamily: {
-        body: ["Nunito"],
-        sans: ["sans-serif"],
+        nunito: ['"Nunito"', 'sans-serif'], // Định nghĩa font
       },
     },
   },

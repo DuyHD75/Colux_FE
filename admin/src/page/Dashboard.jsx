@@ -2,7 +2,7 @@ import StatCard from "../components/dashboard/StatCard";
 import SalesChart from "../components/dashboard/SalesChart";
 import TopProducts from "../components/dashboard/TopProducts";
 import LatestTransaction from "../components/dashboard/LatestTransaction";
-import { Box, Container, Grid } from "@mui/material";
+import { Box, Container, Grid, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import adminApi from "../api/modules/admin.api";
@@ -12,6 +12,7 @@ import ErrorAlert from "../components/common/ErrorAlert";
 import UserRegistrationChart from "../components/dashboard/UserRegistrationChart";
 import RevenueWeekChart from "../components/dashboard/RevenueWeekChart";
 import EarningsChart from "../components/dashboard/EarningsChart";
+import textConfigs from "../config/text.config";
 
 const Dashboard = () => {
   const [loading, setLoading] = useState(true);
@@ -45,11 +46,42 @@ const Dashboard = () => {
   console.log("Profit Data:", dashboardData?.profit);
 
   if (loading) return <LoadingScreen />;
-  if (error) return <ErrorAlert error={error} />;
-
+  if (error)
+    return (
+      <Grid
+        item
+        xs={12}
+        sx={{
+          display: "flex",
+          minHeight: "50vh",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+        }}
+      >
+        <img
+          src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+          alt="No products found"
+          style={{
+            maxWidth: "50%",
+            height: "auto",
+          }}
+        />
+        <Typography
+          color="textSecondary"
+          sx={{
+            ...textConfigs.style.basicFont,
+            my: "1rem",
+            fontSize: "1.2rem",
+          }}
+        >
+          Not found data for dashboard
+        </Typography>
+      </Grid>
+    );
 
   return (
-    <Box  component="main" sx={{ flexGrow: 1, py: 2 }}>
+    <Box component="main" sx={{ flexGrow: 1, py: 2 }}>
       <Container maxWidth="xl">
         <Grid container spacing={3}>
           {/* Stats Overview */}

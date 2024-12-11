@@ -17,7 +17,7 @@ export const NavItemsHeader = ({
   const { appState } = useSelector((state) => state.appState);
   console.log();
   return (
-    <Box className="grow hidden md:flex justify-center font-['Nunito']">
+    <Box className="grow hidden md:flex justify-center font-nunito">
       {menuConfigs.navItems.map((item, index) => (
         <Link
           to={item.path}

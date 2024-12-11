@@ -25,6 +25,8 @@ import { toast } from "react-toastify";
 import { IoMdClose } from "react-icons/io";
 import ImageComponent from "../components/commons/ImageComponent";
 import prodcutsApi from "../api/modules/products.api";
+import { useDispatch } from "react-redux";
+import { setGlobalLoading } from "../redux/reducer/globalLoadingSlice";
 
 const ProductReviews = () => {
   const [page, setPage] = useState(1);
@@ -45,12 +47,12 @@ const ProductReviews = () => {
     setOpen(false);
     setSelectedProductIndex(null);
   };
-
+  const dispatch = useDispatch();
   useEffect(() => {
     const getReviewsByCusId = async () => {
       if (user) {
         console.log(user.userId);
-
+        dispatch(setGlobalLoading(true));
         try {
           const { response, err } = await prodcutsApi.getReviewsByCusId(
             user.userId,
@@ -68,6 +70,8 @@ const ProductReviews = () => {
           }
         } catch (error) {
           console.error(error);
+        } finally {
+          dispatch(setGlobalLoading(false));
         }
       }
     };
@@ -127,8 +131,9 @@ const ProductReviews = () => {
         </Typography>
 
         {productReviews.length > 0 ? (
-          productReviews.map((review, index) => (
-            <>
+          <>
+            {" "}
+            {productReviews.map((review, index) => (
               <Box
                 sx={{
                   borderRadius: "10px",
@@ -185,19 +190,19 @@ const ProductReviews = () => {
                   </Typography>
                 </Stack>
               </Box>
-              <Pagination
-                count={totalPages}
-                page={page}
-                onChange={handleChange}
-                renderItem={(item) => (
-                  <PaginationItem
-                    slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
-                    {...item}
-                  />
-                )}
-              />
-            </>
-          ))
+            ))}
+            <Pagination
+              count={totalPages}
+              page={page}
+              onChange={handleChange}
+              renderItem={(item) => (
+                <PaginationItem
+                  slots={{ previous: ArrowBackIcon, next: ArrowForwardIcon }}
+                  {...item}
+                />
+              )}
+            />
+          </>
         ) : (
           <Box
             sx={{

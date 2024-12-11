@@ -25,11 +25,9 @@ const MainLayout = () => {
   );
 
   return (
-
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
       {showHeaderFooter && <Navbar />}
       <GlobalLoading />
-
       <Box sx={{ display: "flex", flex: 1 }}>
         {showHeaderFooter && (
           <Box

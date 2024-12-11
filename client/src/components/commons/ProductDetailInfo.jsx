@@ -121,7 +121,7 @@ const ProductDetailInfo = ({ product }) => {
       }
 
     }
-  }, [colorsSearch, products]);
+  }, []);
 
   const location = useLocation();
   const { productCal, selectedProductCal, selectedVariantCal } =
@@ -286,13 +286,14 @@ const ProductDetailInfo = ({ product }) => {
 
   const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
     const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (!response) {
-      toast.error(err);
-      console.log(err);
-
-    }
-    else {
+    if (response) {
       toast.success('Added to cart successfully');
+    }
+    if (err && (err.code === 400 || err.code === 404)) {
+      toast.error("Not found cart");
+    }
+    if (err && err.code === 500) {
+      toast.error("Server error.");
     }
   }, []);
 
@@ -714,9 +715,8 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${
-                          selectedVariant.quantity
-                        } ${t("products")})`
+                      ? `${t("still.in.stock")} (${selectedVariant.quantity
+                      } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>

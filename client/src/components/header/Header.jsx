@@ -39,7 +39,6 @@ import cartApi from "../../api/modules/cart.api";
 import backgroundConfigs from "../../config/background.config";
 import { setGlobalLoading } from "../../redux/reducer/globalLoadingSlice";
 
-
 export const Header = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -86,13 +85,12 @@ export const Header = () => {
     };
   };
 
-useEffect(() => {
+  useEffect(() => {
     if (globalLoading === true) {
       setUser(JSON.parse(localStorage.getItem("user")));
       dispatch(setGlobalLoading(false));
     }
-}, [globalLoading])
-
+  }, [globalLoading]);
 
   const HandleSearch = async (e) => {
     if (e.target.value.trim() === "") {
@@ -234,7 +232,6 @@ useEffect(() => {
     setAnchorElAbout(null);
   };
 
-  
   return (
     <AppBar
       className="top-0 left-0 right-0 z-10 font-['Nunito']"
@@ -1250,35 +1247,37 @@ useEffect(() => {
                   </Box>
                 )}
 
-{searchResults.colors.length === 0 && searchResults.products.length === 0 && (<Box
-                sx={{
-                  display: "flex",
-                  minHeight: "50vh",
-                  flexDirection: "column",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
-                    alt="No result found"
-                    style={{
-                      maxWidth: "30%",
-                      height: "auto",
-                    }}
-                  />
-                  <Typography
-                    color="textSecondary"
-                    sx={{
-                      ...textConfigs.style.basicFont,
-                      my: "1rem",
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    No results match your search criteria.
-                  </Typography>
-              </Box>)}
+                {searchResults.colors.length === 0 &&
+                  searchResults.products.length === 0 && (
+                    <Box
+                      sx={{
+                        display: "flex",
+                        minHeight: "50vh",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <img
+                        src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                        alt="No result found"
+                        style={{
+                          maxWidth: "30%",
+                          height: "auto",
+                        }}
+                      />
+                      <Typography
+                        color="textSecondary"
+                        sx={{
+                          ...textConfigs.style.basicFont,
+                          my: "1rem",
+                          fontSize: "1.2rem",
+                        }}
+                      >
+                        No results match your search criteria.
+                      </Typography>
+                    </Box>
+                  )}
               </Box>
             )}
           </Box>

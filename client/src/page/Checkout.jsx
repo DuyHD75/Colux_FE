@@ -32,6 +32,10 @@ const Checkout = () => {
 
     const handleCheckout = async () => {
         try {
+            if(!paymentMethod) {
+                toast.error('Please choose payment method');
+                return;
+            }
             const orderData = {
                 status: 1,
                 toName: checkoutData.billing.fullName,
@@ -319,7 +323,7 @@ const Checkout = () => {
                                 borderBottom: '1px solid #E5E5E5'
                             }}>
                                 <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
-                                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
+                                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/privacy_policy">See Return Policy for details.</Link>
                                 </Typography>
                             </Box>
                             <Box sx={{
@@ -327,10 +331,10 @@ const Checkout = () => {
                                 borderBottom: '1px solid #E5E5E5'
                             }}>
                                 <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
-                                    By selecting Agree & Pay you are agreeing to the Sherwin-Williams <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Online Terms & Conditions of Sale</Link> Opens in new windowand have been provided with electronic access Opens in new windowto product safety data sheets and environmental data sheets for all applicable products in my order.                                </Typography>
+                                    By selecting Agree & Pay you are agreeing to the Colux <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/terms_and_condition">Online Terms & Conditions of Sale</Link> Opens in new windowand have been provided with electronic access Opens in new windowto product safety data sheets and environmental data sheets for all applicable products in my order.                                </Typography>
                                 <Stack direction='row' alignItems='center'>
                                     <Checkbox size='small' onChange={handleCheckboxChange} />
-                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>I agree to the Sherwin-Williams<Link style={{ color: '#0069AF', fontSize: '11.9px' }}> Online Terms and Conditions of SaleOpens in new window.</Link></Typography>
+                                    <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>I agree to the Colux<Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/terms_and_condition"> Online Terms and Conditions of SaleOpens in new window.</Link></Typography>
                                 </Stack>
                             </Box>
                             <button disabled={!isChecked} style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' onClick={() => handleCheckout()} >Agree and Pay</button>

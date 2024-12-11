@@ -122,8 +122,8 @@ const ProjectConstructed = () => {
             (project, index) =>
               index === selectedSlideIndex && (
                 <Box key={index} style={{ ...textConfigs.style.subText }}>
-                  <Typography>Address: {project.address}</Typography>
-                  <Typography>{project.content}</Typography>
+                  <Typography sx={{...textConfigs.style.basicFont}}>Address: {project.address}</Typography>
+                  <Typography sx={{...textConfigs.style.basicFont}}>{project.content}</Typography>
                 </Box>
               )
           )}

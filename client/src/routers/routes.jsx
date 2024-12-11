@@ -11,7 +11,7 @@ import ProductReviews from "../page/ProductReviews";
 import PrivacyPolicy from "../page/PrivacyPolicy";
 import ContactUs from "../page/ContactUs";
 import Products from "../page/Products";
-import ProductDetail from "../page/detail/ProductDetail"
+import ProductDetail from "../page/detail/ProductDetail";
 import Auth from "../page/Auth";
 import Contractors from "../page/Contractors";
 import Advisory from "../page/Advisory";
@@ -25,7 +25,8 @@ import BlogDetail from "../page/detail/BlogDetail";
 import VerifyEmail from "../components/commons/VerifyEmail";
 import ChangePassword from "../page/ChangePassword";
 import ResultPayment from "../page/ResultPayment";
-import NotFound from "../page/404" 
+import NotFound from "../page/404";
+import ProtectedRoute from "../components/commons/ProtectedRoute";
 
 export const routesGen = {
   home: "/",
@@ -33,7 +34,7 @@ export const routesGen = {
   colorDetail: (colorId) => `/colors/${colorId}`,
   cart: "/carts",
   checkout: "/checkout",
-  favorite: "/favorites", 
+  favorite: "/favorites",
   orderHistory: "/orderHistory",
   paymentBilling: "/billing",
   profile: "/profile",
@@ -43,16 +44,16 @@ export const routesGen = {
   aboutUs: "/about",
   termsAndConditions: "/terms_and_condition",
   helps: "/helps",
-  points : "/points",
-  changePassword: "/changePassword",  
-  resultPayment: "/resultPayment"
+  points: "/points",
+  changePassword: "/changePassword",
+  resultPayment: "/resultPayment",
 };
 
 const routes = [
   {
     path: "*",
     element: <NotFound />,
-    state: "not.found"
+    state: "not.found",
   },
   {
     index: true,
@@ -80,8 +81,12 @@ const routes = [
     state: "colorDetail",
   },
   {
-    path: "/carts",
-    element: <Cart />,
+    path: "/cart",
+    element: (
+      <ProtectedRoute>
+        <Cart />
+      </ProtectedRoute>
+    ),
     state: "cart",
   },
   {
@@ -128,33 +133,10 @@ const routes = [
     state: "blogs",
   },
   {
-  path: "/blogs/category/:categoryName",
-  element: <BlogHome/>,
-  state: "blogs",
-
+    path: "/blogs/category/:categoryName",
+    element: <BlogHome />,
+    state: "blogs",
   },
-
-  {
-    path: "/cart",
-    element: <Cart />,
-    state: "cart",
-  },
-  {
-    path: "/checkout",
-    element: <Checkout />,
-    state: "checkout",
-  },
-  {
-    path: "/wishlist",
-    element: <WishList />,
-    state: "cart",
-  },
-  {
-    path: "/billing",
-    element: <PaymentBilling />,
-    state: "paymentBilling",
-  },
-
   {
     path: "/login",
     element: <Auth />,
@@ -199,60 +181,81 @@ const routes = [
     path: "/calculate-price",
     element: <CalculatePrice />,
     state: "calculate-price",
-  }, 
+  },
   {
     path: "/orderHistory",
-    element: <OrderHistory />,
-    state: "orderHistory"
+    element: (
+      <ProtectedRoute>
+        <OrderHistory />
+      </ProtectedRoute>
+    ),
+    state: "orderHistory",
   },
   {
     path: "/profile",
-    element: <Profile />,
-    state: "profile"
+    element: (
+      <ProtectedRoute>
+        <Profile />
+      </ProtectedRoute>
+    ),
+    state: "profile",
   },
   {
     path: "/product_reviews",
-    element: <ProductReviews />,
-    state: "productReviews"
+    element: (
+      <ProtectedRoute>
+        <ProductReviews />
+      </ProtectedRoute>
+    ),
+    state: "productReviews",
   },
   {
     path: "/privacy_policy",
     element: <PrivacyPolicy />,
-    state: "privacy.policy"
+    state: "privacy.policy",
   },
   {
     path: "/contact",
     element: <ContactUs />,
-    state: "contact"
+    state: "contact",
   },
   {
     path: "/about",
     element: <AboutUs />,
-    state: "about"
+    state: "about",
   },
   {
     path: "/terms_and_condition",
     element: <TermsAndConditions />,
-    state: "terms.and.condition"
+    state: "terms.and.condition",
   },
   {
     path: "/helps",
     element: <Helps />,
-    state: "helps"
+    state: "helps",
   },
   {
     path: "/points",
-    element: <Points />,
-    state: "points"
+    element: (
+      <ProtectedRoute>
+        <Points />
+      </ProtectedRoute>
+    ),
+    state: "points",
   },
   {
     path: "/changePassword",
-    element: <ChangePassword />,
-    state: "changePassword"
+    element: (
+      <ProtectedRoute>
+        <ChangePassword />
+      </ProtectedRoute>
+    ),
+    state: "changePassword",
   },
   {
     path: routesGen.resultPayment,
-    element: <ResultPayment/>,
-    state: "resultPayment"
-  }]
+    element: <ResultPayment />,
+    state: "resultPayment",
+  },
+];
 export default routes;

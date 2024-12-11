@@ -32,7 +32,7 @@ const AImageUploader = ({ handleUpload }) => {
   };
 
   return (
-    <Grid item xs={6} sm={4} md={3} lg={2} height={"12rem"}>
+    <Grid item xs={12} md={12} height={"12rem"}>
       <label
         htmlFor="upload-photo"
         style={{

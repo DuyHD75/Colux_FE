@@ -30,8 +30,9 @@ const PaymentBilling = () => {
   const [openEditAddress, setOpenEditAddress] = useState(false);
   const [selectedDistrictID, setSelectedDistrictID] = useState(null);
   const [shippingFee, setShippingFee] = useState(0);
-  const { user } = useSelector((state) => state.user);
-  const sortedProvinces = [...provinces].sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
+  const [user, setUser] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  ); const sortedProvinces = [...provinces].sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
   const sortedDistricts = [...districts].sort((a, b) => a.DistrictName.localeCompare(b.DistrictName));
   const sortedWards = [...wards].sort((a, b) => a.WardName.localeCompare(b.WardName));
 
@@ -66,7 +67,7 @@ const PaymentBilling = () => {
       }
     }
     getAllShipments();
-  }, [shipments])
+  }, [])
 
   const fetchDistricts = async (provinceID) => {
     try {
@@ -138,8 +139,22 @@ const PaymentBilling = () => {
       }
       else {
         toast.success('Create shipment successfully');
-        setShipments([...shipments, response.response.data.data]);
+        setShipments((prevShipments) => {
+          const updatedShipment = response.response.data.data;
+          const shipmentExists = prevShipments.some(
+            (shipment) => shipment.shipmentId === updatedShipment.shipmentId
+          );
 
+          if (shipmentExists) {
+            return prevShipments.map((shipment) =>
+              shipment.shipmentId === updatedShipment.shipmentId
+                ? updatedShipment
+                : shipment
+            );
+          } else {
+            return [...prevShipments, updatedShipment];
+          }
+        });
       }
     } catch (error) {
       console.error('Error create shipment', error);
@@ -163,8 +178,13 @@ const PaymentBilling = () => {
     },
     validationSchema: Yup.object({
       fullName: Yup.string()
-        .min(2, "First name at least 8 characters !")
-        .required("Name is required !"),
+        .min(2, "Full name must be at least 2 characters!")
+        .max(50, "Full name must be at most 50 characters!")
+        .matches(
+          /^[\p{L}\s]+$/u,
+          "Full name can only contain letters and spaces!"
+        )
+        .required("Full name is required!"),
       phoneNumber: Yup.string()
         .required("Phone is required !")
         .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone must be a number !"),
@@ -207,8 +227,13 @@ const PaymentBilling = () => {
     },
     validationSchema: Yup.object({
       fullName: Yup.string()
-        .min(2, "First name at least 8 characters !")
-        .required("Name is required !"),
+        .min(2, "Full name must be at least 2 characters!")
+        .max(50, "Full name must be at most 50 characters!")
+        .matches(
+          /^[\p{L}\s]+$/u,
+          "Full name can only contain letters and spaces!"
+        )
+        .required("Full name is required!"),
       phoneNumber: Yup.string()
         .required("Phone is required !")
         .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone must be a number !"),
@@ -243,8 +268,13 @@ const PaymentBilling = () => {
     },
     validationSchema: Yup.object({
       fullName: Yup.string()
-        .min(2, "First name at least 8 characters !")
-        .required("Name is required !"),
+        .min(2, "Full name must be at least 2 characters!")
+        .max(50, "Full name must be at most 50 characters!")
+        .matches(
+          /^[\p{L}\s]+$/u,
+          "Full name can only contain letters and spaces!"
+        )
+        .required("Full name is required!"),
       phoneNumber: Yup.string()
         .required("Phone is required !")
         .matches(/(84|0[3|5|7|8|9])+([0-9]{8})\b/g, "Phone must be a number !"),
@@ -346,7 +376,7 @@ const PaymentBilling = () => {
                           <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '14px' }}>Email:</Typography>
                         </label>
                         <TextField style={{ width: '70%', marginBottom: '12px', boxShadow: 'inset 0 0 8px rgba(0, 0, 0, .15)' }}
-                          type='text' name='email' 
+                          type='text' name='email'
                           fullWidth value={billingForm.values.email}
                           onChange={billingForm.handleChange}
                           error={billingForm.touched.email && billingForm.errors.email !== undefined}
@@ -572,10 +602,10 @@ const PaymentBilling = () => {
                   borderBottom: '1px solid #E5E5E5'
                 }}>
                   <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'balance', ...TextConfig.style.basicFont }}>
-                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>See Return Policy for details.</Link>
+                    Orders not picked up, received, or scheduled for delivery within 14 days will be forfeited. You will be charged for custom and special order items; all others will be cancelled and restocked without charge. Tinted paint cannot be returned. <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/privacy_policy">See Return Policy for details.</Link>
                   </Typography>
                   <Typography marginY='5.95px' fontSize='11.9px' fontWeight='bold' sx={{ textWrap: 'wrap', ...TextConfig.style.basicFont }}>
-                    By placing this order, you agree to the Sherwin-Williams Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }}>Terms and Conditions of Sale</Link>
+                    By placing this order, you agree to the Colux Online <Link style={{ color: '#0069AF', fontSize: '11.9px' }} to="/terms_and_condition">Terms and Conditions of Sale</Link>
                   </Typography>
                 </Box>
                 <button type='submit' style={{ ...backgroundConfigs.style.backgroundPrimary, color: 'white', ...TextConfig.style.basicFont }} className='min-w-full py-2 px-3 flex justify-center' >Continue</button>
