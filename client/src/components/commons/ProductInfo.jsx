@@ -1,4 +1,4 @@
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import React from "react";
 import ImageComponent from "./ImageComponent";
 import TextConfig from "../../config/text.config";
@@ -73,17 +73,31 @@ const ProductInfo = ({ product, padding, checkout }) => {
           </span>
         </Typography>
         {product.cartItemVariant.categoryName === "Paint" && (
-          <Typography
-            marginBottom="9.1px"
-            variant="h4"
-            fontSize="13px"
-            sx={{ ...TextConfig.style.basicFont }}
-          >
-            Color Code :{" "}
-            <span style={{ marginLeft: "8px" }}>
+          <Stack direction="row" spacing={2}>
+            <Typography
+              sx={{
+                ...TextConfig.style.headerText,
+                fontWeight: "400",
+                fontSize: "14px",
+                borderRight: "1px solid",
+                pr: 2,
+              }}
+            >
+              Color code:{" "}
               {product.cartItemVariant.productDetails.paintDetails.hex}
-            </span>
-          </Typography>
+            </Typography>
+
+            <Box
+              sx={{
+                width: "20px",
+                height: "20px",
+                borderRadius: "8px",
+                bgcolor:
+                  product.cartItemVariant.productDetails &&
+                  product.cartItemVariant.productDetails.paintDetails.hex,
+              }}
+            ></Box>
+          </Stack>
         )}
         <Typography
           marginBottom="5.2px"

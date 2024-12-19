@@ -807,11 +807,22 @@ const ProductDetailInfo = ({ product }) => {
                 </Box>
               </Box>
               <Box
-                sx={{ display: "flex", alignItems: "start", mb: 1, flex: 1 }}
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 1,
+                  flex: 1,
+                  position: "relative",
+                  textDecoration: "none", // Đảm bảo không có gạch chân khi hover
+                  "&:hover .view-text": {
+                    opacity: 1,
+                    transform: "translateX(0)",
+                  },
+                }}
+                component={Link}
+                to="https://colux-tool.vercel.app/"
               >
                 <Box
-                  component={Link}
-                  to="https://colux-tool.vercel.app/"
                   sx={{
                     position: "relative",
                     display: "inline-block",
@@ -821,12 +832,26 @@ const ProductDetailInfo = ({ product }) => {
                     border: "3px dashed #000",
                     boxShadow: "1px 4px 4px 2px #ccc",
                     overflow: "hidden",
-                    textDecoration: "none", // Bỏ gạch chân mặc định của link
+                    textDecoration: "none",
                   }}
                 >
                   <ThreeDRotationIcon
                     sx={{ fontSize: "2rem", color: "#fff" }}
                   />
+                </Box>
+                <Box
+                  className="view-text"
+                  sx={{
+                    marginLeft: "20px",
+                    opacity: 0,
+                    transform: "translateX(-10px)",
+                    transition: "all 0.3s ease",
+                    fontSize: "1.5rem",
+                    color: "#000",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  View
                 </Box>
               </Box>
             </Box>

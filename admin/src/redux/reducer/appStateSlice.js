@@ -3,7 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 const appStateSlice = createSlice({
   name: 'AppState',
   initialState: {
-    appState: "login"
+    appState: ""
   },
   reducers: {
     setAppState: (state, action) => {

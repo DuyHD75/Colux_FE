@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useFormik } from "formik";
 import * as Yup from "yup";
@@ -21,6 +21,20 @@ const Login = () => {
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
+  const [admin, setAdmin1] = useState(JSON.parse(localStorage.getItem("admin")));
+  const [employee, setEmployee] = useState(JSON.parse(localStorage.getItem("employee")));
+
+  useEffect(() => {
+    if (admin) {
+      localStorage.setItem("admin", JSON.stringify(admin));
+      navigate("/dashboard");
+    }
+    if (employee) {
+      localStorage.setItem("employee", JSON.stringify(employee));
+      navigate("/manage-products");
+    }
+  }, []);
+  
 
   const loginForm = useFormik({
     initialValues: {

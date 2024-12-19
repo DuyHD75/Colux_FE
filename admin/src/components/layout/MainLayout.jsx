@@ -1,11 +1,13 @@
 import React from "react";
 import { Box } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../footer/Footer";
 import Navbar from "../Navbar";
 import { useSelector } from "react-redux";
 import GlobalLoading from "../common/GlobalLoading";
 import SlideSBar from "../common/SlideBar";
+import { useEffect } from "react";
+import userApi from "../../api/modules/admin.api";
 
 const actionState = {
   login: "login",
@@ -23,6 +25,43 @@ const MainLayout = () => {
     appState === actionState.forgotPassword ||
     appState === actionState.resetPassword
   );
+
+  const employee = localStorage.getItem("employee");
+  const admin = localStorage.getItem("admin");
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const refreshToken = async () => {
+      const { response: userInfoResponse } = await userApi.getInfo();
+      console.log(userInfoResponse);
+      
+      if (!userInfoResponse) {
+        const { response: refreshTokenResponse } = await userApi.refreshToken();
+        if (refreshTokenResponse) {
+          if (admin) {
+            navigate("/dashboard");
+          }
+          if (employee) {
+            navigate("/manage-products");
+          }
+        } else {
+          localStorage.removeItem("employee");
+          localStorage.removeItem("admin");
+          navigate("/login");
+        }
+      }
+    };
+    console.log(admin);
+    console.log((admin || employee) && appState !== actionState.login);
+    console.log(employee);
+    console.log(appState);
+    console.log(actionState.login);
+    console.log(appState !== actionState.login);
+    
+    if ((admin || employee) && appState !== actionState.login) {
+      refreshToken();
+    }
+  }, []);
 
   return (
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
@@ -60,7 +99,7 @@ const MainLayout = () => {
       </Box>
 
       {showHeaderFooter && <Footer />}
-          </Box>
+    </Box>
   );
 };
 

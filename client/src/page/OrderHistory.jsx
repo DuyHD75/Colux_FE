@@ -33,7 +33,7 @@ import customScrollbarStyle from "../config/scrollbar.config";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import productsApi from "../api/modules/products.api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import prodcutsApi from "../api/modules/products.api";
 import textConfigs from "../config/text.config";
 
@@ -51,6 +51,7 @@ const OrderHistory = () => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
+  const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -249,7 +250,10 @@ const OrderHistory = () => {
 
   const handleCancelOrder = async (order) => {
     try {
-      const { response, err } = await cartApi.cancelOrder(user.userId,order.orderId );
+      const { response, err } = await cartApi.cancelOrder(
+        user.userId,
+        order.orderId
+      );
       if (response) {
         toast.success(response.message);
         const newOrders = orders.map((item) => {
@@ -269,7 +273,7 @@ const OrderHistory = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <>
@@ -535,7 +539,11 @@ const OrderHistory = () => {
                         })}
                       </Box>
                       <Divider />
-                      <Stack direction={{xs:'column',sm:'row'}} spacing="12px" my="16px">
+                      <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing="12px"
+                        my="16px"
+                      >
                         <Box
                           sx={{
                             width: "100%",
@@ -850,6 +858,30 @@ const OrderHistory = () => {
                             Write a Review
                           </Button>
                         )}
+                        {item.paymentStatus === 1 && item.status !== 5 && item.paypalCheckoutLink && (
+                          <Button
+                            sx={{
+                              ...TextConfig.style.headerText,
+                              mt: "1rem",
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              bgcolor: "#1c2759",
+                              color: "white",
+                              borderRadius: "14px",
+                              width: "200px",
+                              height: "30px",
+                              textTransform: "capitalize",
+                              "&:hover": {
+                                color: "secondary.colorText",
+                                backgroundColor: "#2c3766",
+                              },
+                            }}
+                            component={Link}
+                            to={item.paypalCheckoutLink}
+                          >
+                            Proceed With Payment
+                          </Button>
+                        )}
                       </Stack>
                     </AccordionDetails>
                   </Accordion>
@@ -865,25 +897,24 @@ const OrderHistory = () => {
                   justifyContent: "center",
                 }}
               >
-
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
-                    alt="No order history found"
-                    style={{
-                      maxWidth: "50%",
-                      height: "auto",
-                    }}
-                  />
-                  <Typography
-                    color="textSecondary"
-                    sx={{
-                      ...textConfigs.style.basicFont,
-                      my: "1rem",
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    No order history
-                  </Typography>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                  alt="No order history found"
+                  style={{
+                    maxWidth: "50%",
+                    height: "auto",
+                  }}
+                />
+                <Typography
+                  color="textSecondary"
+                  sx={{
+                    ...textConfigs.style.basicFont,
+                    my: "1rem",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  No order history
+                </Typography>
               </Box>
             )}
           </Stack>

@@ -10,6 +10,7 @@ const adminEndpoints = {
   setStatusUser: (id) => `identity-service/api/v1/users/status/${id}`,
   createEmployee: "identity-service/api/v1/users/register/employee",
   updateProfile: "identity-service/api/v1/users/update-profile",
+  refreshToken: "identity-service/api/v1/users/public/refresh-token",
   
   // Dashboard endpoints
   getDashboard: "order-service/api/v1/admins/dashboard",
@@ -178,6 +179,14 @@ const adminApi = {
   createEmployee: async (info) => {
     try {
       const response = await proxyAdmin.post(adminEndpoints.createEmployee, info);
+      return { response };
+    } catch (err) {
+      return { err };
+    }
+  },
+  refreshToken: async () => {
+    try {
+      const response = await proxyAdmin.get(adminEndpoints.refreshToken);
       return { response };
     } catch (err) {
       return { err };
