@@ -32,7 +32,7 @@ const Checkout = () => {
 
     const handleCheckout = async () => {
         try {
-            if(!paymentMethod) {
+            if (!paymentMethod) {
                 toast.error('Please choose payment method');
                 return;
             }
@@ -40,13 +40,13 @@ const Checkout = () => {
                 status: 1,
                 toName: checkoutData.billing.fullName,
                 toPhone: checkoutData.billing.phoneNumber,
-                toEmail: user?user.email:checkoutData.billing.email,
+                toEmail: user ? user.email : checkoutData.billing.email,
                 toAddress: checkoutData.billing.address,
                 toWardName: checkoutData.billing.ward,
                 toDistrictName: checkoutData.billing.district,
                 toProvinceName: checkoutData.billing.province,
                 note: note,
-                customerId: user?user.userId:null,
+                customerId: user ? user.userId : null,
                 purchaseProducts: checkoutData.products.map(product => ({
                     productId: product.cartItemVariant.productDetails.productId,
                     variantId: product.cartItemVariant.variantId,
@@ -206,11 +206,11 @@ const Checkout = () => {
                                                 id="paymentMethodPaypal"
                                                 name="paymentMethod" value="PAYPAL" className="border-indigo-500"
                                                 onChange={handlePaymentMethodChange} />
-                                            <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' style={{ width: '4rem', height: '2rem', marginLeft:'12px', marginRight:'12px' }} />
-                                            <Typography sx={{ ...TextConfig.style.basicFont, fontWeight: 'bold', fontSize: '16px',mt:'4px' }}>PayPal</Typography>
+                                            <img src='https://www.paypalobjects.com/webstatic/mktg/logo/pp_cc_mark_37x23.jpg' style={{ width: '4rem', height: '2rem', marginLeft: '12px', marginRight: '12px' }} />
+                                            <Typography sx={{ ...TextConfig.style.basicFont, fontWeight: 'bold', fontSize: '16px', mt: '4px' }}>PayPal</Typography>
                                         </label>
 
-                                       
+
                                     </Stack>
                                     {paymentMethod === "COD" &&
                                         <>  <Alert sx={{ mb: 1 }} severity="info">
@@ -301,7 +301,7 @@ const Checkout = () => {
                                         <em>(Determined later)</em>
                                     </Typography>
                                     <Box>
-                                        <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', textDecoration: 'line-through' }}>{checkoutData.shippingFee}$ </Typography>
+                                        <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px' }}>{checkoutData.shippingFee}$ </Typography>
                                         {checkoutData.shippingFee > 0 && <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Free</Typography>}
                                     </Box>
 
@@ -311,6 +311,15 @@ const Checkout = () => {
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', }}>{(checkoutData.totalAmount * 0.1).toFixed(0)}$ </Typography>
 
                                 </Box>
+                                {checkoutData.shippingFee > 0 &&
+                                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', }}>
+                                        <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Discount:
+                                        </Typography>
+                                        <Box>
+                                            <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', }}>-{checkoutData.shippingFee}$ </Typography>
+                                        </Box>
+
+                                    </Box>}
                                 <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
                                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold' }}>{(checkoutData.totalAmount + parseFloat((checkoutData.totalAmount * 0.1).toFixed(0)))}$</Typography>

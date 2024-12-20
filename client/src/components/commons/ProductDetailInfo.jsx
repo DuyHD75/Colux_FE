@@ -28,6 +28,7 @@ import productsApi from "../../api/modules/products.api";
 import { toast } from "react-toastify";
 import { useCallback } from "react";
 import cartApi from "../../api/modules/cart.api";
+import ThreeDRotationIcon from "@mui/icons-material/ThreeDRotation";
 
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper/modules";
@@ -60,7 +61,7 @@ const ProductDetailInfo = ({ product }) => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-  console.log('colorSearch', colorsSearch);
+  console.log("colorSearch", colorsSearch);
 
   const pageIndex = 0;
 
@@ -109,17 +110,14 @@ const ProductDetailInfo = ({ product }) => {
         if (foundProduct) {
           setSelectedProduct(foundProduct);
           setSelectedVariant(foundProduct.variants[0]);
-        }
-        else {
+        } else {
           setSelectedProduct(products[0]);
           setSelectedVariant(products[0].variants[0]);
         }
-      }
-      else {
+      } else {
         setSelectedProduct(products[0]);
         setSelectedVariant(products[0].variants[0]);
       }
-
     }
   }, []);
 
@@ -284,18 +282,27 @@ const ProductDetailInfo = ({ product }) => {
     navigate("/billing");
   };
 
-  const updateCart = useCallback(async (cartId, customerId, status, updateQuantityType, cartItems) => {
-    const { response, err } = await cartApi.saveCart(cartId, customerId, status, updateQuantityType, cartItems);
-    if (response) {
-      toast.success('Added to cart successfully');
-    }
-    if (err && (err.code === 400 || err.code === 404)) {
-      toast.error("Not found cart");
-    }
-    if (err && err.code === 500) {
-      toast.error("Server error.");
-    }
-  }, []);
+  const updateCart = useCallback(
+    async (cartId, customerId, status, updateQuantityType, cartItems) => {
+      const { response, err } = await cartApi.saveCart(
+        cartId,
+        customerId,
+        status,
+        updateQuantityType,
+        cartItems
+      );
+      if (response) {
+        toast.success("Added to cart successfully");
+      }
+      if (err && (err.code === 400 || err.code === 404)) {
+        toast.error("Not found cart");
+      }
+      if (err && err.code === 500) {
+        toast.error("Server error.");
+      }
+    },
+    []
+  );
 
   return (
     <Box sx={{ backgroundColor: "#fafaf9", padding: 3 }}>
@@ -715,8 +722,9 @@ const ProductDetailInfo = ({ product }) => {
                     sx={{ ...textConfigs.style.basicFont }}
                   >
                     {selectedVariant.quantity > 0
-                      ? `${t("still.in.stock")} (${selectedVariant.quantity
-                      } ${t("products")})`
+                      ? `${t("still.in.stock")} (${
+                          selectedVariant.quantity
+                        } ${t("products")})`
                       : `${t("out.of.stock")}`}
                   </Typography>
                 </Box>
@@ -751,35 +759,102 @@ const ProductDetailInfo = ({ product }) => {
                 </Box>
               </Box>
             )}
-
-            <Typography
-              variant="body2"
-              mt={1}
-              color="#000"
-              sx={{ ...textConfigs.style.basicFont }}
-            >
-              {t("product.detail.estimated.cost.title")}
-            </Typography>
-
-            <CalculatorIcon
+            <Box
               sx={{
-                color: "#1D4Ed8",
-                fontSize: "1.2rem",
-                marginRight: "8px",
-              }}
-            />
-            <Link
-              to="/calculate-price"
-              state={{ product, selectedProduct, selectedVariant }}
-              className="text-[#1D4Ed8] no-underline"
-              style={{
-                fontWeight: "bold",
-                fontSize: ".8rem",
-                ...textConfigs.style.basicFont,
+                display: "flex",
+                flexDirection: { xs: "column", sm: "row" },
               }}
             >
-              {t("product.detail.estimated.cost.link")}
-            </Link>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "start",
+                  flexDirection: "column",
+                  mb: 1,
+                  flex: 1,
+                }}
+              >
+                <Typography
+                  variant="body2"
+                  mt={1}
+                  color="#000"
+                  sx={{ ...textConfigs.style.basicFont }}
+                >
+                  {t("product.detail.estimated.cost.title")}
+                </Typography>
+                <Box
+                  sx={{ display: "flex", alignItems: "start", mb: 1, flex: 1 }}
+                >
+                  <CalculatorIcon
+                    sx={{
+                      color: "#1D4Ed8",
+                      fontSize: "1.2rem",
+                      marginRight: "8px",
+                    }}
+                  />
+                  <Link
+                    to="/calculate-price"
+                    state={{ product, selectedProduct, selectedVariant }}
+                    className="text-[#1D4Ed8] no-underline"
+                    style={{
+                      fontWeight: "bold",
+                      fontSize: ".8rem",
+                      ...textConfigs.style.basicFont,
+                    }}
+                  >
+                    {t("product.detail.estimated.cost.link")}
+                  </Link>
+                </Box>
+              </Box>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  mb: 1,
+                  flex: 1,
+                  position: "relative",
+                  textDecoration: "none", // Đảm bảo không có gạch chân khi hover
+                  "&:hover .view-text": {
+                    opacity: 1,
+                    transform: "translateX(0)",
+                  },
+                }}
+                component={Link}
+                to="https://colux-tool.vercel.app/"
+              >
+                <Box
+                  sx={{
+                    position: "relative",
+                    display: "inline-block",
+                    padding: ".5rem",
+                    backgroundColor: "#6184c6",
+                    borderRadius: "50%",
+                    border: "3px dashed #000",
+                    boxShadow: "1px 4px 4px 2px #ccc",
+                    overflow: "hidden",
+                    textDecoration: "none",
+                  }}
+                >
+                  <ThreeDRotationIcon
+                    sx={{ fontSize: "2rem", color: "#fff" }}
+                  />
+                </Box>
+                <Box
+                  className="view-text"
+                  sx={{
+                    marginLeft: "20px",
+                    opacity: 0,
+                    transform: "translateX(-10px)",
+                    transition: "all 0.3s ease",
+                    fontSize: "1.5rem",
+                    color: "#000",
+                    ...textConfigs.style.basicFont,
+                  }}
+                >
+                  View
+                </Box>
+              </Box>
+            </Box>
             <Grid container spacing={2} mt={1}>
               <Grid item xs={12} md={6} display="flex" justifyContent="center">
                 <Button

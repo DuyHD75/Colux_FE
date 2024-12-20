@@ -15,7 +15,7 @@ const userEndpoints = {
     `identity-service/api/v1/users/public/password/reset/verify?key=${key}`,
   changePassword: "identity-service/api/v1/users/change-password",
   updateProfile: "identity-service/api/v1/users/update-profile",
-  refreshToken: "identity-service/api/v1/users/refresh_token"
+  refreshToken: "identity-service/api/v1/users/public/refresh-token"
 };
 
 const userApi = {

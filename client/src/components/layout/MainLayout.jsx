@@ -1,19 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Box } from "@mui/material";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import Footer from "../footer/Footer";
 import Header from "../header/Header";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import GlobalLoading from "../commons/GlobalLoading";
-import Cookies from "js-cookie";
 import userApi from "../../api/modules/user.api";
-import { setUser } from "../../redux/reducer/userSlice";
-import ChatPopup from "../commons/ChatPopup";
-import { StompSessionProvider } from 'react-stomp-hooks';
 import cartApi from "../../api/modules/cart.api";
-import { toast } from "react-toastify";
-
-
 const actionState = {
   login: "login",
   register: "register",
@@ -24,48 +17,27 @@ const actionState = {
 
 const MainLayout = () => {
   const { appState } = useSelector((state) => state.appState);
-  const dispatch = useDispatch();
-  const  user  = localStorage.getItem("user");
+  const user = localStorage.getItem("user");
   const [itemCart, setItemCart] = useState(0);
+  const navigate = useNavigate();
 
-
-  // useEffect(() => {
-  //   const authUser = async () => {
-  //     if (!user) {
-  //       const { response, err } = await userApi.getInfo();
-  //       if (response && response.data.user.role === "USER") {
-  //         dispatch(setUser(response.data.user));
-  //       }
-  //       if (err) {
-  //         dispatch(setUser(null));
-  //       }
-  //     }
-  //   };
-   
-  //   authUser();
-  // }, []);
-
-  // const refreshAccessToken = async () => {
-  //   try {
-  //     const { response } = await userApi.refreshToken();
-  //     if (response) {
-  //       console.log('Refresh token is valid. New access token issued.');
-        
-  //     } else {
-  //       console.error('Refresh token expired or invalid.');
-  //       localStorage.clear();
-  //     }
-  //   } catch (err) {
-  //     console.error('Error refreshing token:', err);
-  //   }
-  // };
-
-
-  // useEffect(() => {
-  //   console.log("hello");
-  //   refreshAccessToken();
-  // },[]);
-
+  useEffect(() => {
+    const refreshToken = async () => {
+      const { response: userInfoResponse } = await userApi.getInfo();
+      if (!userInfoResponse) {
+        const { response: refreshTokenResponse } = await userApi.refreshToken();
+        if (refreshTokenResponse) {
+          navigate("/");
+        } else {
+          localStorage.removeItem("user");
+          navigate("/login");
+        }
+      }
+    };
+    if (user && appState !== actionState.login) {
+      refreshToken();
+    }
+  }, []);
 
   useEffect(() => {
     const getCart = async () => {
@@ -78,9 +50,7 @@ const MainLayout = () => {
       }
     };
     getCart();
-  },
-    [user]);
-
+  }, [user]);
 
   const showHeaderFooter = !(
     appState === actionState.login ||

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, IconButton, InputLabel, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
+import { Box, Button, Checkbox, Dialog, DialogActions, DialogContent, DialogTitle, Divider, FormControl, IconButton, InputLabel, MenuItem, Radio, Select, Stack, TextField, Typography } from '@mui/material';
 import TextConfig from '../config/text.config';
 import backgroundConfigs from '../config/background.config';
 import { Link, useNavigate } from 'react-router-dom';
@@ -23,6 +23,7 @@ const PaymentBilling = () => {
   const [wards, setWards] = useState([]);
   const [shipments, setShipments] = useState([]);
   const [selectedShipment, setSelectedShipment] = useState(null);
+  const [tempSelectedShipment, setTempSelectedShipment] = useState(null);
   const [selectedShipmentId, setSelectedShipmentId] = useState(null);
   const [selectedEditShipment, setSelectedEditShipment] = useState(null);
   const [openSelectAddress, setOpenSelectAddress] = useState(false);
@@ -32,7 +33,8 @@ const PaymentBilling = () => {
   const [shippingFee, setShippingFee] = useState(0);
   const [user, setUser] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
-  ); const sortedProvinces = [...provinces].sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
+  );
+  const sortedProvinces = [...provinces].sort((a, b) => a.ProvinceName.localeCompare(b.ProvinceName));
   const sortedDistricts = [...districts].sort((a, b) => a.DistrictName.localeCompare(b.DistrictName));
   const sortedWards = [...wards].sort((a, b) => a.WardName.localeCompare(b.WardName));
 
@@ -115,21 +117,27 @@ const PaymentBilling = () => {
       }
     }
     catch (error) {
+      setShippingFee(0);
       console.error('Error fetching fee:', error);
     }
   }
 
   const createShipment = async (values) => {
     try {
+      console.log('values', values);
+
       const data = {
         customerId: user.userId,
         shipmentId: values.shipmentId ? values.shipmentId : null,
         customerName: values.fullName,
         customerPhone: values.phoneNumber,
         toAddress: values.address,
-        toWardName: values.ward,
-        toDistrictName: values.district,
-        toProvinceName: values.province,
+        toWardName: values.wardName,
+        toDistrictName: values.districtName,
+        toProvinceName: values.provinceName,
+        toWardCode: values.ward,
+        toDistrictId: values.district,
+        toProvinceId: values.province,
         status: 1
       }
 
@@ -160,11 +168,11 @@ const PaymentBilling = () => {
       console.error('Error create shipment', error);
     }
   }
+  console.log(selectedShipment);
 
-  const handleShipmentChange = (e) => {
-    setSelectedShipment(shipments.find(shipment => shipment.shipmentId === e.target.value));
+  const handleShipmentChange = () => {
+    setSelectedShipment(tempSelectedShipment);
   }
-
 
   const billingForm = useFormik({
     initialValues: {
@@ -201,10 +209,9 @@ const PaymentBilling = () => {
     }),
     onSubmit: async values => {
       if (typeof values.province === 'number') {
-
-        values.province = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
-        values.district = districts.find(district => district.DistrictID === values.district).DistrictName;
-        values.ward = wards.find(ward => ward.WardCode === values.ward).WardName;
+        values.provinceName = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
+        values.districtName = districts.find(district => district.DistrictID === values.district).DistrictName;
+        values.wardName = wards.find(ward => ward.WardCode === values.ward).WardName;
       }
       const updatedCheckoutData = {
         ...checkoutData,
@@ -247,11 +254,9 @@ const PaymentBilling = () => {
         .required("Address is required !"),
     }),
     onSubmit: async values => {
-
-      values.province = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
-      values.district = districts.find(district => district.DistrictID === values.district).DistrictName;
-      values.ward = wards.find(ward => ward.WardCode === values.ward).WardName;
-
+      values.provinceName = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
+      values.districtName = districts.find(district => district.DistrictID === values.district).DistrictName;
+      values.wardName = wards.find(ward => ward.WardCode === values.ward).WardName;
       createShipment(values)
       setOpenAddAddress(false);
     }
@@ -289,9 +294,9 @@ const PaymentBilling = () => {
     }),
     onSubmit: async values => {
       values.shipmentId = selectedEditShipment.shipmentId;
-      values.province = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
-      values.district = districts.find(district => district.DistrictID === values.district).DistrictName;
-      values.ward = wards.find(ward => ward.WardCode === values.ward).WardName;
+      values.provinceName = provinces.find(province => province.ProvinceID === values.province).ProvinceName;
+      values.districtName = districts.find(district => district.DistrictID === values.district).DistrictName;
+      values.wardName = wards.find(ward => ward.WardCode === values.ward).WardName;
 
       createShipment(values)
       setOpenEditAddress(false);
@@ -306,6 +311,7 @@ const PaymentBilling = () => {
       billingForm.setFieldValue('province', selectedShipment.toProvinceName);
       billingForm.setFieldValue('district', selectedShipment.toDistrictName);
       billingForm.setFieldValue('ward', selectedShipment.toWardName);
+      calculateFee(selectedShipment.toWardCode, selectedShipment.toDistrictId);
     }
   }, [selectedShipment]);
 
@@ -314,7 +320,6 @@ const PaymentBilling = () => {
       editAddressForm.setFieldValue('address', selectedEditShipment.toAddress);
       editAddressForm.setFieldValue('fullName', selectedEditShipment.customerName);
       editAddressForm.setFieldValue('phoneNumber', selectedEditShipment.customerPhone);
-
     }
   }, [selectedEditShipment]);
 
@@ -585,15 +590,26 @@ const PaymentBilling = () => {
                       <em>(Determined later)</em>
                     </Typography>
                     <Box>
-                      <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', textDecoration: 'line-through' }}>{shippingFee}$ </Typography>
+                      <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px',  }}>{shippingFee}$ </Typography>
                       {shippingFee > 0 && <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Free</Typography>}
                     </Box>
 
                   </Box>
+                  {shippingFee > 0 &&
+                    <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', }}>
+                      <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', marginTop: '12px' }}>Discount:
+                      </Typography>
+                      <Box>
+                        <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold', marginTop: '12px', }}>-{shippingFee}$ </Typography>
+                      </Box>
+
+                    </Box>}
                   <Box sx={{ display: 'flex', flexDirection: 'row', justifyContent: 'space-between', marginTop: '24px' }}>
                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px', fontWeight: 'bold' }}>Estimated total:</Typography>
                     <Typography sx={{ ...TextConfig.style.basicFont, fontSize: '17.8px', fontWeight: 'bold', }}>{checkoutData.totalAmount}$</Typography>
                   </Box>
+                 
+
                   <Typography marginTop='12px' sx={{ ...TextConfig.style.basicFont, fontSize: '11.9px' }}>Product pricing shown reflects applicable sales and discounts
                   </Typography>
                 </Box>
@@ -645,10 +661,10 @@ const PaymentBilling = () => {
                         alignItems="start"
                         width="100%">
                         <Stack direction='row' justifyContent='start' alignItems='start'>
-                          <Checkbox
+                          <Radio
                             value={shipment.shipmentId}
-                            onChange={handleShipmentChange}
-                            checked={selectedShipment.shipmentId === shipment.shipmentId}
+                            onChange={() => setTempSelectedShipment(shipment)}
+                            checked={tempSelectedShipment?.shipmentId === shipment.shipmentId}
                           />
                           <Stack direction='column'>
                             <Stack direction='row'>
@@ -692,6 +708,12 @@ const PaymentBilling = () => {
             <DialogActions>
               <Button onClick={() => setOpenSelectAddress(false)} color="primary">
                 Close
+              </Button>
+              <Button onClick={() => {
+                setSelectedShipment(tempSelectedShipment);
+                setOpenSelectAddress(false);
+              }} color="primary">
+                Apply
               </Button>
 
             </DialogActions>

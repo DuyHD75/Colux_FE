@@ -26,13 +26,18 @@ const Login = ({ switchAuthState }) => {
   const [errorMessage, setErrorMessage] = useState();
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
-
+  const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const handleClickShowPassword = () => setShowPassword(!showPassword);
   const handleMouseDownPassword = (event) => event.preventDefault();
 
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const status = queryParams.get("status");
+
+  if (user) {
+    localStorage.setItem("user", JSON.stringify(user));
+    navigate("/");
+  }
 
   const loginForm = useFormik({
     initialValues: {
@@ -56,7 +61,6 @@ const Login = ({ switchAuthState }) => {
       if (response && response.data.user.role === "USER") {
         dispatch(setUser(response.data.user));
         loginForm.resetForm();
-        dispatch(setUser(response.data.user));
         localStorage.setItem("user", JSON.stringify(response.data.user));
         navigate("/");
       } else {
@@ -76,31 +80,31 @@ const Login = ({ switchAuthState }) => {
     },
   });
 
-   useEffect(() => {
+  useEffect(() => {
     const loginWithGoogle = async () => {
       const { response, err } = await userApi.getInfo();
       if (response?.status === 500) {
         toast.error("Login with google failed!");
       } else if (response) {
-        console.log('response', response);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
+        console.log("response", response);
+        localStorage.setItem("user", JSON.stringify(response.data.user));
         toast.success("Login with google successfully!");
-        navigate('/');
+        navigate("/");
       }
-    }
-    if (status === 'success') {
+    };
+    if (status === "success") {
       loginWithGoogle();
     }
   }, []);
-  
-  console.log('status', status);
+
+  console.log("status", status);
 
   useEffect(() => {
     if (errorMessage) {
       const timer = setTimeout(() => {
         setErrorMessage(undefined);
       }, 10000);
-  
+
       return () => clearTimeout(timer);
     }
   }, [errorMessage]);
@@ -144,7 +148,10 @@ const Login = ({ switchAuthState }) => {
                 className="bg-white rounded-full"
               />
             </Link> */}
-            <Link to="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=https://colux.site/identity-service/api/v1/users/public/grantcode&client_id=106159633603-urb1kt4jf1tualas0qq1gs5ju729nb1h.apps.googleusercontent.com" className="flex items-center">
+            <Link
+              to="https://accounts.google.com/o/oauth2/v2/auth?scope=https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.email%20https%3A%2F%2Fwww.googleapis.com%2Fauth%2Fuserinfo.profile&access_type=offline&include_granted_scopes=true&response_type=code&state=state_parameter_passthrough_value&redirect_uri=https://colux.site/identity-service/api/v1/users/public/grantcode&client_id=106159633603-urb1kt4jf1tualas0qq1gs5ju729nb1h.apps.googleusercontent.com"
+              className="flex items-center"
+            >
               <FcGoogle size={32} className="bg-white rounded-full" />
             </Link>
           </div>
@@ -243,12 +250,16 @@ const Login = ({ switchAuthState }) => {
                 outline: "none",
                 boxShadow: "0 0 0 4px rgba(25, 118, 210, 0.4)",
               },
-              ...textConfigs.style.basicFont
+              ...textConfigs.style.basicFont,
             }}
           >
             Login
           </LoadingButton>
-          {errorMessage && <Alert sx={{...textConfigs.style.basicFont}} severity="error">{errorMessage}</Alert>}
+          {errorMessage && (
+            <Alert sx={{ ...textConfigs.style.basicFont }} severity="error">
+              {errorMessage}
+            </Alert>
+          )}
           <p className="text-sm font-light text-gray-400 font-nunito">
             Don’t have an account yet?{" "}
             <Link

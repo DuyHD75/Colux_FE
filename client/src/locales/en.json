@@ -128,7 +128,7 @@
   "price.range.300-400": "300 - 400$",
   "price.range.400-500": "400 - 500$",
   "price.range.500+": "500$ +",
-  "free.ship": "Free shipping for orders over $500",
+  "free.ship": "Free shipping for all orders",
   "return": "Return within 7 days",
   "value.cannot.be.negative": "Value cannot be negative.",
   "go.to.checkout": "Go to Checkout",

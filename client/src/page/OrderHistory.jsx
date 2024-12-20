@@ -33,7 +33,7 @@ import customScrollbarStyle from "../config/scrollbar.config";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import productsApi from "../api/modules/products.api";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import prodcutsApi from "../api/modules/products.api";
 import textConfigs from "../config/text.config";
 
@@ -51,11 +51,14 @@ const OrderHistory = () => {
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
+  const navigate = useNavigate();
 
   const [openModal, setOpenModal] = useState(false);
+  const [openCancelModal, setOpenCancelModal] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [reviews, setReviews] = useState({});
   const [reviewsOfCus, setReviewsOfCus] = useState([]);
+  const [cancelReason, setCancelReason] = useState("");
 
   const handleOpenModal = (order) => {
     setSelectedOrder(order); // Lưu thông tin đơn hàng khi nhấn nút "Write a Review"
@@ -64,6 +67,16 @@ const OrderHistory = () => {
 
   const handleCloseModal = () => {
     setOpenModal(false);
+    setReviews({}); // Reset reviews khi đóng modal
+  };
+  
+  const handleOpenCancelModal = (order) => {
+    setSelectedOrder(order); // Lưu thông tin đơn hàng khi nhấn nút "Write a Review"
+    setOpenCancelModal(true);
+  };
+
+  const handleCloseCancelModal = () => {
+    setOpenCancelModal(false);
     setReviews({}); // Reset reviews khi đóng modal
   };
 
@@ -124,7 +137,6 @@ const OrderHistory = () => {
     handleCloseModal();
   };
 
-  console.log(orders);
 
   useEffect(() => {
     const getOrder = async () => {
@@ -153,11 +165,9 @@ const OrderHistory = () => {
   }, [user]);
 
   const handleOpenShippingDialog = async (waybillId) => {
-    console.log(waybillId);
     try {
       const { response } = await cartApi.getAWayBill(waybillId);
       if (response) {
-        console.log(response.data.waybill);
         setSteps(response.data.waybill);
       }
     } catch (error) {
@@ -171,12 +181,10 @@ const OrderHistory = () => {
     setOpenShipping(false);
   };
 
-  console.log(steps);
 
   useEffect(() => {
     const getReviewsByCusId = async () => {
       if (user) {
-        console.log(user.userId);
 
         try {
           const { response, err } = await prodcutsApi.getReviewsByCusId(
@@ -199,8 +207,6 @@ const OrderHistory = () => {
     getReviewsByCusId();
   }, [user]);
 
-  console.log(reviewsOfCus);
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     const day = date.getDate().toString().padStart(2, "0");
@@ -211,7 +217,6 @@ const OrderHistory = () => {
     const seconds = date.getSeconds().toString().padStart(2, "0");
     return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
   };
-  console.log(orders);
 
   const getOrderStatusLabel = (orderStatus) => {
     switch (orderStatus) {
@@ -249,9 +254,14 @@ const OrderHistory = () => {
 
   const handleCancelOrder = async (order) => {
     try {
-      const { response, err } = await cartApi.cancelOrder(user.userId,order.orderId );
+      const orderCancelRequest = {
+        code: order.code,
+        cancelReason: cancelReason,
+      };
+      const { response, err } = await cartApi.cancelOrder(orderCancelRequest);
       if (response) {
         toast.success(response.message);
+        setCancelReason("");
         const newOrders = orders.map((item) => {
           if (item.id === order.id) {
             return {
@@ -269,7 +279,7 @@ const OrderHistory = () => {
     } catch (error) {
       console.error(error);
     }
-  }
+  };
 
   return (
     <>
@@ -429,13 +439,11 @@ const OrderHistory = () => {
                                 width="80%"
                               >
                                 <Link
-                                  to={`/products/${product.categoryName}/${
-                                    product.categoryId
-                                      ? product.categoryId
-                                      : "catrgoryid"
-                                  }/${product.productDetails.productName}/${
-                                    product.productDetails.productId
-                                  }`}
+                                  to={`/products/${product.categoryName}/${product.categoryId
+                                    ? product.categoryId
+                                    : "catrgoryid"
+                                    }/${product.productDetails.productName}/${product.productDetails.productId
+                                    }`}
                                 >
                                   <ImageComponent
                                     src={
@@ -535,7 +543,11 @@ const OrderHistory = () => {
                         })}
                       </Box>
                       <Divider />
-                      <Stack direction={{xs:'column',sm:'row'}} spacing="12px" my="16px">
+                      <Stack
+                        direction={{ xs: "column", sm: "row" }}
+                        spacing="12px"
+                        my="16px"
+                      >
                         <Box
                           sx={{
                             width: "100%",
@@ -822,7 +834,7 @@ const OrderHistory = () => {
                                 backgroundColor: "#2c3766",
                               },
                             }}
-                            onClick={() => handleCancelOrder(item)}
+                            onClick={() => handleOpenCancelModal(item)}
                           >
                             Cancel Order
                           </Button>
@@ -850,6 +862,30 @@ const OrderHistory = () => {
                             Write a Review
                           </Button>
                         )}
+                        {item.paymentStatus === 1 && item.status !== 5 && item.paypalCheckoutLink && (
+                          <Button
+                            sx={{
+                              ...TextConfig.style.headerText,
+                              mt: "1rem",
+                              fontWeight: "bold",
+                              fontSize: "16px",
+                              bgcolor: "#1c2759",
+                              color: "white",
+                              borderRadius: "14px",
+                              width: "200px",
+                              height: "30px",
+                              textTransform: "capitalize",
+                              "&:hover": {
+                                color: "secondary.colorText",
+                                backgroundColor: "#2c3766",
+                              },
+                            }}
+                            component={Link}
+                            to={item.paypalCheckoutLink}
+                          >
+                            Proceed With Payment
+                          </Button>
+                        )}
                       </Stack>
                     </AccordionDetails>
                   </Accordion>
@@ -865,25 +901,24 @@ const OrderHistory = () => {
                   justifyContent: "center",
                 }}
               >
-
-                  <img
-                    src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
-                    alt="No order history found"
-                    style={{
-                      maxWidth: "50%",
-                      height: "auto",
-                    }}
-                  />
-                  <Typography
-                    color="textSecondary"
-                    sx={{
-                      ...textConfigs.style.basicFont,
-                      my: "1rem",
-                      fontSize: "1.2rem",
-                    }}
-                  >
-                    No order history
-                  </Typography>
+                <img
+                  src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F404.png?alt=media&token=a8a59775-5287-4cba-9e45-bb0355e39fa0"
+                  alt="No order history found"
+                  style={{
+                    maxWidth: "50%",
+                    height: "auto",
+                  }}
+                />
+                <Typography
+                  color="textSecondary"
+                  sx={{
+                    ...textConfigs.style.basicFont,
+                    my: "1rem",
+                    fontSize: "1.2rem",
+                  }}
+                >
+                  No order history
+                </Typography>
               </Box>
             )}
           </Stack>
@@ -1067,6 +1102,87 @@ const OrderHistory = () => {
               onClick={handleSubmitReview}
             >
               Submit Review
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Dialog
+          open={openCancelModal}
+          onClose={handleCloseCancelModal}
+          fullWidth
+          maxWidth="md"
+        >
+          <DialogTitle>Write a Reason Cancel for Your Order</DialogTitle>
+          <DialogContent>
+            <Box>
+              <Typography
+                variant="h6"
+                gutterBottom
+                sx={{ ...TextConfig.style.basicFont }}
+              >
+                Order ID: {selectedOrder?.code}
+              </Typography>
+              <Typography
+                variant="body1"
+                gutterBottom
+                sx={{ ...TextConfig.style.basicFont }}
+              >
+                Please share your cancel reason below:
+              </Typography>
+              <TextField
+                label="Write your reason cancel"
+                variant="outlined"
+                multiline
+                rows={4}
+                value={cancelReason}
+                onChange={(e) =>setCancelReason(e.target.value)}
+                fullWidth
+                sx={{ mt: 2, ...TextConfig.style.basicFont }}
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button
+              sx={{
+                ...TextConfig.style.headerText,
+                mt: "1rem",
+                fontWeight: "bold",
+                fontSize: "16px",
+                bgcolor: "red",
+                color: "white",
+                borderRadius: "14px",
+                width: "150px",
+                height: "30px",
+                textTransform: "capitalize",
+                "&:hover": {
+                  color: "secondary.colorText",
+                  backgroundColor: "#2c3766",
+                },
+              }}
+              onClick={handleCloseCancelModal}
+            >
+              Close
+            </Button>
+
+            <Button
+              sx={{
+                ...TextConfig.style.headerText,
+                mt: "1rem",
+                fontWeight: "bold",
+                fontSize: "16px",
+                bgcolor: "#1c2759",
+                color: "white",
+                borderRadius: "14px",
+                width: "150px",
+                height: "30px",
+                textTransform: "capitalize",
+                "&:hover": {
+                  color: "secondary.colorText",
+                  backgroundColor: "#2c3766",
+                },
+              }}
+              onClick={()=>handleCancelOrder(selectedOrder)}
+            >
+              Cancel Order
             </Button>
           </DialogActions>
         </Dialog>
