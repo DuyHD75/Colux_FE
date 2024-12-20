@@ -71,7 +71,7 @@ const ContactUs = () => {
                         height: '100%',
                     }}>
                         <ImageComponent
-                            src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/contact-us/_jcr_content/root/container/hero/image.coreimg.85.800.jpeg/1725994956327/contact.jpeg' width='auto' height='auto'
+                            src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fcontact.jpeg?alt=media&token=1bf7add9-0a1a-4a99-a96b-0336135797a5' width='auto' height='auto'
                             className={isXs ? 'object-cover object-top w-full max-h-[186px]' : ''}
                             alt='contact-us'
                         />                    </Box>

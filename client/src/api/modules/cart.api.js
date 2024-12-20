@@ -8,9 +8,9 @@ const userEndpoints = {
   createOrder: "/order-service/api/v1/orders/create",
   getOrdersbyCustomerId: ({ customerId }) =>
     `/order-service/api/v1/orders/customerId/${customerId}`,
-  getAWayBill: ( wayBillId ) =>
+  getAWayBill: (wayBillId) =>
     `/order-service/api/v1/waybills/public/${wayBillId}`,
-  cancelOrder: (orderId,userId) => `/order-service/api/v1/orders/${userId}/${orderId}`,
+  cancelOrder: "/order-service/api/v1/orders/cancel",
 };
 
 const cartApi = {
@@ -24,9 +24,10 @@ const cartApi = {
   },
   deleteCartItem: async (cartId, itemDeleteRequests) => {
     try {
-      const response = await proxyClient.post(userEndpoints.deleteCartItem, 
-       { cartId, itemDeleteRequests },
-      );
+      const response = await proxyClient.post(userEndpoints.deleteCartItem, {
+        cartId,
+        itemDeleteRequests,
+      });
       return { response };
     } catch (err) {
       return { err };
@@ -73,19 +74,20 @@ const cartApi = {
   getAWayBill: async (waybillId) => {
     try {
       console.log("waybillId", waybillId);
-      
+
       const response = await proxyClient.get(
-        userEndpoints.getAWayBill( waybillId )
+        userEndpoints.getAWayBill(waybillId)
       );
       return { response };
     } catch (err) {
       return { err };
     }
   },
-  cancelOrder: async (orderId,userId) => {
+  cancelOrder: async (orderCancelRequest) => {
     try {
-      const response = await proxyClient.get(
-        userEndpoints.cancelOrder(userId,orderId)
+      const response = await proxyClient.post(
+        userEndpoints.cancelOrder,
+        orderCancelRequest
       );
       return { response };
     } catch (err) {

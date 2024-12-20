@@ -15,7 +15,7 @@ const AboutUs = () => {
                     paddingX: { xs: '0', sm: '375.5px' },
                     position: 'relative',
                 }}>
-                    <img src="https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/hero/image.coreimg.85.1600.jpeg/1724774377094/about-us.jpeg" alt="" style={{ width: '100%' }} />
+                    <ImageComponent src="https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fabout-us.jpeg?alt=media&token=d501d86b-47fd-4fd4-9a7a-86407e8af6a0" width='auto' height='auto' />
                     <Box sx={{
                         position: { xs: 'none', sm: 'absolute' },
                         bottom: 0,
@@ -62,7 +62,7 @@ const AboutUs = () => {
                 <Box sx={{
                     width: { xs: '100%', sm: '50%' }
                 }}>
-                    <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/dividedteaser/media.coreimg.85.800.jpeg/1724774377162/employee-painting.jpeg' width='auto' height='auto' />
+                    <ImageComponent src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2F783529927619.jpg?alt=media&token=6b769f5e-9f5e-4fa5-ac46-d263bc43862b' width='auto' height='auto' />
                 </Box>
                 <Box sx={{
                     padding: '24px 48px',
@@ -117,16 +117,16 @@ const AboutUs = () => {
                 </Typography>
                 <Grid container spacing={3} gridTemplateColumns='4,1fr'>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FJotun.png?alt=media&token=107f6a84-7851-46d9-9e3e-ba594a078264' />
+                        <ImageComponent className= 'max-h-[193.22px]'  src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FJotun.png?alt=media&token=107f6a84-7851-46d9-9e3e-ba594a078264' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FNippon.png?alt=media&token=c70e5039-7b00-416e-89ca-64ec5daccd0b' />
+                        <ImageComponent className= 'max-h-[193.22px]'  src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FNippon.png?alt=media&token=c70e5039-7b00-416e-89ca-64ec5daccd0b' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FMyKolor.png?alt=media&token=49b8fd00-b1e4-421c-98ad-d0a0845b4a49' />
+                        <ImageComponent className= 'max-h-[193.22px]'  src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FMyKolor.png?alt=media&token=49b8fd00-b1e4-421c-98ad-d0a0845b4a49' />
                     </Grid>
                     <Grid item xs={6} sm={3} >
-                        <ImageComponent className='max-w-[270px] max-h-[193.22px]' width='270px' height='193.22px' src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FDulux.png?alt=media&token=28b21bac-5a0d-4177-a0a1-8f002c8ab8f2' />
+                        <ImageComponent className= 'max-h-[193.22px]'  src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2FDulux.png?alt=media&token=28b21bac-5a0d-4177-a0a1-8f002c8ab8f2' />
                     </Grid>
                  
 
@@ -165,7 +165,7 @@ const AboutUs = () => {
                 <Box sx={{
                     width: { xs: '100%', sm: '50%' }
                 }}>
-                    <ImageComponent src='https://corporate.sherwin-williams.com/content/sherwin/corp/corp-aem-sherwin/us/en/our-company/_jcr_content/root/container/container/dividedteaser/media.coreimg.85.800.jpeg/1724774378037/woman-smiling-at-desk.jpeg' width='auto' height='auto' />
+                    <ImageComponent src='https://firebasestorage.googleapis.com/v0/b/colux-alpha-storage.appspot.com/o/commons%2Fwoman-smiling-at-desk.jpeg?alt=media&token=31629ee8-2c68-4fa9-89b4-0e8d3a70e6eb' width='auto' height='auto' />
                 </Box>
             </Stack>
 

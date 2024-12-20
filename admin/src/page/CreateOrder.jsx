@@ -329,8 +329,9 @@ const CreateOrder = () => {
         weight,
         length
       );
-      setShippingFee(response.response.data.fee.data.total);
-
+      setShippingFee((response.response.data.fee.data.total/ 23000).toFixed(1));
+      console.log(response.response.data.fee.data.total);
+      
       if (response.code === 400) {
         throw new Error(response.message);
       }
@@ -903,11 +904,34 @@ const CreateOrder = () => {
                         sx={{
                           fontWeight: "700",
                           ...textConfigs.style.basicFont,
-                          textDecoration: "line-through",
                           color: "#4D94DD",
                         }}
                       >
-                        $0
+                        ${shippingFee}
+                      </Typography>
+                    </Stack>
+                    <Stack
+                      width="30%"
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems="center"
+                    >
+                      <Typography
+                        sx={{
+                          fontWeight: "700",
+                          ...textConfigs.style.basicFont,
+                        }}
+                      >
+                        Discount:
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontWeight: "700",
+                          ...textConfigs.style.basicFont,
+                          color: "#4D94DD",
+                        }}
+                      >
+                        $-{shippingFee}
                       </Typography>
                     </Stack>
                     <Stack
