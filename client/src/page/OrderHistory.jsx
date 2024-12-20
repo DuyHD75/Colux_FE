@@ -149,7 +149,7 @@ const OrderHistory = () => {
           dispatch(setGlobalLoading(false));
 
           if (response) {
-            setOrders(response.data.orders);
+            setOrders(response.data.orders.reverse());
           }
           if (err) {
             toast.error(err.exception);
@@ -271,7 +271,7 @@ const OrderHistory = () => {
           }
           return item;
         });
-        setOrders(newOrders);
+        setOrders(newOrders.reverse());
       }
       if (err) {
         toast.error(err.exception);
@@ -305,7 +305,7 @@ const OrderHistory = () => {
           </Typography>
           <Stack spacing={2} direction="column">
             {orders.length > 0 ? (
-              orders.reverse().map((item, index) => {
+              orders.map((item, index) => {
                 return (
                   <Accordion
                     sx={{ borderRadius: "8px", bgcolor: "#F9F9F9" }}

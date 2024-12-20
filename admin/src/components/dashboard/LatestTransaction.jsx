@@ -26,6 +26,23 @@ const LatestTransaction = ({ transactions = [] }) => {
     }
   };
 
+  const getStatusLabel = (status) => {
+    switch (status) {
+      case "1":
+        return "CREATED";
+      case "2":
+        return "PENDING";
+      case "3":
+        return "APPROVED";
+      case "4":
+        return "COMPLETED";
+      case "5":
+        return "CANCELED";
+      default:
+        return "UNKNOWN";
+    }
+  };
+
   const handleCloseDialog = () => {
     setOpenDialog(false);
     setSelectedOrder(null);
@@ -88,7 +105,7 @@ const LatestTransaction = ({ transactions = [] }) => {
                     borderBottom: '1px solid #E5E7EB'
                   }}
                 >
-                  Payment Status
+                  Order Status
                 </TableCell>
                 <TableCell 
                   width="15%" 
@@ -128,7 +145,7 @@ const LatestTransaction = ({ transactions = [] }) => {
                       month: 'short',
                       year: 'numeric'
                     })}</TableCell>
-                  <TableCell>${transaction.total}</TableCell>
+                  <TableCell>${Number(transaction.total).toFixed(1)}</TableCell>
                   <TableCell>
                     <Box sx={{
                       bgcolor: '#DCFCE7',
@@ -140,7 +157,7 @@ const LatestTransaction = ({ transactions = [] }) => {
                       fontSize: '0.875rem',
                       textAlign: 'center'
                     }}>
-                      {transaction.status}
+                      {getStatusLabel(transaction.status)}
                     </Box>
                   </TableCell>
                   <TableCell>
