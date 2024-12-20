@@ -68,15 +68,18 @@ const Login = ({ switchAuthState }) => {
           "Your account does not have permission to access this page."
         );
       }
-      if (err && err.code === 401) {
-        setErrorMessage("No access permission.");
+      if(err) {
+        setErrorMessage(err.exception);
       }
-      if (err && (err.code === 400 || err.code === 404)) {
-        setErrorMessage("Not found user");
-      }
-      if (err && err.code === 500) {
-        setErrorMessage("Server error.");
-      }
+      // if (err && err.code === 401) {
+      //   setErrorMessage("No access permission.");
+      // }
+      // if (err && (err.code === 400 || err.code === 404)) {
+      //   setErrorMessage("Not found user");
+      // }
+      // if (err && err.code === 500) {
+      //   setErrorMessage("Server error.");
+      // }
     },
   });
 
@@ -94,7 +97,10 @@ const Login = ({ switchAuthState }) => {
     };
     if (status === "success") {
       loginWithGoogle();
+    }else if (status === "failed") {
+      toast.error("Login with google failed!");
     }
+
   }, []);
 
   console.log("status", status);
