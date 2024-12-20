@@ -16,7 +16,9 @@ const Profile = () => {
   const [editInfo, setEditInfo] = useState(false);
   const [editAddress, setEditAddress] = useState(false);
   const user = JSON.parse(localStorage.getItem("user"));
-  const [userImage, setUserImage] = useState(user.imageUrl);
+  const [userState, setUserState] = useState(user && user);
+  const [userImage, setUserImage] = useState(userState?.imageUrl);
+
 
   const dispatch = useDispatch();
 
@@ -72,7 +74,13 @@ const Profile = () => {
     };
     const { response, err } = await userApi.updateProfile(profile);
     if (response) {
+      user.firstName = values.firstName;
+      user.lastName = values.lastName;
+      user.phone = values.phone;
+      localStorage.setItem("user", JSON.stringify(user));    
+      setUserState((prev) => ({...prev, firstName:  values.firstName, lastName: values.lastName, phone: values.phone}));
       toast.success("Update profile successfully");
+
     }
   };
 
@@ -113,7 +121,7 @@ const Profile = () => {
   });
 
   useEffect(() => {
-    const { firstName, lastName, email, phone } = user;
+    const { firstName, lastName, email, phone } = userState;
     if (
       formikInfo.values.firstName !== firstName ||
       formikInfo.values.lastName !== lastName ||
@@ -196,7 +204,7 @@ const Profile = () => {
                     fontSize: "18px",
                   }}
                 >
-                  {user && user.firstName} {user && user.lastName}
+                  {userState && userState.firstName} {userState && userState.lastName}
                 </Typography>
                 
               </Box>

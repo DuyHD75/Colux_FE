@@ -43,7 +43,7 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [dispatch]);
   // Log để kiểm tra cấu trúc dữ liệu
-  console.log("Profit Data:", dashboardData?.profit);
+  console.log("Profit Data:", dashboardData);
 
   if (loading) return <LoadingScreen />;
   if (error)
